@@ -9,9 +9,10 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
     public Transform cameraObject;
     Rigidbody playerRigidbody;
-
+    
     public float movementSpeed = 5f;
     public float rotationSpeed = 12f;
+    
     void Awake()
     {
         inputManager = GetComponent<InputManager>();

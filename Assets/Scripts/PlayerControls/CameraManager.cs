@@ -17,8 +17,8 @@ public class CameraManager : MonoBehaviour
 
     void Awake()
     {
-        inputManager = FindObjectOfType<InputManager>();
-        playerTransform = FindObjectOfType<PlayerManager>().transform;
+        inputManager = FindFirstObjectByType<InputManager>();
+        playerTransform = FindFirstObjectByType<PlayerManager>().transform;
     }
 
     public void HandleAllCameraMovement()

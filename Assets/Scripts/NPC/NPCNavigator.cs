@@ -12,8 +12,8 @@ public class NPCNavigator : MonoBehaviour
     public Vector3 destination;
     public bool destinationReached;
     public Animator animator;
-    private float waypointTimeout = 30f;
-    public float currentTimeout = 0f;
+    //private float waypointTimeout = 30f;
+    //public float currentTimeout = 0f;
 
     void Update()
     {
@@ -31,7 +31,8 @@ public class NPCNavigator : MonoBehaviour
                 destinationReached = false;
                 Quaternion targetRotation = Quaternion.LookRotation(direction);
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, turningSpeed * Time.deltaTime);
-                transform.Translate(Vector3.forward * movingSpeed * Time.deltaTime);
+                Vector3 moveDirection = direction.normalized;
+                transform.Translate(moveDirection * movingSpeed * Time.deltaTime, Space.World);
             }
             else
             {
@@ -44,6 +45,6 @@ public class NPCNavigator : MonoBehaviour
     {
         this.destination = destination;
         destinationReached = false;
-        currentTimeout = 0f;
+       // currentTimeout = 0f;
     }
 }

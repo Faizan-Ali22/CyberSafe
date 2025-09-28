@@ -14,6 +14,8 @@ public class InputManager : MonoBehaviour
     private Vector2 cameraInput;
     public float cameraInputX;
     public float cameraInputY;
+     [Header("Input Flag")]
+     public bool interactInput;
 
 
     void Awake()
@@ -29,6 +31,8 @@ public class InputManager : MonoBehaviour
             playerControls = new PlayerControls();
             playerControls.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
             playerControls.PlayerMovement.CameraMovement.performed += i => cameraInput = i.ReadValue<Vector2>();
+            playerControls.PlayerActions.Interact.performed += i => interactInput = true;
+            //playerControls.PlayerActions.Interact.canceled += i => interactInput = false;
         }
         playerControls.Enable();
     }
@@ -38,11 +42,12 @@ public class InputManager : MonoBehaviour
     {
         playerControls.Disable();
     }
-    
-    
+
+
     public void HandleAllInputs()
     {
         HandleMovementInput();
+        HandleInteractInput();
     }
 
 
@@ -58,5 +63,12 @@ public class InputManager : MonoBehaviour
         moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
         animatorManager.UpdateAnimatorValues(0, moveAmount);
     }
-
+    private void HandleInteractInput()
+    {
+        if (interactInput)
+        {
+            Debug.Log("Interacting");
+            interactInput = false;
+        }
+    }
 }

@@ -6,11 +6,12 @@ public class PlayerManager : MonoBehaviour
     InputManager inputManager;
     PlayerMovement playerMovement;
     CameraManager cameraManager;
-    public float gravityIntensity = -9.81f;
+    
     public Transform groundCheck;
     public LayerMask groundLayer;
-    public float groundDistance = 0.4f;
+    public float groundDistance = 0.2f; 
     bool isGrounded;
+
     void Awake()
     {
         inputManager = GetComponent<InputManager>();
@@ -20,35 +21,48 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-
         inputManager.HandleAllInputs();
         cameraManager.HandleAllCameraMovement();
     }
-    void HandleGravity()
-{
-    Rigidbody rb = GetComponent<Rigidbody>();
-    bool isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundLayer);
 
-    if (!isGrounded)
+    void HandleGravity()
     {
-        // Apply gravity directly for fast, realistic falling
-        rb.linearVelocity += Vector3.up * gravityIntensity * Time.deltaTime;
-    }
-    else
-    {
-        // Optionally, zero out vertical velocity when grounded
-        Vector3 vel = rb.linearVelocity;
-        if (vel.y < 0)
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (groundCheck == null) return;
+
+        // ===== CHANGED =====
+        // assign to the class-level isGrounded (not declaring a new local variable)
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundLayer);
+
+        if (isGrounded)
         {
-            vel.y = 0;
-            rb.linearVelocity = vel;
+            // Zero small downward velocity to avoid "hover"/slow slide when standing on steps
+            if (rb.linearVelocity.y < -0.1f)
+            {
+                Vector3 vel = rb.linearVelocity;
+                vel.y = 0f;
+                rb.linearVelocity = vel;
+            }
         }
+        else
+        {
+            
+            // AddForce with ForceMode.Acceleration:
+            // rb.AddForce(Vector3.down * extraGravity, ForceMode.Acceleration);
+        }
+        
     }
-}
+
     void FixedUpdate()
     {
         playerMovement.HandleAllMovement();
-
         HandleGravity();
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (groundCheck == null) return;
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(groundCheck.position, groundDistance);
     }
 }

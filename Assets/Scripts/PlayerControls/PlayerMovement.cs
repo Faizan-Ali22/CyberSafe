@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Scripts")]
+   [Header("Scripts")]
     InputManager inputManager;
     [Header("Movement")]
     Vector3 moveDirection;
@@ -25,38 +25,42 @@ public class PlayerMovement : MonoBehaviour
         HandleMovement();
         HandleRotation();
     }
+
     private void HandleMovement()
     {
+        // build movement direction relative to camera
         moveDirection = cameraObject.forward * inputManager.verticalInput;
-        moveDirection = moveDirection + cameraObject.right * inputManager.horizontalInput;
-        moveDirection.Normalize();
-        moveDirection.y = 0;
-        moveDirection = moveDirection * movementSpeed;
+        moveDirection += cameraObject.right * inputManager.horizontalInput;
+        moveDirection.y = 0f;
 
-        Vector3 movementVelocity = moveDirection;
-        playerRigidbody.linearVelocity = movementVelocity;
+        // normalize only if needed (prevents diagonal > 1 speed)
+        if (moveDirection.sqrMagnitude > 1f)
+            moveDirection.Normalize();
+
+        // horizontal velocity in units/sec
+        Vector3 horizontalVelocity = moveDirection * movementSpeed;
+
+        
+        Vector3 newVelocity = horizontalVelocity;
+        newVelocity.y = playerRigidbody.linearVelocity.y; 
+        playerRigidbody.linearVelocity = newVelocity;
+        // ===================
     }
+
     private void HandleRotation()
     {
-        Vector3 targetDirection = Vector3.zero;
-
-        targetDirection = cameraObject.forward * inputManager.verticalInput;
-        targetDirection = targetDirection + cameraObject.right * inputManager.horizontalInput;
-        targetDirection.Normalize();
-        targetDirection.y = 0;
+        Vector3 targetDirection = cameraObject.forward * inputManager.verticalInput;
+        targetDirection += cameraObject.right * inputManager.horizontalInput;
+        targetDirection.y = 0f;
 
         if (targetDirection == Vector3.zero)
         {
             targetDirection = transform.forward;
         }
+
         Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
         Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
         transform.rotation = playerRotation;
-
     }
-
-
-
-
 }

@@ -11,6 +11,7 @@ public class PlayerManager : MonoBehaviour
     public LayerMask groundLayer;
     public float groundDistance = 0.2f; 
     bool isGrounded;
+    public bool isInCutscene = false;
 
     void Awake()
     {
@@ -21,8 +22,11 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        inputManager.HandleAllInputs();
-        cameraManager.HandleAllCameraMovement();
+         if (!isInCutscene)
+        {
+            inputManager.HandleAllInputs();
+            cameraManager.HandleAllCameraMovement();
+        }
     }
 
     void HandleGravity()
@@ -55,8 +59,21 @@ public class PlayerManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        playerMovement.HandleAllMovement();
-        HandleGravity();
+         if (!isInCutscene)
+        {
+            playerMovement.HandleAllMovement();
+            HandleGravity();
+        }
+        else
+        {
+            // keep the player still while in cutscene
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+        }
     }
 
     void OnDrawGizmosSelected()

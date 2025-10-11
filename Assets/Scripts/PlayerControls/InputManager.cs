@@ -16,6 +16,7 @@ public class InputManager : MonoBehaviour
     public float cameraInputY;
      [Header("Input Flag")]
      public bool interactInput;
+     public bool acceptInput = true;
 
 
     void Awake()
@@ -46,6 +47,7 @@ public class InputManager : MonoBehaviour
 
     public void HandleAllInputs()
     {
+        if (!acceptInput) return;
         HandleMovementInput();
         HandleInteractInput();
     }

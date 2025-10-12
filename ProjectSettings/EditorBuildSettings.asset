@@ -6,10 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/School.unity
+    path: Assets/Scenes/Game-01/Intro.unity
+    guid: 03d1ad3da33e85a4ebca3e76182ccb10
+  - enabled: 1
+    path: Assets/Scenes/Game-01/Game-01.unity
     guid: 9ffa82facae4bf547ba2d58d9e2adee4
   - enabled: 1
-    path: Assets/Scenes/RedLinksScene.unity
+    path: Assets/Scenes/Game-01/RedLinksScene.unity
     guid: 7cbd9b87c6709ca42ab535c48d1157a0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

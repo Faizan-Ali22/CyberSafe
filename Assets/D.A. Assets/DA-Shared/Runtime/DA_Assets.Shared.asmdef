@@ -1,0 +1,16 @@
+{
+    "name": "DA_Assets.Shared",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ad6139985c3093145837dd2c3f8323c2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

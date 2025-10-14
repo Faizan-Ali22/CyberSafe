@@ -1,0 +1,14 @@
+using System;
+using UnityEngine;
+
+{0}
+
+namespace {1}
+{{
+    public class {2} : {3}
+    {{
+{4}
+
+{5}
+    }}
+}}

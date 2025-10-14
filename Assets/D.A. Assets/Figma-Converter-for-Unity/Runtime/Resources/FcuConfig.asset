@@ -1,0 +1,263 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 471efbc970a337c4c83b1330ba757435, type: 3}
+  m_Name: FcuConfig
+  m_EditorClassIdentifier: 
+  productVersion: 5.7.2
+  localizator:
+    locFile: {fileID: 4900000, guid: 76e267d64912f5c44a25b64a5d86254b, type: 3}
+  tags:
+  - label: None
+    fcuTag: 0
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 0
+  - label: Page
+    fcuTag: 3
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 0
+  - label: Frame
+    fcuTag: 2
+    figmaTag: frame
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 0
+  - label: Container
+    fcuTag: 1
+    figmaTag: cont
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 1
+    hasComponent: 0
+  - label: Image
+    fcuTag: 201
+    figmaTag: img
+    customButtonTag: 0
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 1
+  - label: Background
+    fcuTag: 203
+    figmaTag: bg
+    customButtonTag: 0
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 1
+  - label: Vector
+    fcuTag: 202
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 1
+    hasComponent: 0
+  - label: Text
+    fcuTag: 200
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: Placeholder
+    fcuTag: 302
+    figmaTag: ph
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: AutoLayoutGroup
+    fcuTag: 100
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: ContentSizeFitter
+    fcuTag: 101
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: AspectRatioFitter
+    fcuTag: 102
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 1
+  - label: BtnDefault
+    fcuTag: 400
+    figmaTag: def
+    customButtonTag: 1
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 0
+  - label: BtnHover
+    fcuTag: 401
+    figmaTag: hov
+    customButtonTag: 1
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 0
+  - label: BtnPressed
+    fcuTag: 402
+    figmaTag: pres
+    customButtonTag: 1
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 0
+  - label: BtnSelected
+    fcuTag: 403
+    figmaTag: sel
+    customButtonTag: 1
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 0
+  - label: BtnDisabled
+    fcuTag: 404
+    figmaTag: dis
+    customButtonTag: 1
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 0
+  - label: BtnLooped
+    fcuTag: 405
+    figmaTag: lp
+    customButtonTag: 1
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 0
+  - label: Button
+    fcuTag: 300
+    figmaTag: btn
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: InputField
+    fcuTag: 301
+    figmaTag: fld
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: PasswordField
+    fcuTag: 304
+    figmaTag: pwd
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: ScrollView
+    fcuTag: 303
+    figmaTag: scroll
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: Toggle
+    fcuTag: 305
+    figmaTag: tg
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: ToggleGroup
+    fcuTag: 306
+    figmaTag: tgr
+    customButtonTag: 0
+    canBeDownloaded: 0
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: Shadow
+    fcuTag: 500
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: CanvasGroup
+    fcuTag: 501
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 1
+  - label: Mask
+    fcuTag: 502
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 1
+    hasComponent: 1
+  - label: Blur
+    fcuTag: 503
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 0
+    hasComponent: 1
+  - label: Ignore
+    fcuTag: 600
+    figmaTag: ignore
+    customButtonTag: 0
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 0
+    hasComponent: 0
+  - label: 9-slice
+    fcuTag: 204
+    figmaTag: 
+    customButtonTag: 0
+    canBeDownloaded: 1
+    canBeInsideSingleImage: 0
+    hasComponent: 0
+  webLogFileName: response.json
+  dateTimeFormat1: HH-mm-ss-fff
+  canvasGameObjectName: Canvas {0}
+  i2LocGameObjectName: Language Source
+  rounding:
+    isCircleDigits: 0
+    getBoundingSizeDigits: 2
+    getAngleFromMatrixDigits: 2
+    diffCheckerSizeDigits: 2
+    getPaddingDigits: 0
+    fontDigits: 2
+    getMaxAllowedScaleDigits: 2
+  recentProjectsLimit: 20
+  figmaSessionsLimit: 10
+  logFilesLimit: 50
+  maxRenderSize: 4096
+  renderUpscaleFactor: 2
+  blurredObjectTag: UIBlur
+  blurCameraTag: BackgroundBlur
+  realTagSeparator: 45
+  childParsingLimit: 512
+  apiRequestsCountLimit: 500
+  apiTimeoutSec: 60
+  chunkSizeGetNodes: 10
+  frameListDepth: 2
+  gFontsApiKey: 
+  whiteSprite32px: {fileID: 21300000, guid: c863a1ee30e5f0a478b421c09b3bcfd9, type: 3}
+  missingImageTexture128px: {fileID: 21300000, guid: 3e820c8fcbbdcfd4592a8ccbb7de0370, type: 3}
+  baseClass: {fileID: 4900000, guid: 8e32de32e14b50747995a6f5a08bb9ae, type: 3}
+  imageLinearMaterial: {fileID: 2100000, guid: 41bc1ce8da9e87a4fa340d902394e0df, type: 2}
+  vectorMaterials:
+    UnlitVector: {fileID: 2100000, guid: 73ddb2958e9cd451c82f37c26efa5eb0, type: 2}
+    UnlitVectorGradient: {fileID: 2100000, guid: 137d858a4eae4d34298f3cdcd31f5e0b, type: 2}
+    UnlitVectorGradientUI: {fileID: 2100000, guid: 0b012844cadfbe541b20626331cf90a2, type: 2}
+    UnlitVectorUI: {fileID: 2100000, guid: 8d66e65c66e29504199ed664979682cd, type: 2}

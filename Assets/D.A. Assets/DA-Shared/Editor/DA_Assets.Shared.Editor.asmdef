@@ -1,0 +1,21 @@
+{
+    "name": "DA_Assets.Shared.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1b74e700d4693d342a6732b0ca624858",
+        "GUID:2c573e6b271651846a79655161004c5b",
+        "GUID:ad6139985c3093145837dd2c3f8323c2",
+        "GUID:2047be063410e94499789bc60c51cb31"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

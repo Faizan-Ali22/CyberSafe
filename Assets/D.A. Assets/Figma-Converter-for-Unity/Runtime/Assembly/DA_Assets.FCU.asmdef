@@ -1,0 +1,22 @@
+{
+    "name": "DA_Assets.FCU",
+    "rootNamespace": "DA_Assets.FCU",
+    "references": [
+        "GUID:1b74e700d4693d342a6732b0ca624858",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:68550284b645f4b9894995579f34290a",
+        "GUID:552447fb6cdb3d34b969d73c1b33b7d8",
+        "GUID:ad6139985c3093145837dd2c3f8323c2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

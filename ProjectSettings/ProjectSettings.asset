@@ -818,7 +818,7 @@ PlayerSettings:
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
-    Android: DREAMTECK_SPLINES
+    Android: DREAMTECK_SPLINES;FCU_EXISTS;TextMeshPro;UITK_EXISTS;JSONNET_EXISTS;U2D_SPRITE_EXISTS
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

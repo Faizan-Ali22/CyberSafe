@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: d61939fb08db4ef4d8be54fe84955159
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - gui: {fileID: 11400000, guid: a44df56cea3f6824785751338c356dd1, type: 2}
+  - assetLogo: {instanceID: 0}
+  - cornerTopLeftIcon: {fileID: 2800000, guid: 81946ec875d4d354cbd68a4a1d935e82, type: 3}
+  - cornerTopRightIcon: {fileID: 2800000, guid: 2cd8ce091fb8dce4a85d1578ef706c55, type: 3}
+  - cornerBottomLeftIcon: {fileID: 2800000, guid: f18f6f2b2bfbf1146a7b1f9b2ffb0066, type: 3}
+  - cornerBottomRightIcon: {fileID: 2800000, guid: d92a99038cd091b44958b6f580de7ef1, type: 3}
+  - cornerAllIcon: {fileID: 2800000, guid: 45e00e0ff17e8d74e83bf51f3556c7c5, type: 3}
+  - monoBeh: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,689 @@
+key;en-US
+log_added_total;
+log_api_waiting;Figma API timeout. {0} seconds remaining...
+log_auth_complete;Auth complete!
+log_cant_auth;"Can't auth.
+Status: {0}
+Message: {1}
+Exception: {2}"
+log_cant_draw_object;Can't draw '{0}' object.
+log_cant_find_package;"The package '{0}' is not found, required for the asset to work. To install the package:
+1. Open the Unity Package Manager;
+2. Click on the PLUS button in the upper left corner of the window;
+3. Select 'Add package from git URL' menu item and enter the package name '{0}';
+4. Click on the Install button;
+5. The package is installed, now you can use the asset."
+log_cant_get_images;Unable to download some images. You may need to add links to Figma projects with your master components in the '{0}' tab.
+log_cant_get_part_of_frames;"Can't get part of frames.
+Error: {0}
+Status: {1}"
+log_cant_get_image_links;"Can't get sprite links.
+Error: {0}
+Status: {1}"
+log_cant_execute_because_no_backup;Unable to perform this action due to the inability to create a scene backup. Perhaps your scene was created for the first time and does not yet have a saved scene file?
+log_component_not_selected_in_hierarchy;{0}'s gameobject not selected in hierarchy.
+log_current_canvas_metas_destroy;FCU {0}: {1} '{2}.cs' scripts destroyed.
+log_dev_function_enabled;"You have enabled the '{0}' function.
+In current version of the asset this function is under development and may work with errors."
+log_downloading_fonts;Downloading fonts: {0} of {1}
+log_downloading_images;Downloading images: {0} of {1}
+log_drawn_count;Drawing '{0}' components: {1} of {2}
+log_enable_http_project_settings;"Unity doesn't allow establishing an HTTP connection.
+To proceed with the import, open Project Settings > Player > Configuration, and switch the 'Allow downloads over HTTP' option to 'Always allowed'."
+log_fcu_assigned;{0} {1}'s ({2}) assigned.
+log_generating_sprites;Generating sprites:  {0} of {1}
+log_generating_tmp_fonts;Generating TMP fonts: {0} of {1}
+log_getting_frames;Getting frames: {0} of {1}
+log_getting_links;Getting links to download images: {0} of {1}
+log_import_complete;Import complete!
+log_import_task_canceled;
+log_incorrect_selection;
+log_instantiate_game_objects;Instantiating GameObjects...
+log_links_added;Image links received: {0} of {1}
+log_local_prefabs_found;{0} prefabs found.
+log_malformed_url;"For some of your components ({0}), download links for images were not found. Possible reasons:
+1. You are importing frames that have a large size in pixels. Try reducing the Image Scale in the Main Settings of the asset;
+2. You need to reauthorize in your Figma account within the asset;
+3. You have exceeded the request limit to the Figma API, and you need to wait some time before attempting another import;
+4. Your component is hidden, has zero, or negative size.
+
+If the advice from points 1, 2, or 3 did not help, please contact the developer.
+Also, you can try using an asset for procedural image generation instead of the standard one, for example, the free Shapes2D asset. You can read more about this in the ""Manual for developers"" attached to the asset.
+
+List of these components:
+{1}"
+log_mark_as_sprite;Assigning  'Sprite' type to the downloaded images:  {0} of {1}
+log_need_auth;Import stopped. Reauthorization required.
+log_no_google_fonts_api_key;
+log_no_sync_helper;
+log_nothing_to_import;
+log_open_auth_page;Opening authorization page in the web browser…
+log_prefabs_created;{0} prefabs created.
+log_project_downloaded;The project has been downloaded. Select the page you want to get frames from.
+log_project_empty;Project is empty.
+log_project_not_found;Either this file doesn't exist or you don't have permission to view it. Ask the file owner to verify the link and/or update permissions. If you are using a team project, read the 'Teamwork' section in 'Manual for designers.pdf'.
+log_search_local_prefabs;Searching prefabs…
+log_set_anchors;Setting anchors: {0} of {1}
+log_ssl_error;"Turn off HTTPS in Main Settings.
+Error: {0}
+Status: {1}"
+log_start_adding_to_fonts_list;Start adding fonts to the list...
+log_start_creating_prefabs;Start creating prefabs...
+log_start_download_images;Start downloading images...
+log_start_setting_transform;Start setting transforms...
+log_tagging;Tagging in progress. Processed items: {0}
+log_tagging_by_parts;Tagging in progress. Part {0}...
+log_unknown_aligment;"Unable to recognize alignment.
+Aligment: {0}
+Component: {1}
+Please report this error to the developer."
+log_unknown_error;"Unknown error:
+Status: {1}
+Error: {0}
+Exception: {2}"
+log_not_authorized;
+log_feature_not_available_with;This function is not available when using {0}.
+log_incorrent_project_url;Incorrect project url.
+log_name_linking_not_recommended;"You switched the '{0}' to '{1}'.
+This mode is not recommended for use because objects with the same names can get confused during linking.
+Please refer to the manual included with the 'UITK Element Linker' asset to learn more about this in detail."
+log_svg_scale_1;
+loading_google_fonts;Loading '{0}' fonts data from Google repository...
+cant_download_fonts;Failed to download {0} fonts, you need to add them to the project manually: {1}
+cant_generate_fonts;Failed to generate {0} fonts, you need to generate them manually: {1}
+cant_load_sprites;"Sprites for some of your components ({0}) cannot be loaded.  
+List of components:  
+{1}"
+cant_download_sprite;"Can't download sprite for '{0}' object.
+Error: {1}
+Status: {2}"
+label_advanced_mode;Advanced Mode
+tooltip_advanced_mode;
+label_add_tmp_fonts_from_folder;Add from current folder
+tooltip_add_fonts_from_folder;
+label_add_ttf_fonts_from_folder;Add from current folder
+tooltip_add_ttf_fonts_from_folder;
+label_all;All
+tooltip_all;
+label_apply_and_continue;Apply and continue
+tooltip_apply_and_continue;Continue import with selected parameters.
+label_asset;HOME
+tooltip_asset;
+label_asset_creator_settings;FONT ASSET CREATOR SETTINGS
+tooltip_asset_creator_settings;TextMeshPro font generation settings, identical to the settings of the 'Font Asset Creator' utility.
+label_asset_dependencies;ASSET DEPENDENCIES
+tooltip_asset_dependencies;
+label_atlas_padding;Atlas Padding
+tooltip_atlas_padding;"Specify the space, in pixels, between characters in the font texture.
+
+Padding provides the space required to render character separately, and to generate the SDF gradient (See the documentation on Font Assets for details).
+
+The larger the padding, the smoother the transition, which allows for higher-quality rendering and larger effects, like thick outlines.
+
+A padding of 5 is often fine for a 512x512 texture."
+label_atlas_population_mode;Atlas Population Mode
+tooltip_atlas_population_mode;
+label_atlas_resolution;Atlas Resolution
+tooltip_atlas_resolution;"Set the size width and height of the font texture, in pixels.
+
+A resolution of 512 x 512 is fine for most fonts, as long as you are only including ASCII characters. Fonts with more characters may require larger resolutions, or multiple atlases.
+
+When using an SDF font, a higher resolution produces finer gradients, and therefore higher quality text."
+label_auto_disable_compress_assets_on_import;Compress Assets On Import
+tooltip_auto_disable_compress_assets_on_import;
+label_auto_size;Auto Size
+tooltip_auto_size;Auto sizes the text to fit the available space.
+label_best_fit;Best Fit
+tooltip_best_fit;Should Unity ignore the size properties and simply try to fit the text to the control's rectangle?
+label_beta_version;"This is the beta version.
+If you encounter bugs, please
+contact the developer,
+and your problem will be solved
+as soon as possible."
+tooltip_beta_version;
+label_buggy_version;This version contains bugs that have been fixed in the next versions.
+tooltip_buggy_version;
+label_button_settings;UI.BUTTON SETTINGS
+tooltip_button_settings;
+label_button_type;Button Component
+tooltip_button_type;
+label_change;...
+tooltip_change;
+label_changed_in_figma;Changed In Figma
+tooltip_changed_in_figma;"Components whose hash, saved in the SyncHelper object at the time of the previous import, differs from the hash obtained before the new import as a result of analyzing the same component in Figma.
+The component hash is a hash of the aggregate values of all properties of that component in Figma."
+label_changed_in_unity;Changed In Unity
+tooltip_changed_in_unity;"Components whose properties have been changed in the Unity Inspector.
+Currently, tracking of two properties is supported: color and size."
+label_comparer_desc;"In order to see the difference between the two objects
+that you have selected, open thewebsite for comparing
+two texts using the '{0}' button
+and copy the properties of the two objects that you see below
+into the appropriate fields."
+tooltip_comparer_desc;
+label_components_settings;
+tooltip_import_components;The components that will be created on your Canvas when you import the project.
+label_compression_quality;Crunch Compression Quality
+tooltip_compression_quality;"When using Crunch Texture compression, use the slider to adjust the quality. A higher compression quality means larger Textures and longer compression times.
+
+Note: For Android platforms, the Compressor Quality values provide slightly different options. For more information, see Texture formats for platform-specific overrides."
+label_copy_new_data;Copy new data
+tooltip_copy_new_data;
+label_copy_old_data;Copy old data
+tooltip_copy_old_data;
+label_copy_to_clipboard;Copy to clipboard
+tooltip_copy_to_clipboard;
+label_crunched_compression;Use Crunch Compression
+tooltip_crunched_compression;"Use crunch compression, if applicable. Crunch is a lossy compression format on top of DXT or ETC Texture compression.
+
+Unity decompresses Textures to DXT or ETC on the CPU and then uploads them to the GPU at runtime. Crunch compression helps the Texture use the lowest possible amount of space on disk and for downloads.
+
+Crunch Textures can take a long time to compress, but decompression at runtime is very fast."
+label_csv_separator;Separator
+tooltip_csv_separator;
+label_custom_pivot;Custom Pivot
+tooltip_custom_pivot;"The custom pivot, when alignement is ""Custom""."
+label_dabutton_settings;D.A. BUTTON SETTINGS
+tooltip_dabutton_settings;
+label_debug_mode;Debug Mode
+tooltip_debug_mode;Feature for developers. Allows to save the received response from Figma in json format.
+label_debug_tools;DEBUG TOOLS
+label_debug;DEBUG
+tooltip_debug_tools;"Used for debugging the asset.
+Parameters are applied globally to all instances of the asset."
+label_dependencies;DEPENDENCIES
+tooltip_dependencies;
+label_disable_compress_assets_on_import;
+tooltip_disable_compress_assets_on_import;
+label_dont_remove_fcu_meta;Don't remove this script until you are done with the layout.
+tooltip_dont_remove_fcu_meta;
+label_download_fonts_from_project;Download '{0}' fonts from project
+tooltip_download_fonts_from_project;
+label_download_multiple_fills;Download If Multiple Fills
+tooltip_download_multiple_fills;
+label_download_unsupported_gradients;Download Unsupported Gradients
+tooltip_download_unsupported_gradients;
+label_figma_auth;FIGMA AUTH
+tooltip_figma_auth;
+label_figma_color;Figma
+tooltip_figma_color;
+label_figma_comp;FIGMA COMPONENTS
+tooltip_figma_comp;
+label_figma_comp_desc;"In this tab, you can set links to Figma projects that contain your master components.
+This is usually necessary if the asset cannot access sprites that are part of a
+component instance whose master component is not in the main project."
+tooltip_figma_comp_desc;
+label_figma_layout_culture;Layout Language
+tooltip_figma_layout_culture;The language of your Figma project's text
+label_find_added_objects;
+tooltip_find_added_objects;
+label_flip_x;Flip X
+tooltip_flip_x;
+label_flip_y;Flip Y
+tooltip_flip_y;
+label_font_settings;FONT SETTINGS
+tooltip_font_settings;
+label_font_subset;Font Subset
+tooltip_font_subset;"A Font Subset is a sequence (Unicode-Range) of Unicode hexadecimal values, or ranges of values, to specify which characters to include in your font file.
+
+Google supports several subsets for different language groups that are passed to the 'Font Asset Creator' utility when creating a TMP font.
+
+To change the range after font generation, open your TMP font asset in the Inspector and click on the 'Update Atlas Texture' button.
+
+A hyphen is used to separate the first and last values in a range.
+Commas are used to separate values and ranges (for example, '20-7E,A0,2026', where '2026' code is ellipsis (...))."
+label_force_fix;Force Fix
+tooltip_force_fix;
+label_frames_to_import;FRAMES TO IMPORT ({0}/{1})
+tooltip_frames_to_import;
+label_generate_physics_shape;Generate Physics Shape
+tooltip_generate_physics_shape;Automaticallly generates a physics shape.
+label_gradient_resolution;Gradient Resolution
+tooltip_gradient_resolution;Size of each rasterized gradient in pixels. Higher values consume memory but result in more accurate gradients.
+label_horizontal_mapping;Horizontal Mapping
+tooltip_horizontal_mapping;Horizontal UV mapping when using a shader with a texture face option.
+label_horizontal_overflow;Horizontal Overflow
+tooltip_horizontal_overflow;The method used to handle the situation where the text is too wide to fit in the rectangle. The options are Wrap and Overflow.
+label_https_setting;HTTPS
+tooltip_https_setting;
+label_image_and_sprites;
+tooltip_image_and_sprites;
+label_image_component;Image Component
+tooltip_image_component;
+label_image_type;Type
+tooltip_image_type;
+label_import;
+tooltip_import;
+label_import_events;IMPORT EVENTS
+tooltip_import_events;
+log_import_stoped_because_error;Import stoped because error.
+label_import_stoped_manually;Import stopped.
+tooltip_stop_import;Stop import
+label_kerning;Kerning
+tooltip_kerning;Enables character specific spacing between pairs of characters.
+label_kilobytes;The number of downloaded kilobytes of the current download object.
+tooltip_kilobytes;
+label_layout_culture;
+tooltip_layout_culture;
+label_line_spacing;Line Spacing
+tooltip_line_spacing;The vertical separation between lines of text.
+label_loc_case_type;Key Case
+tooltip_loc_case_type;
+label_loc_component;Localization Component
+tooltip_loc_component;
+label_localization_settings;LOCALIZATION
+tooltip_localization_settings;
+label_localizator;Localizator
+tooltip_localizator;
+label_log_default;Default Log
+tooltip_log_default;
+label_log_downloadable;Downloadable Log
+tooltip_log_downloadable;
+label_log_go_drawer;Go Drawer Log
+tooltip_log_go_drawer;
+label_log_set_tag;Set Tag Log
+tooltip_log_set_tag;
+label_log_transform;Transform Log
+tooltip_log_transform;
+label_made_by;
+tooltip_made_by;
+label_main_settings;MAIN SETTINGS
+tooltip_main_settings;
+label_mask_interaction;Mask Interaction
+tooltip_mask_interaction;
+label_maskable;Maskable
+tooltip_maskable;
+label_max_cord_deviation_enabled;Max Cord Enabled
+tooltip_max_cord_deviation_enabled;Enables the 'max cord deviation' tessellation test.
+label_max_tangent_angle_enabled;Max Tangent Enabled
+tooltip_max_tangent_angle_enabled;Enables the 'max tangent angle' tessellation test.
+label_mipmap_enabled;Generate Mip Maps
+tooltip_mipmap_enabled;Check this box to enable mipmap generation.
+label_missings_in_frame;This property does not change when switching to the Single Channel Texture type.
+tooltip_missings_in_frame;
+label_namespace;Namespace
+tooltip_namespace;
+label_new;New
+tooltip_new;
+label_no_recent_projects;No recent projects found.
+tooltip_no_recent_projects;
+label_old_data;Old Data
+tooltip_old_data;
+label_override_line_spacing_px;Override TMP Line Spacing (px)
+tooltip_override_line_spacing_px;
+label_override_tags;Override Tags
+tooltip_override_tags;Whether the color settings override the <color> tag.
+label_parse_escape_characters;Parse Escape Characters
+tooltip_parse_escape_characters;"Whether to display strings such as \""\\n\"" as is or replace them by the character they represent."
+label_pixels_per_unit;Pixels Per Unit
+tooltip_pixels_per_unit;How many pixels in the sprite correspond to one unit in the world.
+label_positioning_mode;Positioning Mode
+tooltip_positioning_mode;
+label_prefab_creator;PREFAB CREATOR
+tooltip_prefab_creator;
+label_prefabs_path;Prefabs Path
+tooltip_prefabs_path;
+label_preserve_aspect;Preserve Aspect
+tooltip_preserve_aspect;
+label_preserve_numbers;Preserve Numbers
+tooltip_preserve_numbers;
+label_project_url;Project Url
+tooltip_project_url;Link to your project in Figma.
+label_pui_falloff_distance;Falloff Distance
+tooltip_pui_falloff_distance;
+label_rate;Rate
+tooltip_rate;
+label_rateme;Rate Me
+tooltip_rateme;
+label_rateme_desc;"Hello! :)
+
+For {0} days, I continue to release
+the updates of asset and
+provide support to users.
+
+If you like my asset, I will be grateful
+if you rate it in the Asset Store."
+tooltip_rateme_desc;
+label_raycast_padding;Raycast Padding
+tooltip_raycast_padding;
+label_raycast_target;Raycast Target
+tooltip_raycast_target;Whether the text blocks raycasts from the Graphic Raycaster.
+label_redownload_sprites;Redownload Sprites
+tooltip_redownload_sprites;If enabled, the downloadable images will replace those that were downloaded earlier when old downloading.
+label_remove;Remove
+tooltip_remove;
+label_remove_unused_sprites;"Remove sprites from the selected folder that are not used by
+Image components in the current open scene."
+tooltip_remove_unused_sprites;
+label_render_mode;Render Mode
+tooltip_render_mode;Specify the render mode to use when outputting the font atlas.
+label_rich_text;Rich Text
+tooltip_rich_text;Enables the use of rich text tags such as <color> and <font>.
+label_rtl_textmeshpro_settings;RTL TEXTMESHPRO SETTINGS
+tooltip_rtl_textmeshpro_settings;
+label_sampling_steps;Sampling Steps
+tooltip_sampling_steps;Number of samples evaluated on paths. Higher values give more accurate results (but takes longer).
+label_shadow_type;Shadow Type
+tooltip_shadow_type;The type of shadow that is used when transferring the shadow effect from Figma. Currently the 'TrueShadow' asset is supported, you can also turn off the shadow.
+label_shadows_tab;SHADOWS
+tooltip_shadows_tab;
+label_sort_point;Sort Point
+tooltip_sort_point;
+label_sorting_layer;Sorting Layer
+tooltip_sorting_layer;
+label_sprite_import_mode;Sprite Import Mode
+tooltip_sprite_import_mode;"Texture importer modes for Sprite import.
+
+None - Graphic is not a Sprite.
+
+Single - Sprite is a single image section extracted automatically from the texture.
+
+Multiple - Sprites are multiple image sections extracted from the texture.
+
+Polygon - Sprite has it own mesh outline defined."
+label_step_distance;Step Distance
+tooltip_step_distance;Distance at which vertices will be generated along the paths. Lower values will result in a more dense tessellation.
+label_svg_image_settings;SVG IMAGE SETTINGS
+tooltip_svg_image_settings;
+label_svg_importer_settings;SVG IMPORTER SETTINGS
+tooltip_svg_importer_settings;
+label_svg_type;Generated Asset Type
+tooltip_svg_type;How the SVG file will be imported.
+label_text_and_fonts;TEXT & FONTS
+tooltip_text_and_fonts;
+label_text_and_font_settings;
+tooltip_text_and_font_settings;
+label_text_component;Text Component
+tooltip_text_component;A text component to be used when wrapping text from Figma. Currently 'Unity.UI.Text' and 'TextMeshPro' are supported.
+label_textmeshpro_settings;TEXTMESHPRO SETTINGS
+tooltip_textmeshpro_settings;
+label_texture_compression;Texture Compression
+tooltip_texture_compression;"Select the kind of compression you want for your texture.
+
+Uncompressed - Texture will not be compressed.
+
+Compressed - Texture will be compressed using a standard format depending on the platform (DXT, ASTC, ...).
+
+CompressedHQ - Texture will be compressed using a high quality format depending on the platform and availability (BC7, ASTC4x4, ...).
+
+CompressedLQ - Texture will be compressed using a low quality but high performance, high compression format depending on the platform and availability (2bpp PVRTC, ASTC8x8, ...)."
+label_texture_importer_settings;TEXTURE IMPORTER SETTINGS
+tooltip_texture_importer_settings;
+label_texture_type;Texture Type
+tooltip_texture_type;"Use the Texture Type property to select the type of Texture you want to create from the source image file.
+
+The other properties in the Texture Import settings window change depending on the value you set."
+label_ttf_path;TTF Fonts Path
+tooltip_ttf_path;
+label_ui_framework;UI Framework
+tooltip_ui_framework;
+label_ui_toolkit;
+tooltip_ui_toolkit;
+label_unity_comp;UNITY COMPONENTS
+tooltip_unity_comp;
+label_unity_image_settings;UNITY IMAGE SETTINGS
+tooltip_unity_image_settings;
+label_unity_text_settings;UNITY TEXT SETTINGS
+tooltip_unity_text_settings;
+label_uitk_linking_mode;UITK Linking Mode
+tooltip_uitk_linking_mode;
+label_uitk_output_path;UITK Output Path
+tooltip_uitk_output_path;
+label_use_i2localization;Use I2Localization
+tooltip_use_i2localization;Whether to add 'I2Localize' script to 'Unity.UI.Text' or 'TextMeshPro' component.
+label_visible_descender;Visible Descender
+tooltip_visible_descender;Compute descender values from visible characters only. Used to adjust layout behavior when hiding and revealing characters dynamically.
+label_viewport_options;Viewport Options
+tooltip_viewport_options;Viewport options to use while importing the SVG document.
+label_vertical_mapping;Vertical Mapping
+tooltip_vertical_mapping;Vertical UV mapping when using a shader with a texture face option.
+label_vertical_overflow;Vertical Overflow
+tooltip_vertical_overflow;The method used to handle the situation where wrapped text is too tall to fit in the rectangle. The options are Truncate and Overflow.
+label_without_changes;Without changes
+tooltip_label_without_changes;
+label_wrapping;Wrapping
+tooltip_wrapping;Wraps text to the next line when reaching the edge of the container.
+label_xml_parsing;
+tooltip_xml_parsing;
+label_procedural_ui_settings;SETTINGS FOR ANY PROCEDURAL IMAGE
+tooltip_procedural_ui_settings;
+label_pui_settings;PROCEDURAL UI IMAGE SETTINGS
+tooltip_pui_settings;
+label_mpuikit_settings;MPIMAGE SETTINGS
+tooltip_mpuikit_settings;
+label_sr_settings;SPRITE RENDERER SETTINGS
+tooltip_sr_settings;
+label_is_readable;Is Readable
+tooltip_is_readable;"Whether Unity stores an additional copy of this texture's pixel data in CPU-addressable memory.
+
+This is required for methods that read, write, and manipulate the pixel data on the CPU, such as Texture2D.GetPixels or ImageConversion.
+
+EncodeToPNG. It is not required for methods that perform all their work on the GPU, such as Graphics.CopyTexture or Graphics.Blit."
+label_next_order_step;Next Order Step
+tooltip_next_order_step;
+label_raw_import;Raw Import
+tooltip_raw_import;When enabled, importing the full structure of your layout, without smart-combine multiple sprites into one sprite.
+label_buttons_tab;BUTTONS
+tooltip_buttons_tab;
+label_ui_toolkit_tab;UI TOOLKIT
+tooltip_ui_toolkit_tab;
+label_nova_components;NOVA COMPONENTS
+tooltip_nova_components;
+label_fcu;Figma Converter for Unity
+tooltip_fcu;
+label_settings;Settings
+tooltip_settings;
+label_script_generator;SCRIPT GENERATOR
+tooltip_script_generator;
+label_enabled;Enabled
+tooltip_enabled;
+label_scripts_output_path;Scripts output path
+tooltip_scripts_output_path;
+label_select_folder;
+tooltip_select_folder;
+label_text_prefab_naming_mode;Text Prefab Naming Mode
+tooltip_text_prefab_naming_mode;
+label_humanized_color;Humanized Color String
+tooltip_humanized_color;
+label_hex_color;Humanized Color HEX
+tooltip_hex_color;
+label_log_component_drawer;
+tooltip_log_component_drawer;
+label_log_hash_generator_drawer;
+tooltip_log_hash_generator_drawer;
+label_override_tmp_letter_spacing;Override TMP Letter Spacing
+tooltip_override_tmp_letter_spacing;
+label_object_comparer;Object Comparer
+tooltip_object_comparer;
+label_fcu_is_null;"The script '{0}' is not attached to this object.
+If this object is a prefab, to ensure the '{1}' function
+works correctly after adding the object to the scene, 
+you need to execute function '{2}' from the context menu.
+
+More information about the Context Menu can be found in the Developer Manual."
+tooltip_fcu_is_null;
+label_more_about_layout_updating;You can learn more about this script in the dev manual, 'Layout updating' slide.
+tooltip_more_about_layout_updating;
+tooltip_open_fcu_window;
+tooltip_change_window_mode;_
+label_orthographic_mode;
+tooltip_orthographic_mode;
+label_extra_padding;Extra Padding
+tooltip_extra_padding;Adds some padding between the characters and the edge of the text mesh. Can reduce graphical errors when displaying small text.
+label_overflow;Overflow
+tooltip_overflow;How to display text which goes past the edge of the container.
+label_geometry_sorting;Geometry Sorting
+tooltip_geometry_sorting;The order in which text geometry is sorted. Used to adjust the way overlapping characters are displayed.
+label_shader;Shader
+tooltip_shader;
+label_farsi;Farsi
+tooltip_farsi;
+label_fix_tags;Fix Tags
+tooltip_fix_tags;
+label_user_name;The name of the user authorized in the current instance of the asset.
+tooltip_user_id;The ID of the user authorized in the current instance of the asset.
+label_asset_instance_id;
+tooltip_asset_instance_id;The ID of this asset instance.
+label_stable_version;This version of the asset is stable.
+tooltip_stable_version;
+label_open_diff_checker;Open difference checker website
+tooltip_open_diff_checker;
+label_go_name_length;GameObject Name Length
+tooltip_go_name_length;
+label_text_name_length;Text GameObject Name Length
+tooltip_text_name_length;
+label_go_layer;GameObject Layer
+tooltip_go_layer;"Sets the value of the ""Layout"" parameter, which you can see in the top-right corner of the Inspector, for all the GameObjects being instantiated."
+label_pivot_type;Pivot Type
+tooltip_pivot_type;
+label_components_to_import;COMPONENTS TO IMPORT
+tooltip_components_to_import;Components that will be added to the scene or updated if they already exist on the scene.
+label_components_with_count;COMPONENTS ({0}/{1})
+tooltip_components_with_count;
+tooltip_recent_projects;View recent projects.
+tooltip_download_project;"Download Figma project from URL.
+The current active import of the current canvas will be stopped."
+label_sampling_point_size;Sampling Point Size
+tooltip_sampling_point_size;The sampling point size.
+label_enable_multi_atlas_support;Enable Multi Atlas Support
+tooltip_enable_multi_atlas_support;
+label_images_format;Images Format
+tooltip_images_format;Format of images imported from Figma.
+label_images_scale;Images Scale
+tooltip_images_scale;The size of the images imported from Figma.
+label_preserve_ratio_mode;Preserve Ratio Mode
+tooltip_preserve_ratio_mode;If an object in Figma has the 'PreserveRatio' function enabled, the 'AspectRatioFitter' script will be added to it with your selected mode.
+label_sprites_path;Sprites Path
+tooltip_sprites_path;
+label_shapes2d_settings;SHAPES 2D SETTINGS
+tooltip_shapes2d_settings;
+label_google_fonts_settings;GOOGLE FONTS SETTINGS
+tooltip_google_fonts_settings;
+label_google_fonts_api_key;Google Fonts Api Key
+tooltip_google_fonts_api_key;In order for the asset to be able to automatically download missing fonts, you need to create your own '{0}', and enter it in '{0}' field.
+label_get_google_api_key;Get
+tooltip_get_google_api_key;
+label_remove_from_scene;REMOVE FROM SCENE
+tooltip_remove_from_scene;Components that will be removed from the scene.
+label_token;Token
+tooltip_token;The token is needed for the working of the asset, it is used to send api requests to Figma.
+tooltip_recent_tokens;
+tooltip_auth;Button for authorization in Figma.
+label_tmp_path;TMP Fonts Path
+tooltip_tmp_path;
+label_no_recent_sessions;No recent sessions found.
+tooltip_no_recent_sessions;
+label_different_component_data;Component data has differences.
+tooltip_different_component_data;
+label_has_differences;{0}: has differences. '{1}' in Unity. '{2}' in Figma.
+tooltip_has_differences;
+label_new_components;
+tooltip_new_components;Components that are missing on the scene but exist in Figma.
+label_import_frames;
+tooltip_import_frames;"Import selected frames from a downloaded or cached Figma project.
+The current active import of the current canvas will be stopped."
+label_open_settings_window;
+tooltip_open_settings_window;Open settings window
+label_select_fonts_folder;Choose a folder with your fonts
+tooltip_select_fonts_folder;
+label_select_prefabs_folder;
+tooltip_select_prefabs_folder;
+tooltip_product_version;The current version of the asset.
+label_auth;Auth
+label_component_detection_type;Component Detection Type
+log_cant_find_font;Can't find font file at path: '{0}'
+log_tm_font_already_exists;TextMeshPro font already exists for '{0}' font at path: {1}
+log_reopen_font_asset_creator;If you often see this error, close 'Font Asset Creator' before running the convert function. 'Font Asset Creator' should open by itself.
+log_converted_fonts;Converted {0} of {1} fonts.
+label_select_sprites_folder;Select the folder you want to remove unused sprites from
+label_inside_assets_folder;The object/folder you select must be inside the 'Assets' folder.
+log_added_total;"Added: {0}
+Total: {1}"
+label_update_avaliable;Update avalibale: {0}
+label_show_asset_in_inspector;Show asset in inspector
+label_show_asset_in_window;Show asset in window
+log_missing_fonts_list;Below is a list of fonts missing from the repository. You need to manually add them to the array of fonts in the '{0}' tab so that they will be available for the next import. Font list: {1}
+log_fonts_in_project;Fonts in project: {0}
+log_checking_fonts;Checking fonts...
+log_start_downloading_fonts;Start downloading fonts...
+log_instantiating_game_objects;Instantiating GameObjects: {0} of {1}
+label_verify;Verify
+fonts_settings;FONTS
+label_import_components;IMPORT COMPONENTS
+log_gameobject_not_selected_in_hierarchy;'{0}' not selected in hierarchy.
+log_asset_not_imported;Asset '{0}' was not imported. You can find it in the Asset Store or Package Manager.
+label_supported_from_unity_version;This feature is available in version Unity {0} and above.
+log_project_too_big;"Your project exceeds the allowable size. Import stopped.
+Project size: {0} MB.
+Allowable size: {1} MB.
+Please move the frames you want to import into a new project and try the import again."
+tooltip_all_components;All components - those that exist on the scene and those that exist in Figma (without duplicates).
+log_featutre_at_dev_stage;This feature ({0}) is not available and is under development.
+log_img_component_compatibility;The image component in the asset settings is switched to '{0}' because this is the only value compatible with the '{1}' image format.
+label_images_and_sprites_tab;IMAGES & SPRITES
+tooltip_images_and_sprites_tab;
+label_max_cord_deviation;Max Cord Deviation
+tooltip_max_cord_deviation;Distance on the cord to a straight line between two points after which more tessellation will be generated.
+label_max_tangent_angle;Max Tangent Angle
+tooltip_max_tangent_angle;Max tangent angle (in degrees) after which more tessellation will be generated.
+log_frames_finded;Finded {0} frames. Download them?
+"log_frames_not_found;No frames found. If you are using Sections, place them inside a frame using the ""Frame selection"" function in Figma, and try the import again.";
+log_current_canvas_childs_destroy;{0} childs destroyed.
+tooltip_component_detection_type;
+log_cant_get_profile_info;Can't get profile info: {0}
+log_sprites_removed;{0} sprites removed.
+log_cache_restored;{0} pages restored from cache.
+tooltip_show_asset_in_inspector;
+tooltip_show_asset_in_window;
+tooltip_global_config;
+log_loading_from_cache;Loading '{0}' project from cache…
+log_no_components_in_gameobject;No components in '{0}'.
+log_props_reset;{0} properties reset.
+log_object_reset;'{0}' has been reset to a prefab state.
+nan;
+log_closed_after_script_reload;{0} closed after scripts reload.
+log_corrent_project_url;Project URL is valid.
+log_package_installed;UPM Package Installed: {0}
+label_normal_color;Normal Color
+tooltip_normal_color;
+label_highlighted_color;Highlighted Color
+tooltip_highlighted_color;
+label_pressed_color;Pressed Color
+tooltip_pressed_color;
+label_selected_color;Selected Color
+tooltip_selected_color;
+label_disabled_color;Disabled Color
+tooltip_disabled_color;
+label_color_multiplier;Color Multiplier
+tooltip_color_multiplier;
+label_fade_duration;Fade Duration
+tooltip_fade_duration;
+label_go_name_max_length;GameObject Name Max Length
+tooltip_go_name_max_length;
+label_text_name_max_length;Text Name Max Length
+tooltip_text_name_max_length;
+log_import_failed_incompatible;Import failed because '{0}' is incompatible with '{1}'.\nPlease change the import settings.\n
+log_import_failed_enable_required;Import failed because you need to enable '{0}' to use '{1}'.\nPlease change the import settings.\n
+log_import_failed_unsupported;Import failed because you are attempting to use '{0}', which does not support '{1}'.\nPlease change the import settings.\n
+label_loc_key_max_lenght;Loc Key Max Length
+tooltip_loc_key_max_lenght;
+label_loc_folder_path;Localization Folder Path
+tooltip_loc_folder_path;
+label_loc_file_name;Localization File Name
+tooltip_loc_file_name;
+label_namespace;Namespace
+tooltip_namespace;
+label_field_name_max_length;Field Name Max Length
+tooltip_field_name_max_length;
+label_method_name_max_length;Method Name Max Length
+tooltip_method_name_max_length;
+label_class_name_max_length;Class Name Max Length
+tooltip_class_name_max_length;
+label_serialization_mode;Serialization Mode
+tooltip_serialization_mode;
+label_base_class;Base Class
+tooltip_base_class;
+label_use_image_linear_material;Use ImageLinear Material
+tooltip_use_image_linear_material;
+label_max_sprite_size;Max Sprite Size
+tooltip_max_sprite_size;

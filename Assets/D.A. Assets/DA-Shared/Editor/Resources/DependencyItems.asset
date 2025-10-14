@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed3ffb60402c43140bf0a3b0bf0cda9e, type: 3}
+  m_Name: DependencyItems
+  m_EditorClassIdentifier: 
+  items:
+  - Name: Figma Converter for Unity
+    Type: DA_Assets.FCU.SyncHelper, DA_Assets.FCU
+    ScriptingDefineName: FCU_EXISTS
+  - Name: Newtonsoft.Json
+    Type: Newtonsoft.Json.JsonConvert, Newtonsoft.Json
+    ScriptingDefineName: JSONNET_EXISTS
+  - Name: TextMeshPro
+    Type: TMPro.TextMeshPro, Unity.TextMeshPro
+    ScriptingDefineName: TextMeshPro
+  - Name: TrueShadow
+    Type: LeTai.TrueShadow.TrueShadow, LeTai.TrueShadow
+    ScriptingDefineName: TRUESHADOW_EXISTS
+  - Name: Modern Procedural UI Kit
+    Type: MPUIKIT.MPImage, MPUIKit
+    ScriptingDefineName: MPUIKIT_EXISTS
+  - Name: Josh's Procedural UI Image
+    Type: UnityEngine.UI.ProceduralImage.ProceduralImage, Assembly-CSharp
+    ScriptingDefineName: JOSH_PUI_EXISTS
+  - Name: I2Localization
+    Type: I2.Loc.Localize, Assembly-CSharp
+    ScriptingDefineName: I2LOC_EXISTS
+  - Name: Shapes2D
+    Type: Shapes2D.Shape, Assembly-CSharp
+    ScriptingDefineName: SUBC_SHAPES_EXISTS
+  - Name: UI Toolkit
+    Type: UnityEngine.UIElements.UIDocument, UnityEngine.UIElementsModule
+    ScriptingDefineName: UITK_EXISTS
+  - Name: Figma to UITK Converter
+    Type: DA_Assets.FCU.UitkExtensions, DA_Assets.UITK_Converter
+    ScriptingDefineName: FCU_UITK_EXT_EXISTS
+  - Name: DAButton
+    Type: DA_Assets.DAB.DAButton, DA_Assets.DAB
+    ScriptingDefineName: DABUTTON_EXISTS
+  - Name: D.A. Localizator
+    Type: DA_Assets.DAL.ILocalizator, DA_Assets.DAL
+    ScriptingDefineName: DALOC_EXISTS
+  - Name: RTL Text Mesh Pro
+    Type: RTLTMPro.RTLTextMeshPro, RTLTMPro
+    ScriptingDefineName: RTLTMP_EXISTS
+  - Name: DTT's Procedural UI
+    Type: DTT.UI.ProceduralUI.RoundedImage, DTT.ProceduralUI.Runtime
+    ScriptingDefineName: PROCEDURAL_UI_ASSET_STORE_RELEASE
+  - Name: UITK Element Linker
+    Type: DA_Assets.UEL.UitkLinkerBase, DA_Assets.UEL
+    ScriptingDefineName: UITK_LINKER_EXISTS
+  - Name: Nova UI
+    Type: Nova.UIBlock2D, Nova
+    ScriptingDefineName: NOVA_UI_EXISTS
+  - Name: Unity UI Extensions
+    Type: UnityEngine.UI.Extensions.FlowLayoutGroup, UnityUIExtensions
+    ScriptingDefineName: UNITY_UI_EXTENSIONS_EXISTS
+  - Name: Vector Graphics
+    Type: Unity.VectorGraphics.SVGImage, Unity.VectorGraphics
+    ScriptingDefineName: VECTOR_GRAPHICS_EXISTS
+  - Name: 2D Sprite
+    Type: UnityEditor.U2D.Sprites.SpriteDataProviderFactories, Unity.2D.Sprite.Editor
+    ScriptingDefineName: U2D_SPRITE_EXISTS

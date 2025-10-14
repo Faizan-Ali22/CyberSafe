@@ -1,0 +1,19 @@
+{
+    "name": "DA_Assets.DAG.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:20d7c11c9c91aa4428ccd059506c1f18",
+        "GUID:a6cf5be64ada0d14782980ee615220ef"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

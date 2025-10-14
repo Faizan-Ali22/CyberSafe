@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: dc8f5f60c6791de4489a0cf2f325d658
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - monoBeh: {instanceID: 0}
+  - _gui: {fileID: 11400000, guid: a44df56cea3f6824785751338c356dd1, type: 2}
+  - _fcuLogo: {fileID: 2800000, guid: f8b2c813170af09459fb79312a19a0cc, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

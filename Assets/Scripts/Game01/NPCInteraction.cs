@@ -32,6 +32,7 @@ public class NPCInteraction : MonoBehaviour
 
     bool playerInRange = false;
     PlayerManager playerManager;
+    private bool isInteractionComplete = false;
 
     void Start()
     {
@@ -41,12 +42,39 @@ public class NPCInteraction : MonoBehaviour
         if (redLinksLogoUI != null) redLinksLogoUI.SetActive(false);
 
         playerManager = FindFirstObjectByType<PlayerManager>();
+        CheckIfAlreadySaved();
+
+        // Restore player position if returning from phone interaction
+       // RestorePlayerPosition();
+    }
+
+    void CheckIfAlreadySaved()
+    {
+        // Disable interaction if this NPC was already saved
+        if (GameProgressManager.Instance != null)
+        {
+            if (GameProgressManager.Instance.WasNPCSaved(gameObject.name))
+            {
+                DisableInteraction();
+            }
+        }
+    }
+
+    public void DisableInteraction()
+    {
+        isInteractionComplete = true;
+        if (tapToInteractUI != null) tapToInteractUI.SetActive(false);
+        
+        // Disable the collider to prevent further interactions
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !isInteractionComplete)
         {
+            // Only show UI and play sound if not already completed
             playerInRange = true;
             if (tapToInteractUI != null) tapToInteractUI.SetActive(true);
             StartCoroutine(PlayNotificationTwice());
@@ -133,8 +161,11 @@ public class NPCInteraction : MonoBehaviour
         // 6) Wait a few seconds, then load next mini-game scene (Red Links)
         yield return new WaitForSeconds(10f); // adjust delay as needed
         if (!string.IsNullOrEmpty(redLinksSceneName))
+        {
+            // Set orientation before loading scene
+            Screen.orientation = ScreenOrientation.Portrait;
             SceneManager.LoadScene(redLinksSceneName);
-           
+        }
         else
         {
             // fallback: return control
@@ -142,4 +173,21 @@ public class NPCInteraction : MonoBehaviour
             if (playerManager != null) playerManager.isInCutscene = false;
         }
     }
+public void SavePlayerPositionAndTransition()
+{
+    // Find and save player position
+    GameObject player = GameObject.FindGameObjectWithTag("Player");
+    if (player != null)
+    {
+        Vector3 pos = player.transform.position;
+        PlayerPrefs.SetFloat("PlayerPosX", pos.x);
+        PlayerPrefs.SetFloat("PlayerPosY", pos.y);
+        PlayerPrefs.SetFloat("PlayerPosZ", pos.z);
+        PlayerPrefs.Save();
+        Debug.Log($"Saved player position: {pos}");
+    }
+    
+    // Then load Bilal scene
+    UnityEngine.SceneManagement.SceneManager.LoadScene("RedLinksScene");
+}
 }

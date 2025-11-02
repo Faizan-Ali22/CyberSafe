@@ -819,7 +819,10 @@ PlayerSettings:
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
-    Android: DREAMTECK_SPLINES;FCU_EXISTS;TextMeshPro;UITK_EXISTS;JSONNET_EXISTS;U2D_SPRITE_EXISTS
+    Android: DREAMTECK_SPLINES;FCU_EXISTS;TextMeshPro;UITK_EXISTS;JSONNET_EXISTS;U2D_SPRITE_EXISTS;CROSS_PLATFORM_INPUT;MOBILE_INPUT
+    Standalone: CROSS_PLATFORM_INPUT
+    Windows Store Apps: MOBILE_INPUT
+    iPhone: CROSS_PLATFORM_INPUT;MOBILE_INPUT
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

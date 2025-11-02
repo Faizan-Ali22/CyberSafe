@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 [System.Serializable]
 public class DialogueLine
@@ -12,23 +12,30 @@ public class DialogueLine
     [TextArea] public string text;
     public float duration = 2.0f;
 }
+
 public class NPCInteraction : MonoBehaviour
 {
-   [Header("UI / Audio")]
-    public GameObject tapToInteractUI;   // world-space canvas child (assign)
-    public AudioClip notificationClip;   // the "ting" sound
-    public AudioSource audioSource;      // assign or auto-get
+    [Header("UI / Audio")]
+    public GameObject tapToInteractUI;
+    public AudioClip notificationClip;
+    public AudioSource audioSource;
 
     [Header("Cutscene")]
-    public Camera cutsceneCamera;        // specific camera for this interaction
-    public Camera mainFollowCamera;      // assign your normal follow camera
-    public Animator npcAnimator;         // NPC animator (has 'isTalking' bool)
-    public Animator playerAnimator;      // main player animator
+    public Camera cutsceneCamera;
+    public Camera mainFollowCamera;
+    public Animator npcAnimator;
+    public Animator playerAnimator;
     public DialogueLine[] dialogueSequence;
 
-    [Header("Red Links")]
-    public GameObject redLinksLogoUI;    // overlay UI to show logo (disable initially)
-    public string redLinksSceneName = "RedLinksScene"; // scene to load next
+    [Header("Minigame / AI")]
+    public GameObject minigameCanvas;  // the portrait-mode mobile UI
+    public string aiPatrolTag = "";
+
+    private List<NPCPatrol> pausedPatrols = new List<NPCPatrol>();
+    private List<bool> pausedPatrolsPrevState = new List<bool>();
+    private RigidbodyConstraints previousPlayerConstraints = RigidbodyConstraints.None;
+    private PlayerMovement cachedPlayerMovement;
+    private bool minigameActive = false;
 
     bool playerInRange = false;
     PlayerManager playerManager;
@@ -39,18 +46,14 @@ public class NPCInteraction : MonoBehaviour
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
         if (tapToInteractUI != null) tapToInteractUI.SetActive(false);
         if (cutsceneCamera != null) cutsceneCamera.gameObject.SetActive(false);
-        if (redLinksLogoUI != null) redLinksLogoUI.SetActive(false);
+        if (minigameCanvas != null) minigameCanvas.SetActive(false);
 
         playerManager = FindFirstObjectByType<PlayerManager>();
         CheckIfAlreadySaved();
-
-        // Restore player position if returning from phone interaction
-       // RestorePlayerPosition();
     }
 
     void CheckIfAlreadySaved()
     {
-        // Disable interaction if this NPC was already saved
         if (GameProgressManager.Instance != null)
         {
             if (GameProgressManager.Instance.WasNPCSaved(gameObject.name))
@@ -64,8 +67,6 @@ public class NPCInteraction : MonoBehaviour
     {
         isInteractionComplete = true;
         if (tapToInteractUI != null) tapToInteractUI.SetActive(false);
-        
-        // Disable the collider to prevent further interactions
         Collider col = GetComponent<Collider>();
         if (col != null) col.enabled = false;
     }
@@ -74,7 +75,6 @@ public class NPCInteraction : MonoBehaviour
     {
         if (other.CompareTag("Player") && !isInteractionComplete)
         {
-            // Only show UI and play sound if not already completed
             playerInRange = true;
             if (tapToInteractUI != null) tapToInteractUI.SetActive(true);
             StartCoroutine(PlayNotificationTwice());
@@ -100,7 +100,7 @@ public class NPCInteraction : MonoBehaviour
         }
     }
 
-    // Hook this method to the UI button OnClick
+    // Called when tapping “Tap to Interact” UI
     public void OnTapInteract()
     {
         if (!playerInRange) return;
@@ -110,84 +110,148 @@ public class NPCInteraction : MonoBehaviour
 
     IEnumerator PlayInteractionCutscene()
     {
-        // 1) Enter cutscene mode
         if (playerManager != null) playerManager.isInCutscene = true;
 
-        // 2) Switch cameras
         if (mainFollowCamera != null) mainFollowCamera.gameObject.SetActive(false);
         if (cutsceneCamera != null) cutsceneCamera.gameObject.SetActive(true);
 
-        // 3) Freeze player physics briefly
         Rigidbody playerRb = playerManager ? playerManager.GetComponent<Rigidbody>() : null;
-        if (playerRb != null) { playerRb.linearVelocity = Vector3.zero; playerRb.angularVelocity = Vector3.zero; }
-
-        // 4) Play dialogue sequence
-        for (int i = 0; i < dialogueSequence.Length; i++)
+        if (playerRb != null)
         {
-            DialogueLine ln = dialogueSequence[i];
-            if (ln.speaker == DialogueLine.Speaker.Player)
-            {
-                if (playerAnimator != null) playerAnimator.SetBool("isTalking", true);
-                if (npcAnimator != null) npcAnimator.SetBool("isTalking", false);
-            }
-            else
-            {
-                if (npcAnimator != null) npcAnimator.SetBool("isTalking", true);
-                if (playerAnimator != null) playerAnimator.SetBool("isTalking", false);
-            }
+            playerRb.linearVelocity = Vector3.zero;
+            playerRb.angularVelocity = Vector3.zero;
+        }
+
+        // Dialogue sequence
+        foreach (DialogueLine ln in dialogueSequence)
+        {
+            Animator activeAnim = (ln.speaker == DialogueLine.Speaker.Player) ? playerAnimator : npcAnimator;
+            Animator otherAnim = (ln.speaker == DialogueLine.Speaker.Player) ? npcAnimator : playerAnimator;
+
+            if (activeAnim != null) activeAnim.SetBool("isTalking", true);
+            if (otherAnim != null) otherAnim.SetBool("isTalking", false);
 
             DialogueManager.Instance.ShowSubtitle(ln.text);
             yield return new WaitForSeconds(ln.duration);
-
-            // stop talk animation so transitions can happen
-            if (playerAnimator != null) playerAnimator.SetBool("isTalking", false);
-            if (npcAnimator != null) npcAnimator.SetBool("isTalking", false);
             DialogueManager.Instance.HideSubtitle();
 
-            // small buffer between lines
-            yield return new WaitForSeconds(0.15f);
+            if (activeAnim != null) activeAnim.SetBool("isTalking", false);
         }
 
-        // 5) End cutscene: show Red Links logo & then go to minigame scene
+        // After dialogue → show phone minigame (portrait)
         if (cutsceneCamera != null) cutsceneCamera.gameObject.SetActive(false);
-        if (redLinksLogoUI != null)
+        StartCoroutine(SwitchToPortraitAndShowMinigame());
+    }
+
+    // ------------------------------ PHONE MODE SEQUENCE ------------------------------
+
+    private IEnumerator SwitchToPortraitAndShowMinigame()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        // 🔄 Rotate to portrait (feels like player pulls out phone)
+        Screen.orientation = ScreenOrientation.Portrait;
+
+        // 🎮 Show minigame
+        if (minigameCanvas != null)
         {
-            redLinksLogoUI.SetActive(true);
-            // wait the 5 seconds (logo duration)
-            yield return new WaitForSeconds(5f);
-            redLinksLogoUI.SetActive(false);
+            minigameCanvas.SetActive(true);
+            minigameActive = true;
         }
 
-        // 6) Wait a few seconds, then load next mini-game scene (Red Links)
-        yield return new WaitForSeconds(10f); // adjust delay as needed
-        if (!string.IsNullOrEmpty(redLinksSceneName))
+        // Freeze player movement
+        Rigidbody playerRb = playerManager ? playerManager.GetComponent<Rigidbody>() : null;
+        if (playerRb != null)
         {
-            // Set orientation before loading scene
-            Screen.orientation = ScreenOrientation.Portrait;
-            SceneManager.LoadScene(redLinksSceneName);
+            previousPlayerConstraints = playerRb.constraints;
+            playerRb.linearVelocity = Vector3.zero;
+            playerRb.angularVelocity = Vector3.zero;
+            playerRb.constraints = RigidbodyConstraints.FreezeAll;
         }
-        else
-        {
-            // fallback: return control
-            if (mainFollowCamera != null) mainFollowCamera.gameObject.SetActive(true);
-            if (playerManager != null) playerManager.isInCutscene = false;
-        }
+
+        cachedPlayerMovement = playerManager?.GetComponent<PlayerMovement>();
+        if (cachedPlayerMovement != null) cachedPlayerMovement.enabled = false;
+
+        // Pause all NPCs
+        //
     }
-public void SavePlayerPositionAndTransition()
-{
-    // Find and save player position
-    GameObject player = GameObject.FindGameObjectWithTag("Player");
-    if (player != null)
+
+    // Called from the “Give Phone Back” button on the minigame canvas
+    public void OnReturnFromPhone()
     {
-        Vector3 pos = player.transform.position;
-        PlayerPrefs.SetFloat("PlayerPosX", pos.x);
-        PlayerPrefs.SetFloat("PlayerPosY", pos.y);
-        PlayerPrefs.SetFloat("PlayerPosZ", pos.z);
-        PlayerPrefs.Save();
-        Debug.Log($"Saved player position: {pos}");
+        StartCoroutine(ReturnToLandscapeAndResume());
     }
-    
-    // Then load Bilal scene
-    UnityEngine.SceneManagement.SceneManager.LoadScene("RedLinksScene");
-}
+
+    private IEnumerator ReturnToLandscapeAndResume()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        // 🔄 Rotate back to landscape
+        Screen.orientation = ScreenOrientation.LandscapeRight;
+
+        // Hide phone canvas
+        if (minigameCanvas != null)
+            minigameCanvas.SetActive(false);
+
+        // Resume everything
+        ResumeFromMinigame();
+    }
+
+    // ------------------------------ AI PAUSE/RESUME ------------------------------
+
+    // private void PauseAllAI()
+    // {
+    //     pausedPatrols.Clear();
+    //     pausedPatrolsPrevState.Clear();
+
+    //     var all = string.IsNullOrEmpty(aiPatrolTag)
+    //         ? Object.FindObjectsByType<NPCPatrol>(FindObjectsSortMode.None)
+    //         : GameObject.FindGameObjectsWithTag(aiPatrolTag).Select(go => go.GetComponent<NPCPatrol>())
+    //             .Where(p => p != null)
+    //             .ToArray();
+
+    //     foreach (var p in all)
+    //     {
+    //         pausedPatrols.Add(p);
+    //         pausedPatrolsPrevState.Add(p.isMoving);
+    //         p.isMoving = false;
+    //     }
+    // }
+
+    public void ResumeFromMinigame()
+    {
+        // Restore player physics
+        Rigidbody playerRb = playerManager ? playerManager.GetComponent<Rigidbody>() : null;
+        if (playerRb != null)
+        {
+            playerRb.constraints = previousPlayerConstraints;
+            playerRb.linearVelocity = Vector3.zero;
+            playerRb.angularVelocity = Vector3.zero;
+        }
+
+        // Enable player movement again
+        if (cachedPlayerMovement != null) cachedPlayerMovement.enabled = true;
+
+        // Resume all AI
+        // for (int i = 0; i < pausedPatrols.Count; i++)
+        // {
+        //     if (pausedPatrols[i] != null)
+        //         pausedPatrols[i].isMoving = pausedPatrolsPrevState[i];
+        // }
+        // pausedPatrols.Clear();
+        // pausedPatrolsPrevState.Clear();
+
+        // Player regains control
+        if (playerManager != null) playerManager.isInCutscene = false;
+
+        // Switch back to follow camera
+        if (mainFollowCamera != null) mainFollowCamera.gameObject.SetActive(true);
+
+        minigameActive = false;
+    }
+
+    void OnDestroy()
+    {
+        if (minigameActive) ResumeFromMinigame();
+    }
 }

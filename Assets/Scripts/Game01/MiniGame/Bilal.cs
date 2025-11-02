@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI; // Add this for Button
+using UnityEngine.UI;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class Bilal : MonoBehaviour
@@ -14,123 +13,125 @@ public class Bilal : MonoBehaviour
     public GameObject WrongChoice;
     public GameObject Flash;
     public GameObject Hacked;
+
     [Header("Buttons")]
     public Button activationButton;
     public Button OpenButton;
-    public Button Legit;
-    public Button Phishing;
+    public Button LegitButton;
+    public Button PhishingButton;
     public Button givePhoneBackButton;
-    
-    private NPCInteraction npcInteraction;
 
-    [Header("Camera References")]
-    public Camera introCamera;
-    public Vector3 returnPosition;
+    [Header("Audio")]
+    public AudioSource sfxSource;           // assign an AudioSource in Inspector
+    public AudioClip notificationSound;     // assign the "ting" or any SFX
+
+    private NPCInteraction npcInteraction;
 
     void Start()
     {
+        // ✅ Initialize all screens
+        SetAllScreensInactive();
         LockScreen.SetActive(true);
-        LockScreenMsg.SetActive(false);
-        OpenMsg.SetActive(false);
-        RightChoice.SetActive(false);
-        WrongChoice.SetActive(false);
-        Flash.SetActive(false);
-        Hacked.SetActive(false);
-        
-        if (activationButton != null && OpenButton !=null && Legit !=null && Phishing !=null) 
-        {
-            activationButton.onClick.AddListener(OnTap);
-            OpenButton.onClick.AddListener(OnOpen);
-            Legit.onClick.AddListener(OnLegit);
-            Phishing.onClick.AddListener(OnPhishing);
-        }
-        else
-        {
-            Debug.LogWarning("Button reference not set in Bilal script!");
-        }
-        
-        if (givePhoneBackButton != null)
-        {
-            givePhoneBackButton.onClick.AddListener(OnGivePhoneBack);
-        }
-        
+
+        // ✅ Hook up button events
+        if (activationButton != null) activationButton.onClick.AddListener(OnTap);
+        if (OpenButton != null) OpenButton.onClick.AddListener(OnOpen);
+        if (LegitButton != null) LegitButton.onClick.AddListener(OnLegit);
+        if (PhishingButton != null) PhishingButton.onClick.AddListener(OnPhishing);
+        if (givePhoneBackButton != null) givePhoneBackButton.onClick.AddListener(OnGivePhoneBack);
+
+        // ✅ Get NPC interaction reference if exists
         npcInteraction = FindFirstObjectByType<NPCInteraction>();
+
+        // ✅ Start intro auto-transition sequence
+        StartCoroutine(AutoTransitionFromLockScreen());
     }
+
+    // --------------------------------------------------------------------
+    // 🔹 Automatic transition from LockScreen → LockScreenMsg
+    IEnumerator AutoTransitionFromLockScreen()
+    {
+        // Wait 2 seconds on the first screen
+        yield return new WaitForSeconds(5.0f);
+
+        // Play notification sound (optional)
+        if (sfxSource != null && notificationSound != null)
+            sfxSource.PlayOneShot(notificationSound);
+
+        // Wait a small delay for the sound to play
+        yield return new WaitForSeconds(0.5f);
+
+        // Switch screens
+        LockScreen.SetActive(false);
+        LockScreenMsg.SetActive(true);
+    }
+
+    // --------------------------------------------------------------------
+    // 🔹 Button-driven transitions
 
     public void OnTap()
     {
         LockScreen.SetActive(false);
         LockScreenMsg.SetActive(true);
     }
-    
+
     public void OnOpen()
     {
         LockScreenMsg.SetActive(false);
         OpenMsg.SetActive(true);
     }
-    
+
     public void OnLegit()
     {
         OpenMsg.SetActive(false);
         WrongChoice.SetActive(true);
-        StartCoroutine(ShowFlashAfterDelay());
+        StartCoroutine(WrongChoiceSequence());
     }
 
-    private IEnumerator ShowFlashAfterDelay()
+    IEnumerator WrongChoiceSequence()
     {
-        yield return new WaitForSecondsRealtime(2);
+        yield return new WaitForSeconds(2f);
         WrongChoice.SetActive(false);
         Flash.SetActive(true);
-        StartCoroutine(ShowHackedAfterDelay());
-    }
-    
-    private IEnumerator ShowHackedAfterDelay()
-    {
-        yield return new WaitForSecondsRealtime(2);
+        yield return new WaitForSeconds(2f);
+        Flash.SetActive(false);
         Hacked.SetActive(true);
     }
-    
+
     public void OnPhishing()
     {
         OpenMsg.SetActive(false);
-        StartCoroutine(ShowRightChoiceAfterDelay());
-    }
-    
-    private IEnumerator ShowRightChoiceAfterDelay()
-    {
-        yield return new WaitForSecondsRealtime(0.01f);
         RightChoice.SetActive(true);
     }
-    
+
     public void OnGivePhoneBack()
     {
-        // Disable NPC interaction and increment save count
-        if (npcInteraction != null)
-        {
-            npcInteraction.DisableInteraction();
-            GameProgressManager.Instance.IncrementSaved();
-        }
-
-        // Save player state BEFORE loading scene
-        PlayerPrefs.SetInt("RedLinksScene", 1);
-        PlayerPrefs.Save();
-        
-        // Load Game-01 scene
-        SceneManager.LoadScene("Game-02");
+        // Logic for returning to main scene
+        // You can re-enable NPC interaction or increment progress here
+        // GameProgressManager.Instance.IncrementSaved();
+        // SceneManager.LoadScene("Game-01");
     }
 
-    void OnDestroy()
+    // --------------------------------------------------------------------
+    // 🔹 Helpers
+
+    private void SetAllScreensInactive()
     {
-        if (activationButton != null && OpenButton !=null && Legit !=null && Phishing !=null)
-        {
-            activationButton.onClick.RemoveListener(OnTap);
-            OpenButton.onClick.RemoveListener(OnOpen);
-            Legit.onClick.RemoveListener(OnLegit);
-            Phishing.onClick.RemoveListener(OnPhishing);
-        }
-        if (givePhoneBackButton != null)
-        {
-            givePhoneBackButton.onClick.RemoveListener(OnGivePhoneBack);
-        }
+        LockScreen.SetActive(false);
+        LockScreenMsg.SetActive(false);
+        OpenMsg.SetActive(false);
+        RightChoice.SetActive(false);
+        WrongChoice.SetActive(false);
+        Flash.SetActive(false);
+        Hacked.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        if (activationButton != null) activationButton.onClick.RemoveListener(OnTap);
+        if (OpenButton != null) OpenButton.onClick.RemoveListener(OnOpen);
+        if (LegitButton != null) LegitButton.onClick.RemoveListener(OnLegit);
+        if (PhishingButton != null) PhishingButton.onClick.RemoveListener(OnPhishing);
+        if (givePhoneBackButton != null) givePhoneBackButton.onClick.RemoveListener(OnGivePhoneBack);
     }
 }

@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
+using static System.Math;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -10,11 +12,16 @@ using TMPro;
 using System.Text;
 public class PasswordStrengthChecker : MonoBehaviour
 {
+   [Header("Avatar Names (Customize Here!)")]
+    [SerializeField] private string[] avatarNames = { "Alice", "Bob", "Charlie", "Diana", "Eve" };
+    
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI passwordDisplayText;
     [SerializeField] private TextMeshProUGUI strengthText;
     [SerializeField] private TextMeshProUGUI hintsText;
     [SerializeField] private TextMeshProUGUI characterCountText;
+    [SerializeField] private TextMeshProUGUI crackTimeText;
+    [SerializeField] private TextMeshProUGUI currentAccountNameText;
     
     [Header("Visual Feedback")]
     [SerializeField] private UnityEngine.UI.Image strengthBar;
@@ -23,20 +30,39 @@ public class PasswordStrengthChecker : MonoBehaviour
     [SerializeField] private Color strongColor = new Color(0.2f, 1f, 0.2f);
     [SerializeField] private Color veryStrongColor = new Color(0f, 0.8f, 0f);
     
+    [Header("Password Display Settings")]
+    [SerializeField] private bool showPassword = false;
+    [SerializeField] private UnityEngine.UI.Button toggleVisibilityButton;
+    [SerializeField] private UnityEngine.UI.Button setPasswordButton;
+    
+    [Header("Panel References")]
+    [SerializeField] private GameObject avatarSelectionPanel;
+    [SerializeField] private GameObject passwordCheckerPanel;
+    
     private StringBuilder currentPassword = new StringBuilder();
     private const int MAX_PASSWORD_LENGTH = 128;
     private bool useNewInputSystem = false;
     
+    private int currentAccountIndex = -1;
+    private Dictionary<int, string> accountPasswords = new Dictionary<int, string>();
+    
+    // Crack time calculation constants
+    private const long ATTEMPTS_PER_SECOND = 1000000000; // 1 billion attempts per second (modern GPU)
+    
     private void Start()
     {
-        InitializeUI();
-        UpdateDisplay();
         DetectInputSystem();
+        ShowAvatarSelection();
+        
+        // Setup set password button
+        if (setPasswordButton != null)
+        {
+            setPasswordButton.onClick.AddListener(OnSetPasswordClicked);
+        }
     }
     
     private void DetectInputSystem()
     {
-        // Check if new Input System is available
         #if ENABLE_INPUT_SYSTEM
         useNewInputSystem = true;
         Debug.Log("✅ Using New Input System (Unity 6)");
@@ -48,7 +74,94 @@ public class PasswordStrengthChecker : MonoBehaviour
     
     private void Update()
     {
-        HandleKeyboardInput();
+        if (passwordCheckerPanel != null && passwordCheckerPanel.activeSelf)
+        {
+            HandleKeyboardInput();
+        }
+    }
+    
+    public void ShowAvatarSelection()
+    {
+        if (avatarSelectionPanel != null)
+            avatarSelectionPanel.SetActive(true);
+        
+        if (passwordCheckerPanel != null)
+            passwordCheckerPanel.SetActive(false);
+    }
+    
+    public void SelectAccount(int accountIndex)
+    {
+        currentAccountIndex = accountIndex;
+        currentPassword.Clear();
+        
+        if (avatarSelectionPanel != null)
+            avatarSelectionPanel.SetActive(false);
+        
+        if (passwordCheckerPanel != null)
+            passwordCheckerPanel.SetActive(true);
+        
+        InitializeUI();
+        UpdateDisplay();
+        
+        // Update account name display with custom names
+        if (currentAccountNameText != null && accountIndex >= 0 && accountIndex < avatarNames.Length)
+        {
+            currentAccountNameText.text = $"Setting password for: <b>{avatarNames[accountIndex]}</b>";
+        }
+    }
+    
+    public string[] GetAvatarNames()
+    {
+        return avatarNames;
+    }
+    
+    private void OnSetPasswordClicked()
+    {
+        if (currentPassword.Length == 0)
+        {
+            Debug.Log("Cannot set empty password!");
+            return;
+        }
+        
+        // Save the password for this account
+        accountPasswords[currentAccountIndex] = currentPassword.ToString();
+        
+        Debug.Log($"✅ Password set for account {currentAccountIndex}!");
+        
+        // Show confirmation animation
+        if (setPasswordButton != null)
+        {
+            TextMeshProUGUI btnText = setPasswordButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (btnText != null)
+            {
+                btnText.text = "✅ Password Set!";
+            }
+        }
+        
+        // Return to avatar selection after short delay
+        StartCoroutine(ReturnToAvatarSelection());
+    }
+    
+    private IEnumerator ReturnToAvatarSelection()
+    {
+        yield return new WaitForSeconds(1.5f);
+        
+        // Reset button text
+        if (setPasswordButton != null)
+        {
+            TextMeshProUGUI btnText = setPasswordButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (btnText != null)
+            {
+                btnText.text = "Set Password";
+            }
+        }
+        
+        ShowAvatarSelection();
+    }
+    
+    public bool IsPasswordSet(int accountIndex)
+    {
+        return accountPasswords.ContainsKey(accountIndex);
     }
     
     private void InitializeUI()
@@ -58,6 +171,26 @@ public class PasswordStrengthChecker : MonoBehaviour
         
         if (characterCountText != null)
             characterCountText.text = "Characters: 0";
+        
+        if (crackTimeText != null)
+            crackTimeText.text = "";
+    }
+    
+    public void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+        UpdateDisplay();
+        
+        if (toggleVisibilityButton != null)
+        {
+            TextMeshProUGUI buttonText = toggleVisibilityButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (buttonText != null)
+            {
+                buttonText.text = showPassword ? "🙈 Hide" : "👁️ Show";
+            }
+        }
+        
+        Debug.Log($"Password visibility: {(showPassword ? "VISIBLE" : "HIDDEN")}");
     }
     
     private void HandleKeyboardInput()
@@ -75,7 +208,6 @@ public class PasswordStrengthChecker : MonoBehaviour
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
         
-        // Handle backspace with new Input System
         if (keyboard.backspaceKey.wasPressedThisFrame)
         {
             if (currentPassword.Length > 0)
@@ -86,7 +218,6 @@ public class PasswordStrengthChecker : MonoBehaviour
             return;
         }
         
-        // Handle text input with new Input System
         string textInput = GetNewInputSystemCharacters(keyboard);
         
         foreach (char c in textInput)
@@ -103,7 +234,6 @@ public class PasswordStrengthChecker : MonoBehaviour
     {
         StringBuilder chars = new StringBuilder();
         
-        // Check letter keys
         if (keyboard.aKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'A' : 'a');
         if (keyboard.bKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'B' : 'b');
         if (keyboard.cKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'C' : 'c');
@@ -131,7 +261,6 @@ public class PasswordStrengthChecker : MonoBehaviour
         if (keyboard.yKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'Y' : 'y');
         if (keyboard.zKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'Z' : 'z');
         
-        // Numbers
         bool shift = keyboard.shiftKey.isPressed;
         if (keyboard.digit1Key.wasPressedThisFrame) chars.Append(shift ? '!' : '1');
         if (keyboard.digit2Key.wasPressedThisFrame) chars.Append(shift ? '@' : '2');
@@ -144,7 +273,6 @@ public class PasswordStrengthChecker : MonoBehaviour
         if (keyboard.digit9Key.wasPressedThisFrame) chars.Append(shift ? '(' : '9');
         if (keyboard.digit0Key.wasPressedThisFrame) chars.Append(shift ? ')' : '0');
         
-        // Special characters
         if (keyboard.minusKey.wasPressedThisFrame) chars.Append(shift ? '_' : '-');
         if (keyboard.equalsKey.wasPressedThisFrame) chars.Append(shift ? '+' : '=');
         if (keyboard.leftBracketKey.wasPressedThisFrame) chars.Append(shift ? '{' : '[');
@@ -163,7 +291,6 @@ public class PasswordStrengthChecker : MonoBehaviour
     
     private void HandleLegacyInputSystem()
     {
-        // Handle backspace with legacy Input
         if (Input.GetKeyDown(KeyCode.Backspace))
         {
             if (currentPassword.Length > 0)
@@ -174,7 +301,6 @@ public class PasswordStrengthChecker : MonoBehaviour
             return;
         }
         
-        // Handle character input with legacy Input
         string input = Input.inputString;
         foreach (char c in input)
         {
@@ -190,27 +316,105 @@ public class PasswordStrengthChecker : MonoBehaviour
     {
         string password = currentPassword.ToString();
         
-        // Update masked password display
         if (passwordDisplayText != null)
         {
             if (password.Length == 0)
                 passwordDisplayText.text = "Start typing your password...";
             else
-                passwordDisplayText.text = new string('●', password.Length);
+                passwordDisplayText.text = showPassword ? password : new string('●', password.Length);
         }
         
-        // Update character count
         if (characterCountText != null)
             characterCountText.text = $"Characters: {password.Length}";
         
-        // Calculate and display strength
         PasswordStrength strength = CalculateStrength(password);
         UpdateStrengthDisplay(strength);
         
-        // Generate and display hints
+        if (crackTimeText != null)
+        {
+            string crackTime = CalculateCrackTime(password, strength);
+            crackTimeText.text = crackTime;
+        }
+        
         string hints = GenerateHints(password, strength);
         if (hintsText != null)
             hintsText.text = hints;
+    }
+    
+    private string CalculateCrackTime(string password, PasswordStrength strength)
+    {
+        if (password.Length == 0)
+            return "";
+        
+        int poolSize = 0;
+        if (strength.HasLower) poolSize += 26;
+        if (strength.HasUpper) poolSize += 26;
+        if (strength.HasDigit) poolSize += 10;
+        if (strength.HasSpecial) poolSize += 32;
+        
+        if (poolSize == 0) poolSize = 26;
+        
+        double combinations = Math.Pow(poolSize, password.Length);
+        double secondsToCrack = combinations / ATTEMPTS_PER_SECOND;
+        
+        string timeString = FormatCrackTime(secondsToCrack);
+        string emoji = GetCrackTimeEmoji(secondsToCrack);
+        
+        return $"{emoji} <b>Time to Crack:</b> {timeString}\n<size=14><color=#888888>(At 1 billion guesses/second)</color></size>";
+    }
+    
+    private string FormatCrackTime(double seconds)
+    {
+        if (seconds < 1)
+            return "<color=red>Instantly</color>";
+        
+        if (seconds < 60)
+            return $"<color=red>{seconds:F1} seconds</color>";
+        
+        double minutes = seconds / 60;
+        if (minutes < 60)
+            return $"<color=orange>{minutes:F1} minutes</color>";
+        
+        double hours = minutes / 60;
+        if (hours < 24)
+            return $"<color=yellow>{hours:F1} hours</color>";
+        
+        double days = hours / 24;
+        if (days < 30)
+            return $"<color=yellow>{days:F1} days</color>";
+        
+        double months = days / 30;
+        if (months < 12)
+            return $"<color=#90EE90>{months:F1} months</color>";
+        
+        double years = days / 365;
+        if (years < 1000)
+            return $"<color=green>{years:F1} years</color>";
+        
+        if (years < 1000000)
+        {
+            double thousands = years / 1000;
+            return $"<color=green>{thousands:F1} thousand years</color>";
+        }
+        
+        if (years < 1000000000)
+        {
+            double millions = years / 1000000;
+            return $"<color=green>{millions:F1} million years</color>";
+        }
+        
+        double billions = years / 1000000000;
+        return $"<color=green>{billions:F1} billion years</color>";
+    }
+    
+    private string GetCrackTimeEmoji(double seconds)
+    {
+        if (seconds < 60) return "💀";
+        if (seconds < 3600) return "⚠️";
+        if (seconds < 86400) return "⏰";
+        if (seconds < 2592000) return "📅";
+        if (seconds < 31536000) return "🗓️";
+        return "🔒";
     }
     
     private PasswordStrength CalculateStrength(string password)
@@ -221,7 +425,6 @@ public class PasswordStrengthChecker : MonoBehaviour
         int score = 0;
         bool hasLower = false, hasUpper = false, hasDigit = false, hasSpecial = false;
         
-        // Analyze characters
         foreach (char c in password)
         {
             if (char.IsLower(c)) hasLower = true;
@@ -230,22 +433,18 @@ public class PasswordStrengthChecker : MonoBehaviour
             else if (!char.IsLetterOrDigit(c)) hasSpecial = true;
         }
         
-        // Length scoring
         if (password.Length >= 8) score += 20;
         if (password.Length >= 12) score += 15;
         if (password.Length >= 16) score += 15;
         
-        // Complexity scoring
         if (hasLower) score += 10;
         if (hasUpper) score += 15;
         if (hasDigit) score += 15;
         if (hasSpecial) score += 20;
         
-        // Bonus for using all character types
         if (hasLower && hasUpper && hasDigit && hasSpecial)
             score += 10;
         
-        // Determine strength level
         string level;
         if (score < 30) level = "Very Weak";
         else if (score < 50) level = "Weak";
@@ -271,7 +470,6 @@ public class PasswordStrengthChecker : MonoBehaviour
         {
             strengthText.text = $"Strength: {strength.Level}\nScore: {strength.Score}/100";
             
-            // Color coding
             Color textColor = weakColor;
             switch (strength.Level)
             {
@@ -284,7 +482,6 @@ public class PasswordStrengthChecker : MonoBehaviour
             strengthText.color = textColor;
         }
         
-        // Update strength bar
         if (strengthBar != null)
         {
             strengthBar.fillAmount = strength.Score / 100f;

@@ -6,11 +6,11 @@ public class CutSceneMainMenu : MonoBehaviour
 {
      void OnEnable()
     {
-        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+        StartCoroutine(LoadSceneAsync("MainMenu"));
     }
-    // IEnumerator LoadMainMenu()
-    // {
-        
-        
-    // }
+    
+    private IEnumerator LoadSceneAsync(string sceneName)
+    {
+        yield return SceneManager.LoadSceneAsync(sceneName);
+    }
 }

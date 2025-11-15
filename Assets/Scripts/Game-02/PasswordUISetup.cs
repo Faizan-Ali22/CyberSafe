@@ -273,7 +273,7 @@ public class PasswordUISetup : MonoBehaviour
         passwordDisplay.alignment = TextAlignmentOptions.Center;
         passwordDisplay.color = Color.white;
         passwordDisplay.raycastTarget = false;
-        passwordDisplay.enableWordWrapping = true;
+        passwordDisplay.textWrappingMode = TextWrappingModes.Normal;
         passwordDisplay.overflowMode = TextOverflowModes.Ellipsis;
         
         // Toggle Visibility Button

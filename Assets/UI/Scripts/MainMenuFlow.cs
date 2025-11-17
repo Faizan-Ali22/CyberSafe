@@ -14,6 +14,7 @@ public class MainMenuFlow : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private GameObject[] mainUIElements; 
     [SerializeField] private GameObject[] selectUIElements;
+    public GameObject BottomBar;
     
     [Header("Timing")]
     [SerializeField] private float introAnimTime = 1f;
@@ -44,6 +45,15 @@ public class MainMenuFlow : MonoBehaviour
         StartCoroutine(TransitionToSelectMenu());
     }
     
+    public void OnClickExit()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
+    }
+    
     private IEnumerator TransitionToSelectMenu()
     {
         // Hide main menu
@@ -63,6 +73,7 @@ public class MainMenuFlow : MonoBehaviour
         // Show UI after both animations complete
         SetSelectUIActive(true);
         SetCanvasInteractable(selectMenuGroup, true);
+        BottomBar.SetActive(false);
     }
     
     private void SetMainUIActive(bool active)

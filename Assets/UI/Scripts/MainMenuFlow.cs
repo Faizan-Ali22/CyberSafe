@@ -15,22 +15,37 @@ public class MainMenuFlow : MonoBehaviour
     [SerializeField] private GameObject[] mainUIElements; 
     [SerializeField] private GameObject[] selectUIElements;
     public GameObject BottomBar;
-    
+
+    [Header("BG Intro")]
+    [SerializeField] private GameObject bgRoot;
+    [SerializeField] private float bgIntroTime = 0.1f;
+
     [Header("Timing")]
     [SerializeField] private float introAnimTime = 1f;
     [SerializeField] private float animStartDelay = 0.5f;
     [SerializeField] private float firstSelectAnimTime = 1f;
     [SerializeField] private float secondSelectAnimTime = 1f;
-    
+
     void Awake()
     {
-        SetCanvas(mainMenuGroup, 1f, false);
+        if (bgRoot != null) bgRoot.SetActive(true);
+
+        SetCanvas(mainMenuGroup, 0f, false);
         SetCanvas(selectMenuGroup, 0f, false);
         SetMainUIActive(false);
         SetSelectUIActive(false);
-        StartCoroutine(PlayIntroAnimation());
+
+        StartCoroutine(SceneStartupFlow());
     }
-    
+
+    private IEnumerator SceneStartupFlow()
+    {
+        yield return new WaitForSeconds(bgIntroTime);
+
+        SetCanvas(mainMenuGroup, 1f, false);
+        yield return PlayIntroAnimation();
+    }
+
     private IEnumerator PlayIntroAnimation()
     {
         yield return new WaitForSeconds(animStartDelay);
@@ -40,11 +55,24 @@ public class MainMenuFlow : MonoBehaviour
         SetCanvasInteractable(mainMenuGroup, true);
     }
 
+    // --- CHANGED ---
     public void OnClickStartButton()
     {
+        // Ensure the canvases are in the expected state first
+        if (mainMenuGroup.alpha < 1f || selectMenuGroup.alpha > 0f)
+        {
+            // force main menu visible, select menu hidden
+            SetCanvas(mainMenuGroup, 1f, true);
+            SetCanvas(selectMenuGroup, 0f, false);
+            SetMainUIActive(true);
+            SetSelectUIActive(false);
+        }
+
+        // Now run the usual transition
         StartCoroutine(TransitionToSelectMenu());
     }
-    
+    // ---------------
+
     public void OnClickExit()
     {
         #if UNITY_EDITOR
@@ -53,29 +81,51 @@ public class MainMenuFlow : MonoBehaviour
             Application.Quit();
         #endif
     }
-    
+
+    public void OnClickBackButton()
+    {
+        StartCoroutine(TransitionToMainMenu());
+    }
+
     private IEnumerator TransitionToSelectMenu()
     {
-        // Hide main menu
+        selectMenuAnimator.ResetTrigger("Start");
+        selectMenuAnimator.ResetTrigger("Select");
+
         SetCanvas(mainMenuGroup, 0f, false);
         SetMainUIActive(false);
         
-        // Show select menu and play first animation
         SetCanvas(selectMenuGroup, 1f, false);
         yield return new WaitForSeconds(animStartDelay);
         selectMenuAnimator.SetTrigger("Start");
         yield return new WaitForSeconds(firstSelectAnimTime);
         
-        // Play second animation
         selectMenuAnimator.SetTrigger("Select");
         yield return new WaitForSeconds(secondSelectAnimTime);
         
-        // Show UI after both animations complete
         SetSelectUIActive(true);
         SetCanvasInteractable(selectMenuGroup, true);
         BottomBar.SetActive(false);
     }
-    
+
+    private IEnumerator TransitionToMainMenu()
+    {
+        mainMenuAnimator.ResetTrigger("Start");
+        mainMenuAnimator.ResetTrigger("Back");
+
+        SetCanvas(mainMenuGroup, 1f, false);
+        SetCanvas(selectMenuGroup, 0f, false);
+        SetSelectUIActive(false);
+
+        mainMenuAnimator.SetTrigger("Back");
+        yield return new WaitForSeconds(introAnimTime);
+        mainMenuAnimator.SetTrigger("Start");
+        yield return new WaitForSeconds(introAnimTime);
+
+        SetMainUIActive(true);
+        SetCanvasInteractable(mainMenuGroup, true);
+    }
+
     private void SetMainUIActive(bool active)
     {
         if (mainUIElements == null) return;

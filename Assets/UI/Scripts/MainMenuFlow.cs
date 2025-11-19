@@ -28,8 +28,10 @@ public class MainMenuFlow : MonoBehaviour
 
     void Awake()
     {
-        if (bgRoot != null) bgRoot.SetActive(true);
-
+        if (bgRoot != null)
+        { 
+            bgRoot.SetActive(true);
+        }
         SetCanvas(mainMenuGroup, 0f, false);
         SetCanvas(selectMenuGroup, 0f, false);
         SetMainUIActive(false);
@@ -41,6 +43,9 @@ public class MainMenuFlow : MonoBehaviour
     private IEnumerator SceneStartupFlow()
     {
         yield return new WaitForSeconds(bgIntroTime);
+
+        if (bgRoot != null)
+            bgRoot.SetActive(false);   // hide BG before showing main menu
 
         SetCanvas(mainMenuGroup, 1f, false);
         yield return PlayIntroAnimation();
@@ -117,6 +122,9 @@ public class MainMenuFlow : MonoBehaviour
         SetCanvas(selectMenuGroup, 0f, false);
         SetSelectUIActive(false);
 
+        // return select animator to idle before we leave it hidden
+        ResetSelectMenuAnimator();
+
         mainMenuAnimator.SetTrigger("Back");
         yield return new WaitForSeconds(introAnimTime);
         mainMenuAnimator.SetTrigger("Start");
@@ -124,6 +132,16 @@ public class MainMenuFlow : MonoBehaviour
 
         SetMainUIActive(true);
         SetCanvasInteractable(mainMenuGroup, true);
+    }
+
+    private void ResetSelectMenuAnimator()
+    {
+        if (!selectMenuAnimator) return;
+
+        selectMenuAnimator.ResetTrigger("Start");
+        selectMenuAnimator.ResetTrigger("Select");
+        selectMenuAnimator.Play("Select-Idle", 0, 0f); // use your actual idle state name
+        selectMenuAnimator.Update(0f); // force immediate evaluation
     }
 
     private void SetMainUIActive(bool active)

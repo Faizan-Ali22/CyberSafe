@@ -3591,8 +3591,8 @@ MonoBehaviour:
   - {fileID: 1940696589}
   - {fileID: 1277410129}
   BottomBar: {fileID: 1655135163}
-  bgRoot: {fileID: 1143122569}
-  bgIntroTime: 0.2
+  bgRoot: {fileID: 1794489977}
+  bgIntroTime: 0.1
   introAnimTime: 1
   animStartDelay: 0.5
   firstSelectAnimTime: 1

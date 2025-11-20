@@ -14,6 +14,7 @@ public class MainMenuFlow : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private GameObject[] mainUIElements; 
     [SerializeField] private GameObject[] selectUIElements;
+    [SerializeField] private GameObject[] settingsUIElements;
     public GameObject BottomBar;
 
     [Header("BG Intro")]
@@ -36,7 +37,7 @@ public class MainMenuFlow : MonoBehaviour
         SetCanvas(selectMenuGroup, 0f, false);
         SetMainUIActive(false);
         SetSelectUIActive(false);
-
+        SetSettingsUIActive(false);
         StartCoroutine(SceneStartupFlow());
     }
 
@@ -45,7 +46,7 @@ public class MainMenuFlow : MonoBehaviour
         yield return new WaitForSeconds(bgIntroTime);
 
         if (bgRoot != null)
-            bgRoot.SetActive(false);   // hide BG before showing main menu
+            bgRoot.SetActive(false);   
 
         SetCanvas(mainMenuGroup, 1f, false);
         yield return PlayIntroAnimation();
@@ -60,23 +61,32 @@ public class MainMenuFlow : MonoBehaviour
         SetCanvasInteractable(mainMenuGroup, true);
     }
 
-    // --- CHANGED ---
+
     public void OnClickStartButton()
     {
-        // Ensure the canvases are in the expected state first
         if (mainMenuGroup.alpha < 1f || selectMenuGroup.alpha > 0f)
         {
-            // force main menu visible, select menu hidden
             SetCanvas(mainMenuGroup, 1f, true);
             SetCanvas(selectMenuGroup, 0f, false);
             SetMainUIActive(true);
             SetSelectUIActive(false);
+            SetSettingsUIActive(false);
         }
-
-        // Now run the usual transition
         StartCoroutine(TransitionToSelectMenu());
     }
-    // ---------------
+
+    public void OnClickSettingstButton()
+    {
+        if (mainMenuGroup.alpha < 1f || selectMenuGroup.alpha > 0f)
+        {
+            SetCanvas(mainMenuGroup, 1f, true);
+            SetCanvas(selectMenuGroup, 0f, false);
+            SetMainUIActive(true);
+            SetSelectUIActive(false);
+            SetSettingsUIActive(false);
+        }
+        StartCoroutine(TransitionToSettingsMenu());
+    }
 
     public void OnClickExit()
     {
@@ -99,6 +109,7 @@ public class MainMenuFlow : MonoBehaviour
 
         SetCanvas(mainMenuGroup, 0f, false);
         SetMainUIActive(false);
+        SetSettingsUIActive(false);
         
         SetCanvas(selectMenuGroup, 1f, false);
         yield return new WaitForSeconds(animStartDelay);
@@ -112,7 +123,27 @@ public class MainMenuFlow : MonoBehaviour
         SetCanvasInteractable(selectMenuGroup, true);
         BottomBar.SetActive(false);
     }
+     private IEnumerator TransitionToSettingsMenu()
+    {
+        selectMenuAnimator.ResetTrigger("Start");
+        selectMenuAnimator.ResetTrigger("Select");
 
+        SetCanvas(mainMenuGroup, 0f, false);
+        SetMainUIActive(false);
+        SetSelectUIActive(false);
+        
+        SetCanvas(selectMenuGroup, 1f, false);
+        yield return new WaitForSeconds(animStartDelay);
+        selectMenuAnimator.SetTrigger("Start");
+        yield return new WaitForSeconds(firstSelectAnimTime);
+        
+        selectMenuAnimator.SetTrigger("Select");
+        yield return new WaitForSeconds(secondSelectAnimTime);
+        
+        SetSettingsUIActive(true);
+        SetCanvasInteractable(selectMenuGroup, true);
+        BottomBar.SetActive(false);
+    }
     private IEnumerator TransitionToMainMenu()
     {
         mainMenuAnimator.ResetTrigger("Start");
@@ -121,8 +152,9 @@ public class MainMenuFlow : MonoBehaviour
         SetCanvas(mainMenuGroup, 1f, false);
         SetCanvas(selectMenuGroup, 0f, false);
         SetSelectUIActive(false);
+        SetSettingsUIActive(false);
 
-        // return select animator to idle before we leave it hidden
+        
         ResetSelectMenuAnimator();
 
         mainMenuAnimator.SetTrigger("Back");
@@ -140,8 +172,8 @@ public class MainMenuFlow : MonoBehaviour
 
         selectMenuAnimator.ResetTrigger("Start");
         selectMenuAnimator.ResetTrigger("Select");
-        selectMenuAnimator.Play("Select-Idle", 0, 0f); // use your actual idle state name
-        selectMenuAnimator.Update(0f); // force immediate evaluation
+        selectMenuAnimator.Play("Select-Idle", 0, 0f); 
+        selectMenuAnimator.Update(0f); 
     }
 
     private void SetMainUIActive(bool active)
@@ -155,7 +187,11 @@ public class MainMenuFlow : MonoBehaviour
         if (selectUIElements == null) return;
         foreach (var go in selectUIElements) if (go) go.SetActive(active);
     }
-    
+    private void SetSettingsUIActive(bool active)
+    {
+        if (settingsUIElements == null) return;
+        foreach (var go in settingsUIElements) if (go) go.SetActive(active);
+    }
     private void SetCanvasInteractable(CanvasGroup cg, bool interactable)
     {
         if (!cg) return;

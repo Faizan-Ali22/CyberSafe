@@ -19,7 +19,7 @@ public class MainMenuFlow : MonoBehaviour
 
     [Header("BG Intro")]
     [SerializeField] private GameObject bgRoot;
-    [SerializeField] private float bgIntroTime = 0.1f;
+    [SerializeField] private float bgIntroTime = 2.0f;
 
     [Header("Timing")]
     [SerializeField] private float introAnimTime = 1f;

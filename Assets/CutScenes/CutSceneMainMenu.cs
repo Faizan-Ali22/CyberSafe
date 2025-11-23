@@ -6,7 +6,7 @@ public class CutSceneMainMenu : MonoBehaviour
 {
      void OnEnable()
     {
-        StartCoroutine(LoadSceneAsync("MainMenu"));
+        StartCoroutine(LoadSceneAsync("Chapter-0"));
     }
     
     private IEnumerator LoadSceneAsync(string sceneName)

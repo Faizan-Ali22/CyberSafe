@@ -15,7 +15,7 @@ public class MainMenuFlow : MonoBehaviour
     [SerializeField] private GameObject[] mainUIElements; 
     [SerializeField] private GameObject[] selectUIElements;
     [SerializeField] private GameObject[] settingsUIElements;
-    public GameObject BottomBar;
+    //public GameObject BottomBar;
 
     [Header("BG Intro")]
     [SerializeField] private GameObject bgRoot;
@@ -121,7 +121,7 @@ public class MainMenuFlow : MonoBehaviour
         
         SetSelectUIActive(true);
         SetCanvasInteractable(selectMenuGroup, true);
-        BottomBar.SetActive(false);
+        //BottomBar.SetActive(false);
     }
      private IEnumerator TransitionToSettingsMenu()
     {
@@ -142,7 +142,7 @@ public class MainMenuFlow : MonoBehaviour
         
         SetSettingsUIActive(true);
         SetCanvasInteractable(selectMenuGroup, true);
-        BottomBar.SetActive(false);
+        //BottomBar.SetActive(false);
     }
     private IEnumerator TransitionToMainMenu()
     {

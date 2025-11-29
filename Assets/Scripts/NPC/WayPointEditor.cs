@@ -14,7 +14,7 @@ public class WayPointEditor
         }
         else
         {
-            Gizmos.color = Color.cyan * 0.5f;
+            Gizmos.color = Color.cyan * 0.8f;
         }
         Gizmos.DrawWireSphere(waypoint.transform.position, 0.5f);
 

@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Chapter-0/Chapter-0.unity
     guid: 4b0c4ede9effb4346b02bd7429afa568
+  - enabled: 1
+    path: Assets/Scenes/Malware-Maze/Game.unity
+    guid: 51866baa4d0c6844b968a19be2d3d7f9
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -22,6 +22,10 @@ public class TimelineGameplayStarter : MonoBehaviour
         {
             playableDirector.stopped += OnTimelineStopped;
         }
+        else if (debugLogs)
+        {
+            Debug.LogWarning("[TimelineGameplayStarter] PlayableDirector is not assigned. Timeline completion will not be detected.");
+        }
     }
 
     void OnDisable()
@@ -49,11 +53,19 @@ public class TimelineGameplayStarter : MonoBehaviour
             ayanPlayer.SetActive(true);
             if (debugLogs) Debug.Log("[TimelineGameplayStarter] Ayan player enabled.");
         }
+        else if (debugLogs)
+        {
+            Debug.LogWarning("[TimelineGameplayStarter] Ayan player reference is not assigned.");
+        }
 
         if (cameraManager != null)
         {
             cameraManager.SetActive(true);
             if (debugLogs) Debug.Log("[TimelineGameplayStarter] CameraManager enabled.");
+        }
+        else if (debugLogs)
+        {
+            Debug.LogWarning("[TimelineGameplayStarter] CameraManager reference is not assigned.");
         }
 
         if (debugLogs) Debug.Log("[TimelineGameplayStarter] Gameplay started successfully.");

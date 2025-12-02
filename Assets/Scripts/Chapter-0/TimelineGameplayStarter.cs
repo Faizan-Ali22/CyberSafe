@@ -20,15 +20,25 @@ public class TimelineGameplayStarter : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject[] gameplayUIElements;
+    [SerializeField] private GameObject skipButton;
 
     [Header("Cameras")]
     public GameObject cameramanager;
     [SerializeField] private Camera gameplayCamera;
     [SerializeField] private Camera timelineCamera;
 
+    [Header("Player Scripts")]
+    [SerializeField] private PlayerManager playerManager;
+    [SerializeField] private InputManager inputManager;
+
+    private bool hasSkipped = false;
+
     private void Awake()
     {
         SetComponentsEnabled(false);
+        
+        // Disable player scripts during cutscene
+        SetPlayerScriptsEnabled(false);
         
         if (gameplayCharacter != null)
         {
@@ -40,6 +50,12 @@ public class TimelineGameplayStarter : MonoBehaviour
         if (gameplayCamera != null)
         {
             gameplayCamera.enabled = false;
+        }
+
+        // Ensure skip button is visible at start
+        if (skipButton != null)
+        {
+            skipButton.SetActive(true);
         }
     }
 
@@ -59,7 +75,51 @@ public class TimelineGameplayStarter : MonoBehaviour
         }
     }
 
+    // Call this method from the Skip Button's OnClick event
+    public void SkipCutscene()
+    {
+        if (hasSkipped) return;
+        hasSkipped = true;
+
+        // Stop the timeline
+        if (playableDirector != null)
+        {
+            playableDirector.Stop();
+        }
+
+        // Hide skip button
+        if (skipButton != null)
+        {
+            skipButton.SetActive(false);
+        }
+
+        // Transition to gameplay
+        TransitionToGameplay();
+
+        #if UNITY_EDITOR
+        Debug.Log("Cutscene skipped!");
+        #endif
+    }
+
     private void OnTimelineStopped(PlayableDirector director)
+    {
+        // Hide skip button when timeline ends naturally
+        if (skipButton != null)
+        {
+            skipButton.SetActive(false);
+        }
+
+        if (!hasSkipped)
+        {
+            TransitionToGameplay();
+        }
+
+        #if UNITY_EDITOR
+        Debug.Log("Timeline ended - Gameplay started!");
+        #endif
+    }
+
+    private void TransitionToGameplay()
     {
         SetComponentsEnabled(true);
         
@@ -94,37 +154,57 @@ public class TimelineGameplayStarter : MonoBehaviour
         if (cameramanager != null)
         {
             cameramanager.SetActive(true);
-            // Force re-initialization of camera target
-            ReinitializeCameraManager();
         }
         if (gameplayCamera != null)
         {
             gameplayCamera.enabled = true;
         }
         
-        #if UNITY_EDITOR
-        Debug.Log("Timeline ended - Gameplay started!");
-        #endif
+        // Enable player scripts and reinitialize camera after a short delay
+        StartCoroutine(EnablePlayerAndCamera());
+    }
+
+    private IEnumerator EnablePlayerAndCamera()
+    {
+        // Wait one frame to ensure all GameObjects are properly activated
+        yield return null;
+        
+        // Enable player scripts
+        SetPlayerScriptsEnabled(true);
+        
+        // Reinitialize camera manager to find the player
+        ReinitializeCameraManager();
+    }
+
+    private void SetPlayerScriptsEnabled(bool enabled)
+    {
+        if (playerManager != null)
+        {
+            playerManager.enabled = enabled;
+        }
+        
+        if (inputManager != null)
+        {
+            inputManager.enabled = enabled;
+        }
     }
 
     private void ReinitializeCameraManager()
     {
-        // Get the CameraManager component
+        if (cameramanager == null) return;
+    
         var camManager = cameramanager.GetComponent<CameraManager>();
-        if (camManager != null && gameplayCharacter != null)
+        if (camManager != null)
         {
-            // Re-assign the player target
-            // camManager.target = gameplayCharacter.transform; // Commented out - 'target' property doesn't exist
-            
-            // If CameraManager has an initialization method, call it
-            // camManager.Initialize(); // Uncomment if such method exists
+            // Call InitializeCamera if it exists, otherwise use SendMessage
+            camManager.SendMessage("InitializeCamera", SendMessageOptions.DontRequireReceiver);
         }
     }
 
     private void SetComponentsEnabled(bool enabled)
     {
         if (componentsToEnable == null) return;
-        
+           
         foreach (var component in componentsToEnable)
         {
             if (component != null)

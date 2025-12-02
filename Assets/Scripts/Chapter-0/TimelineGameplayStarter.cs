@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.Playables;
+using System.Collections;
+using System.Collections.Generic;   
 
 public class TimelineGameplayStarter : MonoBehaviour
 {
@@ -12,12 +14,15 @@ public class TimelineGameplayStarter : MonoBehaviour
     [Header("GameObjects")]
     [SerializeField] private GameObject gameplayCharacter;
     [SerializeField] private GameObject cutsceneCharacter;
-    [SerializeField] private GameObject cinemachineBrain;  // The Main Camera with Cinemachine Brain
+    [SerializeField] private GameObject cutsceneCharacter2;
+    [SerializeField] private GameObject cinemachineBrain;
+    public GameObject CineCamera;
 
     [Header("UI")]
     [SerializeField] private GameObject[] gameplayUIElements;
 
     [Header("Cameras")]
+    public GameObject cameramanager;
     [SerializeField] private Camera gameplayCamera;
     [SerializeField] private Camera timelineCamera;
 
@@ -67,8 +72,14 @@ public class TimelineGameplayStarter : MonoBehaviour
         {
             cutsceneCharacter.SetActive(false);
         }
-
-        // Disable Cinemachine Brain camera
+        if (cutsceneCharacter2 != null)
+        {
+            cutsceneCharacter2.SetActive(false);
+        }
+        if (CineCamera != null)
+        {
+            CineCamera.SetActive(false);
+        }
         if (cinemachineBrain != null)
         {
             cinemachineBrain.SetActive(false);
@@ -80,7 +91,12 @@ public class TimelineGameplayStarter : MonoBehaviour
         {
             timelineCamera.enabled = false;
         }
-        
+        if (cameramanager != null)
+        {
+            cameramanager.SetActive(true);
+            // Force re-initialization of camera target
+            ReinitializeCameraManager();
+        }
         if (gameplayCamera != null)
         {
             gameplayCamera.enabled = true;
@@ -89,6 +105,20 @@ public class TimelineGameplayStarter : MonoBehaviour
         #if UNITY_EDITOR
         Debug.Log("Timeline ended - Gameplay started!");
         #endif
+    }
+
+    private void ReinitializeCameraManager()
+    {
+        // Get the CameraManager component
+        var camManager = cameramanager.GetComponent<CameraManager>();
+        if (camManager != null && gameplayCharacter != null)
+        {
+            // Re-assign the player target
+            // camManager.target = gameplayCharacter.transform; // Commented out - 'target' property doesn't exist
+            
+            // If CameraManager has an initialization method, call it
+            // camManager.Initialize(); // Uncomment if such method exists
+        }
     }
 
     private void SetComponentsEnabled(bool enabled)

@@ -110,7 +110,7 @@ public class NPCInteraction : MonoBehaviour
 
     IEnumerator PlayInteractionCutscene()
     {
-        if (playerManager != null) playerManager.isInCutscene = true;
+        //if (playerManager != null) playerManager.isInCutscene = true;
 
         if (mainFollowCamera != null) mainFollowCamera.gameObject.SetActive(false);
         if (cutsceneCamera != null) cutsceneCamera.gameObject.SetActive(true);
@@ -242,7 +242,7 @@ public class NPCInteraction : MonoBehaviour
         // pausedPatrolsPrevState.Clear();
 
         // Player regains control
-        if (playerManager != null) playerManager.isInCutscene = false;
+       // if (playerManager != null) playerManager.isInCutscene = false;
 
         // Switch back to follow camera
         if (mainFollowCamera != null) mainFollowCamera.gameObject.SetActive(true);

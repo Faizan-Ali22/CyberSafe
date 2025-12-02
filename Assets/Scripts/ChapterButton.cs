@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -6,7 +6,7 @@ namespace Michsky.UI.Shift
 {
     public class ChapterButton : MonoBehaviour
     {
-         [Header("Resources")]
+        [Header("Resources")]
         public Sprite backgroundImage;
         public string buttonTitle = "My Title";
         [TextArea] public string buttonDescription = "My Description";
@@ -15,7 +15,7 @@ namespace Michsky.UI.Shift
         public bool useCustomResources = false;
 
         [Header("Progress")]
-        [Tooltip("Index of this chapter (0 to 7). 0 is first chapter, 7 is last.")]
+        [Tooltip("Index of this chapter (0 to 7). 0 is first chapter.")]
         public int chapterIndex = 0;
 
         [Header("Status")]
@@ -60,9 +60,6 @@ namespace Michsky.UI.Shift
             }
         }
 
-        /// <summary>
-        /// Read the progress for this chapter and set statusItem accordingly.
-        /// </summary>
         private void UpdateStatusFromProgress()
         {
             if (ProgressManager.Instance == null)
@@ -84,7 +81,6 @@ namespace Michsky.UI.Shift
             }
             else
             {
-                // Unlocked but not completed
                 statusItem = StatusItem.None;
             }
         }

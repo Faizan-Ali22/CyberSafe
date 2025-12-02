@@ -46,10 +46,10 @@ public class SceneInitializer : MonoBehaviour
             
             // Enable player control
             PlayerManager pm = player.GetComponent<PlayerManager>();
-            if (pm != null)
-            {
-                pm.isInCutscene = false;
-            }
+            // if (pm != null)
+            // {
+            //     pm.isInCutscene = false;
+            // }
         }
 
         // Disable cutscene camera, enable main camera

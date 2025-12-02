@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class ChangeClothes : MonoBehaviour
@@ -7,19 +8,16 @@ public class ChangeClothes : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject changeClothesUI;
     [SerializeField] private Image fadeImage;
-    [SerializeField] private float fadeDuration = 0.5f;
+    [SerializeField] private float fadeDuration = 1f;
 
-    [Header("Player Characters")]
-    [SerializeField] private GameObject currentPlayer; // Ayan With-Glasses
-    [SerializeField] private GameObject newPlayer; // Ayan Black
-
-    [Header("Camera")]
-    [SerializeField] private CameraManager cameraManager;
+    [Header("Scene")]
+    [SerializeField] private string nextSceneName;
+    [SerializeField] private int nextSceneIndex = -1; // Use -1 to use scene name instead
 
     [Header("Settings")]
     [SerializeField] private string playerTag = "Player";
 
-    private bool hasChangedClothes = false;
+    private bool isTransitioning = false;
 
     private void Start()
     {
@@ -37,17 +35,11 @@ public class ChangeClothes : MonoBehaviour
             fadeImage.color = c;
             fadeImage.gameObject.SetActive(false);
         }
-
-        // Ensure new player is disabled at start
-        if (newPlayer != null)
-        {
-            newPlayer.SetActive(false);
-        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(playerTag) && !hasChangedClothes)
+        if (other.CompareTag(playerTag) && !isTransitioning)
         {
             if (changeClothesUI != null)
             {
@@ -58,7 +50,7 @@ public class ChangeClothes : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag(playerTag))
+        if (other.CompareTag(playerTag) && !isTransitioning)
         {
             if (changeClothesUI != null)
             {
@@ -67,11 +59,11 @@ public class ChangeClothes : MonoBehaviour
         }
     }
 
-    // Call this method from the Change Clothes Button's OnClick event
+    // Call this method from the Button's OnClick event
     public void OnChangeClothesButtonClicked()
     {
-        if (hasChangedClothes) return;
-        hasChangedClothes = true;
+        if (isTransitioning) return;
+        isTransitioning = true;
 
         // Hide the change clothes UI
         if (changeClothesUI != null)
@@ -79,10 +71,10 @@ public class ChangeClothes : MonoBehaviour
             changeClothesUI.SetActive(false);
         }
 
-        StartCoroutine(ChangeClothesSequence());
+        StartCoroutine(FadeAndLoadScene());
     }
 
-    private IEnumerator ChangeClothesSequence()
+    private IEnumerator FadeAndLoadScene()
     {
         // Enable fade image
         if (fadeImage != null)
@@ -93,24 +85,23 @@ public class ChangeClothes : MonoBehaviour
         // Fade to black (alpha 0 to 1)
         yield return StartCoroutine(FadeImage(0f, 1f));
 
-        // Swap players while screen is black
-        SwapPlayers();
+        // Load next scene asynchronously
+        AsyncOperation asyncLoad;
 
-        // Brief pause while screen is black
-        yield return new WaitForSeconds(0.2f);
-
-        // Fade back in (alpha 1 to 0)
-        yield return StartCoroutine(FadeImage(1f, 0f));
-
-        // Disable fade image
-        if (fadeImage != null)
+        if (nextSceneIndex >= 0)
         {
-            fadeImage.gameObject.SetActive(false);
+            asyncLoad = SceneManager.LoadSceneAsync(nextSceneIndex);
+        }
+        else
+        {
+            asyncLoad = SceneManager.LoadSceneAsync(nextSceneName);
         }
 
-        #if UNITY_EDITOR
-        Debug.Log("Clothes changed successfully!");
-        #endif
+        // Wait until scene is fully loaded
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
     }
 
     private IEnumerator FadeImage(float startAlpha, float endAlpha)
@@ -132,29 +123,5 @@ public class ChangeClothes : MonoBehaviour
         // Ensure final alpha is set
         color.a = endAlpha;
         fadeImage.color = color;
-    }
-
-    private void SwapPlayers()
-    {
-        if (currentPlayer == null || newPlayer == null) return;
-
-        // Store current player position and rotation
-        Vector3 playerPosition = currentPlayer.transform.position;
-        Quaternion playerRotation = currentPlayer.transform.rotation;
-
-        // Disable current player
-        currentPlayer.SetActive(false);
-
-        // Enable new player at same position
-        newPlayer.transform.position = playerPosition;
-        newPlayer.transform.rotation = playerRotation;
-        newPlayer.SetActive(true);
-
-        // Update camera manager target
-        if (cameraManager != null)
-        {
-            cameraManager.SendMessage("SetTarget", newPlayer.transform, SendMessageOptions.DontRequireReceiver);
-            cameraManager.SendMessage("InitializeCamera", SendMessageOptions.DontRequireReceiver);
-        }
     }
 }

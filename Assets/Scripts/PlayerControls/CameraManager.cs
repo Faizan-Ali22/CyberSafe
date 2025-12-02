@@ -6,6 +6,7 @@ public class CameraManager : MonoBehaviour
     public Transform playerTransform;
     public Transform cameraPivot;
     private Vector3 cameraFollowVelocity = Vector3.zero;
+    
     [Header("Camera Movement and Rotation")]
     public float cameraFollowSpeed = 0.1f;
     public float cameraLookSpeed = 0.1f;
@@ -13,25 +14,28 @@ public class CameraManager : MonoBehaviour
     public float lookAngle;
     public float pivotAngle;
     public float minimumPivot = -30f;
-    public float maximumPivot = -30f;
+    public float maximumPivot = 30f;
 
     void Awake()
     {
         inputManager = FindFirstObjectByType<InputManager>();
-        playerTransform = FindFirstObjectByType<PlayerManager>().transform;
+        playerTransform = FindFirstObjectByType<PlayerManager>()?.transform;
     }
 
     public void HandleAllCameraMovement()
     {
+        if (playerTransform == null || inputManager == null) return;
+        
         FollowTarget();
         RotateCamera();
     }
+
     void FollowTarget()
     {
         Vector3 targetPosition = Vector3.SmoothDamp(transform.position, playerTransform.position, ref cameraFollowVelocity, cameraFollowSpeed);
         transform.position = targetPosition;
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref cameraFollowVelocity, cameraFollowSpeed);
     }
+
     private void RotateCamera()
     {
         Vector3 rotation;
@@ -39,7 +43,6 @@ public class CameraManager : MonoBehaviour
 
         lookAngle = lookAngle + (inputManager.cameraInputX * cameraLookSpeed);
         pivotAngle = pivotAngle - (inputManager.cameraInputY * cameraPivotSpeed);
-        // restrict camera angle
         pivotAngle = Mathf.Clamp(pivotAngle, minimumPivot, maximumPivot);
 
         rotation = Vector3.zero;
@@ -51,7 +54,5 @@ public class CameraManager : MonoBehaviour
         rotation.x = pivotAngle;
         targetRotation = Quaternion.Euler(rotation);
         cameraPivot.localRotation = targetRotation;
-
     }
-
 }

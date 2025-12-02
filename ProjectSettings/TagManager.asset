@@ -6,6 +6,8 @@ TagManager:
   tags:
   - IntroCamera
   - AI
+  - Wall
+  - Virus
   layers:
   - Default
   - TransparentFX

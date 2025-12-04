@@ -13,6 +13,7 @@ namespace Michsky.UI.Shift
         [Header("Settings")]
         public bool keepAlphaValue = false;
         public bool useCustomColor = false;
+        public bool useCustomFont = true;
         public ColorType colorType;
         public FontType fontType;
 
@@ -108,16 +109,19 @@ namespace Michsky.UI.Shift
                 }
 
                 // Fonts
-                if (fontType == FontType.Light)
-                    textObject.font = UIManagerAsset.lightFont;
-                else if (fontType == FontType.Regular)
-                    textObject.font = UIManagerAsset.regularFont;
-                else if (fontType == FontType.Medium)
-                    textObject.font = UIManagerAsset.mediumFont;
-                else if (fontType == FontType.Semibold)
-                    textObject.font = UIManagerAsset.semiBoldFont;
-                else if (fontType == FontType.Bold)
-                    textObject.font = UIManagerAsset.boldFont;
+                if (useCustomFont == false)
+                {
+                    if (fontType == FontType.Light)
+                        textObject.font = UIManagerAsset.lightFont;
+                    else if (fontType == FontType.Regular)
+                        textObject.font = UIManagerAsset.regularFont;
+                    else if (fontType == FontType.Medium)
+                        textObject.font = UIManagerAsset.mediumFont;
+                    else if (fontType == FontType.Semibold)
+                        textObject.font = UIManagerAsset.semiBoldFont;
+                    else if (fontType == FontType.Bold)
+                        textObject.font = UIManagerAsset.boldFont;
+                }
             }
 
             catch { }

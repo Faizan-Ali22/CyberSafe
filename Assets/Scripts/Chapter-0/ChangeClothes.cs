@@ -9,7 +9,7 @@ public class ChangeClothes : MonoBehaviour
     [SerializeField] private GameObject changeClothesUI;
     [SerializeField] private Image fadeImage;
     [SerializeField] private float fadeDuration = 1f;
-
+     [SerializeField] private GameObject[] uiToHideOnClick;
     [Header("Scene")]
     [SerializeField] private string nextSceneName;
     [SerializeField] private int nextSceneIndex = -1; // Use -1 to use scene name instead
@@ -70,7 +70,14 @@ public class ChangeClothes : MonoBehaviour
         {
             changeClothesUI.SetActive(false);
         }
-
+        // Hide all UI elements in the array
+        foreach (GameObject uiElement in uiToHideOnClick)
+        {
+            if (uiElement != null)
+            {
+                uiElement.SetActive(false);
+            }
+        }
         StartCoroutine(FadeAndLoadScene());
     }
 

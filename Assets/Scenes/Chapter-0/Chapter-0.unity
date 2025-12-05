@@ -3190,6 +3190,7 @@ MonoBehaviour:
   textObject: {fileID: 504673046}
   keepAlphaValue: 0
   useCustomColor: 0
+  useCustomFont: 1
   colorType: 0
   fontType: 3
 --- !u!114 &504673046
@@ -4894,6 +4895,7 @@ MonoBehaviour:
   textObject: {fileID: 1069199947}
   keepAlphaValue: 1
   useCustomColor: 0
+  useCustomFont: 1
   colorType: 0
   fontType: 3
 --- !u!114 &1069199947
@@ -5482,6 +5484,7 @@ MonoBehaviour:
   - {fileID: 1495701929}
   - {fileID: 1343966359}
   - {fileID: 114691933}
+  - {fileID: 1933910298}
   skipButton: {fileID: 2051613833}
   cameramanager: {fileID: 963416885}
   gameplayCamera: {fileID: 739281440}
@@ -6407,6 +6410,7 @@ MonoBehaviour:
   textObject: {fileID: 1490080227}
   keepAlphaValue: 1
   useCustomColor: 0
+  useCustomFont: 1
   colorType: 0
   fontType: 3
 --- !u!114 &1490080227
@@ -6918,6 +6922,7 @@ MonoBehaviour:
   textObject: {fileID: 1693838583}
   keepAlphaValue: 0
   useCustomColor: 0
+  useCustomFont: 1
   colorType: 2
   fontType: 3
 --- !u!114 &1693838583
@@ -8448,8 +8453,13 @@ MonoBehaviour:
   changeClothesUI: {fileID: 211731135}
   fadeImage: {fileID: 629849957}
   fadeDuration: 0.5
+  uiToHideOnClick:
+  - {fileID: 738577740}
+  - {fileID: 1495701929}
+  - {fileID: 1343966359}
+  - {fileID: 114691933}
   nextSceneName: Chapter-A
-  nextSceneIndex: -1
+  nextSceneIndex: 5
   playerTag: Player
 --- !u!1 &1988849457
 GameObject:

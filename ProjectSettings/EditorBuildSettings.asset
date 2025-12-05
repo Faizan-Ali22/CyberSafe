@@ -24,6 +24,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Chapter-0/Chapter-A.unity
     guid: 1587f9c4d9d94a7438da4bfe369d6816
   - enabled: 1
+    path: Assets/Scenes/Chapter-0/Chapter-B.unity
+    guid: 9af71b8e1183fb14fbaefcac8d6e548c
+  - enabled: 1
+    path: Assets/Scenes/Chapter-0/Chapter-C.unity
+    guid: 589c8d5b27880504cb87bf978ae8b27a
+  - enabled: 1
     path: Assets/Scenes/Malware-Maze/Game.unity
     guid: 51866baa4d0c6844b968a19be2d3d7f9
   m_configObjects:

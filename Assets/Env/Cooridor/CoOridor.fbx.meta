@@ -1,0 +1,257 @@
+fileFormatVersion: 2
+guid: 857913dba69717748a7e2f1164fcb030
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Black Metallic Veins
+    second: {fileID: 2100000, guid: 514e3191d38f94c48ab87882669aa70d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Cstm_Princip-DoorWin_A
+    second: {fileID: 2100000, guid: 3056cbb1c4faa84449dd496d902b3cc6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Acc_LightBoxExit01_Emissive
+    second: {fileID: 2100000, guid: 0215583672a548e46ad613c553cf814a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Doors_InteriorWood01E
+    second: {fileID: 2100000, guid: 7c3b308d7e3c0cf4c9af6904b774957b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Doors_InteriorWood01E.001
+    second: {fileID: 2100000, guid: da99d9de7be578540a404747248d0247, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Doors_InteriorWood01E_Metal
+    second: {fileID: 2100000, guid: bdd4a5d17ce93464c88f6a52167b2184, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Doors_PanicDoorHigh01B
+    second: {fileID: 2100000, guid: 532930d51490f3f49b428eb7af40ab42, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Doors_PanicDoorHigh01B_Alpha
+    second: {fileID: 2100000, guid: 4ba3383ad426dd6448d74d933fe33a97, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Doors_PanicDoorHigh01B_Metal
+    second: {fileID: 2100000, guid: 6ed35e7590cab1c438152fca48575c9b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Doors_PanicDoorHigh02
+    second: {fileID: 2100000, guid: db9d2aac81c82a74aaeed91fc8f0dca2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Doors_PanicDoorHigh02_Alpha
+    second: {fileID: 2100000, guid: 42a4bf69a760ada47ad34d5a354f71ba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Doors_PanicDoorHigh02_Metal
+    second: {fileID: 2100000, guid: 0c6ad38b5339ba04883109591c64b3dd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Fab_Carpet01
+    second: {fileID: 2100000, guid: bc1753a7b86e7a6429d0bc16d93f0889, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Ground_PlasticTiles01A
+    second: {fileID: 2100000, guid: 4756b329811a9e14ab29324770401d8e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Ground_PlasticTiles01C
+    second: {fileID: 2100000, guid: b6a7cc09dc5569f49ad1b057108f477d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Light_Suspended01_Emissive
+    second: {fileID: 2100000, guid: ca5eaff49da5d1a4da9a15915623fac6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Light_Suspended01_Metal
+    second: {fileID: 2100000, guid: ba5cc7aedec110244abb46e49f5a0723, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Post_RippedPaper05_Alpha
+    second: {fileID: 2100000, guid: 71762c71caebdbe438dd39986d7c1dd5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Rub_CardboardStack01_Gray
+    second: {fileID: 2100000, guid: b6d77bc7170df8e4bac4b693cf390ad8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Sign_Highschool01
+    second: {fileID: 2100000, guid: 00b1a13044bdf194a97d4ce5fb405d71, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Sign_Toilets01
+    second: {fileID: 2100000, guid: ae3ff88c4f4fceb4ba810402c96a45ae, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Stairs_LargeInteriror01
+    second: {fileID: 2100000, guid: f1b8b4d93dd47ae43929a2d2c45f74a2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Stairs_LargeInteriror01_Metal
+    second: {fileID: 2100000, guid: ff96199b0337d20408c3f322b139ab80, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Walls_ClassRoomWood01
+    second: {fileID: 2100000, guid: b766151a226a03c48a0c1a2ff6751e16, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Walls_Standard01
+    second: {fileID: 2100000, guid: ea24c85aa80c6ed4abbd5c04f7079fda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Walls_Standard01_Beige
+    second: {fileID: 2100000, guid: 7f5cedb6951246444856e1e5eba7f50a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Win_GlassPattern01_Alpha
+    second: {fileID: 2100000, guid: 9e8411a175ef79f41a465f49a2884189, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Win_GlassPattern01_B
+    second: {fileID: 2100000, guid: 7ae1f928809d320488c4910b7b4a045f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TX_Win_GlassPattern01_Opaque
+    second: {fileID: 2100000, guid: 91cb8a3ec36e0f649b1de1248106ace5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: material_0.046
+    second: {fileID: 2100000, guid: b9aef2ba8f8293c4ca9dcf323aafdb0a, type: 2}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -81,9 +81,11 @@ public class TimelineGameplayStarter : MonoBehaviour
         if (hasSkipped) return;
         hasSkipped = true;
 
-        // Stop the timeline
         if (playableDirector != null)
         {
+            // Fast forward to end to apply any final state
+            playableDirector.time = playableDirector.duration;
+            playableDirector.Evaluate();
             playableDirector.Stop();
         }
 
@@ -122,42 +124,13 @@ public class TimelineGameplayStarter : MonoBehaviour
     private void TransitionToGameplay()
     {
         SetComponentsEnabled(true);
-        
-        if (gameplayCharacter != null)
-        {
-            gameplayCharacter.SetActive(true);
-        }
-        
-        if (cutsceneCharacter != null)
-        {
-            cutsceneCharacter.SetActive(false);
-        }
-        if (cutsceneCharacter2 != null)
-        {
-            cutsceneCharacter2.SetActive(false);
-        }
-        if (CineCamera != null)
-        {
-            CineCamera.SetActive(false);
-        }
-        if (cinemachineBrain != null)
-        {
-            cinemachineBrain.SetActive(false);
-        }
-        
+        SetGameplayActive(true);
+        SetCutsceneActive(false);
         SetUIActive(true);
         
         if (timelineCamera != null)
         {
             timelineCamera.enabled = false;
-        }
-        if (cameramanager != null)
-        {
-            cameramanager.SetActive(true);
-        }
-        if (gameplayCamera != null)
-        {
-            gameplayCamera.enabled = true;
         }
         
         // Enable player scripts and reinitialize camera after a short delay
@@ -224,6 +197,44 @@ public class TimelineGameplayStarter : MonoBehaviour
             {
                 uiElement.SetActive(active);
             }
+        }
+    }
+
+    private void SetGameplayActive(bool active)
+    {
+        if (gameplayCharacter != null)
+        {
+            gameplayCharacter.SetActive(active);
+        }
+
+        if (gameplayCamera != null)
+        {
+            gameplayCamera.enabled = active;
+        }
+
+        if (cameramanager != null)
+        {
+            cameramanager.SetActive(active);
+        }
+    }
+
+    private void SetCutsceneActive(bool active)
+    {
+        if (cutsceneCharacter != null)
+        {
+            cutsceneCharacter.SetActive(active);
+        }
+        if (cutsceneCharacter2 != null)
+        {
+            cutsceneCharacter2.SetActive(active);
+        }
+        if (CineCamera != null)
+        {
+            CineCamera.SetActive(active);
+        }
+        if (cinemachineBrain != null)
+        {
+            cinemachineBrain.SetActive(active);
         }
     }
 }

@@ -36,25 +36,21 @@ public class TimelineGameplayStarter : MonoBehaviour
     private void Awake()
     {
         SetComponentsEnabled(false);
-        
-        // Disable player scripts during cutscene
         SetPlayerScriptsEnabled(false);
-        
+
         if (gameplayCharacter != null)
-        {
             gameplayCharacter.SetActive(false);
-        }
 
         SetUIActive(false);
-        
-        if (gameplayCamera != null)
-        {
-            gameplayCamera.enabled = false;
-        }
 
-        // Ensure skip button is visible at start
+        if (gameplayCamera != null)
+            gameplayCamera.enabled = false;
+
+        // Ensure skip button (and its canvas) stay active
         if (skipButton != null)
         {
+            var canvas = skipButton.GetComponentInParent<Canvas>(true);
+            if (canvas != null) canvas.gameObject.SetActive(true);
             skipButton.SetActive(true);
         }
     }
@@ -81,24 +77,23 @@ public class TimelineGameplayStarter : MonoBehaviour
         if (hasSkipped) return;
         hasSkipped = true;
 
-        // Stop the timeline
+        Debug.Log("Skip pressed");
+
         if (playableDirector != null)
         {
+            playableDirector.time = playableDirector.duration;
+            playableDirector.Evaluate();
             playableDirector.Stop();
         }
-
-        // Hide skip button
-        if (skipButton != null)
+        else
         {
-            skipButton.SetActive(false);
+            Debug.LogWarning("PlayableDirector is not assigned.");
         }
 
-        // Transition to gameplay
-        TransitionToGameplay();
+        if (skipButton != null)
+            skipButton.SetActive(false);
 
-        #if UNITY_EDITOR
-        Debug.Log("Cutscene skipped!");
-        #endif
+        TransitionToGameplay();
     }
 
     private void OnTimelineStopped(PlayableDirector director)
@@ -122,42 +117,13 @@ public class TimelineGameplayStarter : MonoBehaviour
     private void TransitionToGameplay()
     {
         SetComponentsEnabled(true);
-        
-        if (gameplayCharacter != null)
-        {
-            gameplayCharacter.SetActive(true);
-        }
-        
-        if (cutsceneCharacter != null)
-        {
-            cutsceneCharacter.SetActive(false);
-        }
-        if (cutsceneCharacter2 != null)
-        {
-            cutsceneCharacter2.SetActive(false);
-        }
-        if (CineCamera != null)
-        {
-            CineCamera.SetActive(false);
-        }
-        if (cinemachineBrain != null)
-        {
-            cinemachineBrain.SetActive(false);
-        }
-        
+        SetGameplayActive(true);
+        SetCutsceneActive(false);
         SetUIActive(true);
         
         if (timelineCamera != null)
         {
             timelineCamera.enabled = false;
-        }
-        if (cameramanager != null)
-        {
-            cameramanager.SetActive(true);
-        }
-        if (gameplayCamera != null)
-        {
-            gameplayCamera.enabled = true;
         }
         
         // Enable player scripts and reinitialize camera after a short delay
@@ -220,10 +186,50 @@ public class TimelineGameplayStarter : MonoBehaviour
 
         foreach (var uiElement in gameplayUIElements)
         {
-            if (uiElement != null)
-            {
-                uiElement.SetActive(active);
-            }
+            if (uiElement == null) continue;
+            // Don’t toggle the skip button here
+            if (skipButton != null && (uiElement == skipButton || uiElement == skipButton.transform.root.gameObject))
+                continue;
+
+            uiElement.SetActive(active);
+        }
+    }
+
+    private void SetGameplayActive(bool active)
+    {
+        if (gameplayCharacter != null)
+        {
+            gameplayCharacter.SetActive(active);
+        }
+
+        if (gameplayCamera != null)
+        {
+            gameplayCamera.enabled = active;
+        }
+
+        if (cameramanager != null)
+        {
+            cameramanager.SetActive(active);
+        }
+    }
+
+    private void SetCutsceneActive(bool active)
+    {
+        if (cutsceneCharacter != null)
+        {
+            cutsceneCharacter.SetActive(active);
+        }
+        if (cutsceneCharacter2 != null)
+        {
+            cutsceneCharacter2.SetActive(active);
+        }
+        if (CineCamera != null)
+        {
+            CineCamera.SetActive(active);
+        }
+        if (cinemachineBrain != null)
+        {
+            cinemachineBrain.SetActive(active);
         }
     }
 }

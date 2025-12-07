@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fb3b2e1ae2f7d054bb7bc8263270f864
+guid: c8cfe3cf31774f14d9acbf7ab25a0b26
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -31,11 +31,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Ahmed-idle
+      name: Pointing
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 250
+      lastFrame: 83
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -122,7 +122,7 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 5ebb3d9560d12bf4390f30633682bf6b, type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 7ebc48864e8fe8b42bcdac37594b553a, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1

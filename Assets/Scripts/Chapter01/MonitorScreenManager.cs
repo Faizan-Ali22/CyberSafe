@@ -17,15 +17,15 @@ public class MonitorScreenManager : MonoBehaviour
         {
             if (hackedScreens[i] != null)
             {
-                bool shouldShow = i >= SessionProgress.HackedClearedCount;
-                hackedScreens[i].SetActive(shouldShow);
+                bool cleared = SessionProgress.IsScreenCleared(i);
+                hackedScreens[i].SetActive(!cleared);
             }
         }
     }
 
-    public void ClearNextScreen()
+    public void ClearScreen(int index)
     {
-        SessionProgress.AddCleared(1);
+        SessionProgress.MarkScreenCleared(index);
         ApplyState();
     }
 }

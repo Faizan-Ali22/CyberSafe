@@ -7,6 +7,7 @@ public class LabReturnState : MonoBehaviour
     private const string PosZ = "LabPlayerPosZ";
     private const string RotY = "LabPlayerRotY";
     private const string TeacherDoneKey = "LabTeacherDone";
+    private const string SelectedScreenKey = "LabSelectedScreenId";
 
     public static bool HasSavedPose =>
         PlayerPrefs.HasKey(PosX) && PlayerPrefs.HasKey(PosY) &&
@@ -44,6 +45,17 @@ public class LabReturnState : MonoBehaviour
 
     public static bool IsTeacherDone() => PlayerPrefs.GetInt(TeacherDoneKey, 0) == 1;
 
+    public static void SetSelectedScreenId(int id)
+    {
+        PlayerPrefs.SetInt(SelectedScreenKey, id);
+        PlayerPrefs.Save();
+    }
+
+    public static int GetSelectedScreenId()
+    {
+        return PlayerPrefs.GetInt(SelectedScreenKey, -1);
+    }
+
     public static void Reset()
     {
         PlayerPrefs.DeleteKey(PosX);
@@ -51,7 +63,9 @@ public class LabReturnState : MonoBehaviour
         PlayerPrefs.DeleteKey(PosZ);
         PlayerPrefs.DeleteKey(RotY);
         PlayerPrefs.DeleteKey(TeacherDoneKey);
+        PlayerPrefs.DeleteKey(SelectedScreenKey);
         PlayerPrefs.Save();
-    }  
     }
+
+}
 

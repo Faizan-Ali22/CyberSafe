@@ -4,13 +4,14 @@ using System.Collections;
 
 public class MonitorTapHotspot : MonoBehaviour
 {
-    [Header("Scene")]
+     [Header("Scene")]
     [SerializeField] private string mazeSceneName = "Game01";
 
     [Header("Intro")]
     [SerializeField] private Canvas logoIntroCanvas;
     [SerializeField] private CanvasGroup logoCanvasGroup; // assign the CanvasGroup on the logo canvas
     [SerializeField] private float logoDuration = 2f;
+    [SerializeField] private float fadeDuration = 0.25f;
 
     [Header("Player")]
     [SerializeField] private Transform playerTransform; // assign your player root
@@ -18,12 +19,15 @@ public class MonitorTapHotspot : MonoBehaviour
     [Header("UI to hide on tap")]
     [SerializeField] private GameObject[] uiElementsToHide; // assign any UI elements you want hidden on tap
 
+    [Header("Screen Id")]
+    [SerializeField] private int screenId = 0; // set per monitor: Hacked-1 -> 0, Hacked-2 -> 1, ...
+
     private bool busy;
 
     private void Awake()
     {
-        // Force logo off at scene load
-        if (logoIntroCanvas) logoIntroCanvas.enabled = true; // keep canvas enabled so alpha works
+        // Force logo hidden initially
+        if (logoIntroCanvas) logoIntroCanvas.enabled = true;
         if (logoCanvasGroup)
         {
             logoCanvasGroup.alpha = 0f;
@@ -32,7 +36,6 @@ public class MonitorTapHotspot : MonoBehaviour
         }
         else if (logoIntroCanvas)
         {
-            // fallback: disable canvas if no CanvasGroup provided
             logoIntroCanvas.enabled = false;
         }
     }
@@ -42,7 +45,10 @@ public class MonitorTapHotspot : MonoBehaviour
     {
         if (busy) return;
 
-        // Hide any extra UI elements when tapped
+        // Remember which screen was tapped
+        LabReturnState.SetSelectedScreenId(screenId);
+
+        // Hide extra UI
         if (uiElementsToHide != null)
         {
             foreach (var go in uiElementsToHide)
@@ -58,27 +64,57 @@ public class MonitorTapHotspot : MonoBehaviour
     {
         busy = true;
 
-        // Show logo and keep it visible
+        // Fade in logo
         if (logoIntroCanvas) logoIntroCanvas.enabled = true;
         if (logoCanvasGroup)
         {
-            logoCanvasGroup.alpha = 1f;
             logoCanvasGroup.blocksRaycasts = true;
             logoCanvasGroup.interactable = true;
+            yield return StartCoroutine(FadeCanvasGroup(logoCanvasGroup, 0f, 1f, fadeDuration));
         }
 
-        // Wait in realtime for the intro duration
+        // Begin async load immediately, but hold activation
+        AsyncOperation op = SceneManager.LoadSceneAsync(mazeSceneName);
+        op.allowSceneActivation = false;
+
+        // Keep logo up for the intro duration
         yield return new WaitForSecondsRealtime(logoDuration);
 
         // Save player pose
         if (playerTransform) LabReturnState.SavePlayerPose(playerTransform);
 
-        // Load next scene asynchronously; keep logo visible until load completes
-        AsyncOperation op = SceneManager.LoadSceneAsync(mazeSceneName);
-        op.allowSceneActivation = true; // default; still we wait for completion
-        while (!op.isDone)
+        // Wait until scene is ready
+        while (op.progress < 0.9f)
+            yield return null;
+
+        // Fade out logo (optional)
+        if (logoCanvasGroup)
         {
+            yield return StartCoroutine(FadeCanvasGroup(logoCanvasGroup, 1f, 0f, fadeDuration));
+            logoCanvasGroup.blocksRaycasts = false;
+            logoCanvasGroup.interactable = false;
+        }
+        else if (logoIntroCanvas)
+        {
+            logoIntroCanvas.enabled = false;
+        }
+
+        // Activate the scene
+        op.allowSceneActivation = true;
+        while (!op.isDone)
+            yield return null;
+    }
+
+    private IEnumerator FadeCanvasGroup(CanvasGroup cg, float from, float to, float duration)
+    {
+        float t = 0f;
+        cg.alpha = from;
+        while (t < duration)
+        {
+            t += Time.unscaledDeltaTime;
+            cg.alpha = Mathf.Lerp(from, to, t / duration);
             yield return null;
         }
+        cg.alpha = to;
     }
 }

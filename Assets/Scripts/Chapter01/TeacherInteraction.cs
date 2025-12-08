@@ -80,7 +80,7 @@ public class TeacherInteraction : MonoBehaviour
             new DialogueLine
             {
                 speakerName = "Teacher",
-                dialogue = "Maybe we are hit with a cyber attack.",
+                dialogue = "Looks like we have been hit by a Cyber Attack.",
                 speakerAnimator = teacherAnimator,
                 animationTrigger = talkTriggerName,
                 cameraTarget = teacherCloseUpTarget,
@@ -107,7 +107,7 @@ public class TeacherInteraction : MonoBehaviour
             new DialogueLine
             {
                 speakerName = "Teacher",
-                dialogue = "If there is some kind of malware, fix it.",
+                dialogue = "If there is some kind of Malware, fix it.",
                 speakerAnimator = teacherAnimator,
                 animationTrigger = talkTriggerName,
                 cameraTarget = teacherCloseUpTarget,

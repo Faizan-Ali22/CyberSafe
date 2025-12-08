@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class MazeGameManager : MonoBehaviour
 {
-    [Header("Shields")]
+     [Header("Shields")]
     public GameObject shieldPrefab;
     public List<Transform> shieldSpawnPoints;
     public int shieldsPerRun = 3;
@@ -35,6 +35,13 @@ public class MazeGameManager : MonoBehaviour
         // Force popup UI off at start
         if (popupCanvas) popupCanvas.SetActive(false);
 
+        // Enforce at least 3 spawn points if you expect 3 shields
+        if (shieldSpawnPoints.Count < shieldsPerRun)
+        {
+            Debug.LogWarning($"MazeGameManager: Only {shieldSpawnPoints.Count} spawn points assigned; reducing shieldsPerRun to match.");
+            shieldsPerRun = shieldSpawnPoints.Count;
+        }
+
         SpawnShields();
     }
 
@@ -61,6 +68,11 @@ public class MazeGameManager : MonoBehaviour
                 continue;
             }
             pickup.manager = this;
+        }
+
+        if (toSpawn < 3)
+        {
+            Debug.LogWarning($"Only {toSpawn} shields spawned. Ensure you have >=3 spawn points and shieldsPerRun=3 for full run.");
         }
     }
 
@@ -94,8 +106,14 @@ public class MazeGameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(returnDelay);
 
-        SessionProgress.AddCleared(1);
+        // Mark the tapped screen as cleared
+        int screenId = LabReturnState.GetSelectedScreenId();
+        if (screenId >= 0)
+        {
+            SessionProgress.MarkScreenCleared(screenId);
+        }
 
+        // Chapter completion when 5 or more unique screens cleared
         if (SessionProgress.HackedClearedCount >= 5 && ProgressManager.Instance != null)
         {
             ProgressManager.Instance.SetChapterCompleted(1, true);

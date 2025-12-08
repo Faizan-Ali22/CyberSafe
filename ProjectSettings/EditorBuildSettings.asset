@@ -34,13 +34,13 @@ EditorBuildSettings:
     guid: 956cd95118c44ea4d9aa4357070c17c1
   - enabled: 1
     path: Assets/Scenes/Chapter-0/Start-Attack.unity
-    guid: 07708952adcd5634999e6addbd61f81f
+    guid: 6438fc68a8113bb4a9f22d8e681b57a8
   - enabled: 1
     path: Assets/Scenes/Malware-Maze/After-Attack.unity
     guid: cecf33ee11a833045a90cdb77124a50d
   - enabled: 1
-    path: Assets/Scenes/Malware-Maze/MalwareMaze.unity
-    guid: 356a6200fdb514c4d9eff32316b7409f
+    path: Assets/Scenes/Malware-Maze/Chapter01.unity
+    guid: 02831695e21b26043975954afc082578
   - enabled: 1
     path: Assets/Scenes/Malware-Maze/Game.unity
     guid: 51866baa4d0c6844b968a19be2d3d7f9

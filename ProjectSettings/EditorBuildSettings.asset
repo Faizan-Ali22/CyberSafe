@@ -9,9 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Intro Scenes/Intro-Room 1.unity
     guid: c241d158dd9cbf044831b005f8b63ceb
   - enabled: 1
-    path: Assets/Scenes/Game-01/Intro.unity
-    guid: 03d1ad3da33e85a4ebca3e76182ccb10
-  - enabled: 1
     path: Assets/Scenes/Intro Scenes/MainMenu.unity
     guid: 357078b898f2ded4e8b9af27317eed93
   - enabled: 1
@@ -44,6 +41,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Malware-Maze/Game01.unity
     guid: 51866baa4d0c6844b968a19be2d3d7f9
+  - enabled: 1
+    path: Assets/Scenes/Red-Links/RedLinks.unity
+    guid: 03d1ad3da33e85a4ebca3e76182ccb10
+  - enabled: 1
+    path: Assets/Scenes/Red-Links/Cutscene.unity
+    guid: 9ffa82facae4bf547ba2d58d9e2adee4
+  - enabled: 1
+    path: Assets/Scenes/Red-Links/Chapter-02.unity
+    guid: 2706cb7613685a54dbaca2ff75682312
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -15,7 +15,7 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI dialogueText;
     public Button continueButton;
     public Button skipButton;
-    public Toggle autoPlayToggle;
+    //public Toggle autoPlayToggle;
 
     [Header("Auto-Play Settings")]
     public float autoPlayDelay = 2.5f;
@@ -43,7 +43,7 @@ public class DialogueManager : MonoBehaviour
     private string currentFullText;
     private Coroutine typingCoroutine;
     private Coroutine autoPlayCoroutine;
-    private AudioSource audioSource;
+   // private AudioSource audioSource;
     private DialogueLine currentLine;
 
     private void Awake()
@@ -53,9 +53,9 @@ public class DialogueManager : MonoBehaviour
         else
             Destroy(gameObject);
 
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-            audioSource = gameObject.AddComponent<AudioSource>();
+        // audioSource = GetComponent<AudioSource>();
+        // if (audioSource == null)
+        //     audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     private void Start()
@@ -68,11 +68,11 @@ public class DialogueManager : MonoBehaviour
         if (skipButton != null)
             skipButton.onClick. AddListener(SkipAllDialogue);
 
-        if (autoPlayToggle != null)
-        {
-            autoPlayToggle.onValueChanged.AddListener(OnAutoPlayToggled);
-            isAutoPlaying = autoPlayToggle.isOn;
-        }
+        // if (autoPlayToggle != null)
+        // {
+        //     autoPlayToggle.onValueChanged.AddListener(OnAutoPlayToggled);
+        //     isAutoPlaying = autoPlayToggle.isOn;
+        // }
     }
 
     public void StartDialogue(DialogueLine[] lines)
@@ -135,10 +135,10 @@ public class DialogueManager : MonoBehaviour
         }
 
         // Play voice clip
-        if (currentLine.voiceClip != null)
-        {
-            audioSource.PlayOneShot(currentLine.voiceClip);
-        }
+        // if (currentLine.voiceClip != null)
+        // {
+        //     audioSource.PlayOneShot(currentLine.voiceClip);
+        // }
 
         onLineStart?.Invoke();
         typingCoroutine = StartCoroutine(TypeDialogue(currentLine. dialogue));
@@ -157,7 +157,7 @@ public class DialogueManager : MonoBehaviour
 
             if (typingSound != null && Time.time - lastSoundTime >= typingSoundInterval)
             {
-                audioSource.PlayOneShot(typingSound, 0.5f);
+               // audioSource.PlayOneShot(typingSound, 0.5f);
                 lastSoundTime = Time. time;
             }
 

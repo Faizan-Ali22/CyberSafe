@@ -42,7 +42,7 @@ namespace Lovatto.MiniMap
             {
                 if (instance == null)
                 {
-                    instance = FindObjectOfType<bl_MiniMapOverlay>();
+                    instance = FindFirstObjectByType<bl_MiniMapOverlay>();
                 }
                 return instance;
             }

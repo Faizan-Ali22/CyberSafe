@@ -67,9 +67,9 @@ namespace Lovatto.MiniMap
         /// </summary>
         public void DrawOnGUI(Rect fullArea)
         {
+#if UNITY_EDITOR
+            EditorGUI.DrawRect(fullArea, new Color(1, 0, 0, 0.33f));
 
-            EditorGUI.DrawRect(fullArea, new Color(1,0,0,0.33f));
-            
             if (renderDivisions == RendersDivisions.Single)
             {
                 GUI.DrawTexture(fullArea, snapshots[0]);
@@ -94,6 +94,9 @@ namespace Lovatto.MiniMap
                 area.y -= row;
                 area.x = fullArea.x;
             }
+#else
+            // No-op in builds
+#endif
         }
     }
 

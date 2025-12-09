@@ -136,8 +136,8 @@ namespace Lovatto.MiniMap
 
         public void CalculateBounds()
         {
-            var allMeshes = FindObjectsOfType<MeshRenderer>();
-            var allSNMeshes = FindObjectsOfType<SkinnedMeshRenderer>();
+            var allMeshes = FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None);
+            var allSNMeshes = FindObjectsByType<SkinnedMeshRenderer>(FindObjectsSortMode.None);
 
             var renderers = new List<Renderer>();
             foreach (var item in allMeshes)

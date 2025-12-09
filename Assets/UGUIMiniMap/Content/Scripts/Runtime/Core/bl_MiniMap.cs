@@ -566,7 +566,7 @@ public sealed class bl_MiniMap : MonoBehaviour
     {
         if (ActiveMiniMap == this) return;
 
-        var othersMinimaps = FindObjectsOfType<bl_MiniMap>();
+        var othersMinimaps = FindObjectsByType<bl_MiniMap>(FindObjectsSortMode.None);
         for (int i = 0; i < othersMinimaps.Length; i++)
         {
             othersMinimaps[i].SetActive(false);

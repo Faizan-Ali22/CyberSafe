@@ -81,9 +81,9 @@ namespace Lovatto.MiniMap
 
             if (!init)
             {
-                if (mapBounds == null && FindObjectOfType<bl_MiniMapBounds>() != null)
+                if (mapBounds == null)
                 {
-                    mapBounds = FindObjectOfType<bl_MiniMapBounds>();
+                    mapBounds = FindBoundsInstance();
                 }
 
                 if (mapBounds != null)
@@ -97,7 +97,16 @@ namespace Lovatto.MiniMap
             }
         }
 
-        public override void OnInspectorGUI()
+                private static bl_MiniMapBounds FindBoundsInstance()
+                {
+        #if UNITY_2023_1_OR_NEWER
+                    return UnityEngine.Object.FindFirstObjectByType<bl_MiniMapBounds>();
+        #else
+                    return UnityEngine.Object.FindObjectOfType<bl_MiniMapBounds>();
+        #endif
+                }
+        
+                public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
 

@@ -26,7 +26,7 @@ public static class bl_MiniMapUtils  {
     {
         if (bl_MiniMap.ActiveMiniMap != null) return bl_MiniMap.ActiveMiniMap;
 
-        bl_MiniMap[] allmm = GameObject.FindObjectsOfType<bl_MiniMap>();
+        bl_MiniMap[] allmm = GameObject.FindObjectsByType<bl_MiniMap>(FindObjectsSortMode.None);
         if (id > allmm.Length - 1) return null;
         return allmm[id];
     }

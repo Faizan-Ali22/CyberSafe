@@ -7460,7 +7460,7 @@ MonoBehaviour:
   - {fileID: 1343966359}
   - {fileID: 114691933}
   nextSceneName: Chapter-A
-  nextSceneIndex: 5
+  nextSceneIndex: 4
   playerTag: Player
 --- !u!1 &1963785361
 GameObject:

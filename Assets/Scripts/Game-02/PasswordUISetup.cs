@@ -463,7 +463,7 @@ public class PasswordUISetup : MonoBehaviour
         tmp.overflowMode = TextOverflowModes.Overflow;
         tmp.parseCtrlCharacters = true;
         tmp.isOrthographic = true;
-        tmp.enableWordWrapping = true;
+        tmp.textWrappingMode = TextWrappingModes.Normal;
         tmp.raycastTarget = false;
         
         return tmp;

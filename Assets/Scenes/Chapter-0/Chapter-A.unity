@@ -4717,7 +4717,7 @@ MonoBehaviour:
   - {fileID: 1343966359}
   - {fileID: 114691933}
   nextSceneName: Chapter-B
-  nextSceneIndex: 6
+  nextSceneIndex: 5
   playerTag: Player
 --- !u!65 &2077303784
 BoxCollider:

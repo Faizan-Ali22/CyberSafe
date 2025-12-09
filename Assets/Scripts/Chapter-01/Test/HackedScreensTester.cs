@@ -47,8 +47,16 @@ public class HackedScreensTester : MonoBehaviour
 
     private void TryFindMonitorManager()
     {
-        if (!monitorScreenManager)
-            monitorScreenManager = FindObjectOfType<MonitorScreenManager>();
+        if (monitorScreenManager) return;
+
+#if UNITY_2023_1_OR_NEWER
+        monitorScreenManager = FindFirstObjectByType<MonitorScreenManager>();
+#else
+        // Fallback for older Unity versions; suppress obsolete warning.
+#pragma warning disable CS0618
+        monitorScreenManager = FindObjectOfType<MonitorScreenManager>();
+#pragma warning restore CS0618
+#endif
     }
 
     private void SyncFromSession()

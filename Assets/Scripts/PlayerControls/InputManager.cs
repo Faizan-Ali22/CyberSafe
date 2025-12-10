@@ -22,7 +22,7 @@ public class InputManager : MonoBehaviour
     public FixedJoystick cameraJoystick;
     
     [Header("Sensitivity")]
-    [SerializeField] public float joystickCameraSensitivity = 4.0f;
+    [SerializeField] public float joystickCameraSensitivity = 10.0f;
 
     [Header("Input Flag")]
     public bool interactInput;

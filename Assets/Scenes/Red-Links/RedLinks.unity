@@ -820,7 +820,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1521755752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -964,7 +964,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1838661507}
   - component: {fileID: 1838661508}
-  - component: {fileID: 1838661509}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -996,30 +995,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1838661506}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f2912d1a640e274b9bae3577620a914, type: 3}
+  m_Script: {fileID: 11500000, guid: a40abeb28f764c84da5870f20b3b27db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!320 &1838661509
-PlayableDirector:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1838661506}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 81f5ba8a205876e459be0522ec06e953, type: 2}
-  m_InitialState: 1
-  m_WrapMode: 2
-  m_DirectorUpdateMode: 1
-  m_InitialTime: 0
-  m_SceneBindings:
-  - key: {fileID: -4247676045290849668, guid: 81f5ba8a205876e459be0522ec06e953, type: 2}
-    value: {fileID: 1529265884}
-  - key: {fileID: 1309047756490772759, guid: 81f5ba8a205876e459be0522ec06e953, type: 2}
-    value: {fileID: 1521755751}
-  m_ExposedReferences:
-    m_References: []
+  introPanel: {fileID: 1017527925}
+  chapterText: {fileID: 1477157124}
+  logoImage: {fileID: 137389099}
+  typeDelay: 0.06
+  holdAfterText: 0.8
+  logoFadeIn: 1
+  logoHold: 1.4
+  logoFadeOut: 0.8
+  fadeToBlackBeforeLoad: 0.6
+  mainSceneName: Cutscene
+  debugLogs: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

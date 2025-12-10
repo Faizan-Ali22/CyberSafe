@@ -1370,7 +1370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneName: Chapter-02
   useSceneIndex: 0
-  sceneIndex: 0
+  sceneIndex: 14
 --- !u!4 &1131330312
 Transform:
   m_ObjectHideFlags: 0

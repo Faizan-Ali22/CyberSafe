@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
-using static System.Math;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -10,21 +9,31 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using System.Text;
+
+/// <summary>
+/// Password Strength Checker - Unity 6 + Android Compatible
+/// Professional 175 IQ implementation with mobile keyboard support
+/// </summary>
 public class PasswordStrengthChecker : MonoBehaviour
 {
-   [Header("Avatar Names (Customize Here!)")]
+    [Header("Avatar Names (Customize Here!)")]
     [SerializeField] private string[] avatarNames = { "Alice", "Bob", "Charlie", "Diana", "Eve" };
     
-    [Header("UI References")]
+    [Header("Avatar Images (Optional - Drag Images Here!)")]
+    [Tooltip("Leave empty to use default emojis. Drag Sprite/Texture2D for custom images.")]
+    [SerializeField] private Sprite[] avatarImages = new Sprite[5];
+    
+    [Header("UI References - AUTO-ASSIGNED")]
     [SerializeField] private TextMeshProUGUI passwordDisplayText;
     [SerializeField] private TextMeshProUGUI strengthText;
     [SerializeField] private TextMeshProUGUI hintsText;
     [SerializeField] private TextMeshProUGUI characterCountText;
     [SerializeField] private TextMeshProUGUI crackTimeText;
     [SerializeField] private TextMeshProUGUI currentAccountNameText;
+    [SerializeField] private TMP_InputField passwordInputField;
     
     [Header("Visual Feedback")]
-    [SerializeField] private UnityEngine.UI.Image strengthBar;
+    [SerializeField] private Image strengthBar;
     [SerializeField] private Color weakColor = new Color(1f, 0.2f, 0.2f);
     [SerializeField] private Color mediumColor = new Color(1f, 0.8f, 0f);
     [SerializeField] private Color strongColor = new Color(0.2f, 1f, 0.2f);
@@ -32,8 +41,8 @@ public class PasswordStrengthChecker : MonoBehaviour
     
     [Header("Password Display Settings")]
     [SerializeField] private bool showPassword = false;
-    [SerializeField] private UnityEngine.UI.Button toggleVisibilityButton;
-    [SerializeField] private UnityEngine.UI.Button setPasswordButton;
+    [SerializeField] private Button toggleVisibilityButton;
+    [SerializeField] private Button setPasswordButton;
     
     [Header("Panel References")]
     [SerializeField] private GameObject avatarSelectionPanel;
@@ -41,43 +50,97 @@ public class PasswordStrengthChecker : MonoBehaviour
     
     private StringBuilder currentPassword = new StringBuilder();
     private const int MAX_PASSWORD_LENGTH = 128;
-    private bool useNewInputSystem = false;
-    
     private int currentAccountIndex = -1;
     private Dictionary<int, string> accountPasswords = new Dictionary<int, string>();
-    
-    // Crack time calculation constants
-    private const long ATTEMPTS_PER_SECOND = 1000000000; // 1 billion attempts per second (modern GPU)
+    private const long ATTEMPTS_PER_SECOND = 1000000000;
     
     private void Start()
     {
-        DetectInputSystem();
         ShowAvatarSelection();
+        SetupButtons();
+        SetupInputField();
         
-        // Setup set password button
+        Debug.Log("✅ Password Checker Ready - Android Compatible!");
+    }
+    
+    private void SetupButtons()
+    {
         if (setPasswordButton != null)
         {
             setPasswordButton.onClick.AddListener(OnSetPasswordClicked);
         }
-    }
-    
-    private void DetectInputSystem()
-    {
-        #if ENABLE_INPUT_SYSTEM
-        useNewInputSystem = true;
-        Debug.Log("✅ Using New Input System (Unity 6)");
-        #else
-        useNewInputSystem = false;
-        Debug.Log("✅ Using Legacy Input Manager");
-        #endif
-    }
-    
-    private void Update()
-    {
-        if (passwordCheckerPanel != null && passwordCheckerPanel.activeSelf)
+        
+        if (toggleVisibilityButton != null)
         {
-            HandleKeyboardInput();
+            toggleVisibilityButton.onClick.AddListener(TogglePasswordVisibility);
         }
+    }
+    
+    private void SetupInputField()
+    {
+        if (passwordInputField != null)
+        {
+            // Configure for Android keyboard
+            passwordInputField.contentType = TMP_InputField.ContentType.Standard;
+            passwordInputField.inputType = TMP_InputField.InputType.Standard;
+            passwordInputField.keyboardType = TouchScreenKeyboardType.Default;
+            passwordInputField.characterLimit = MAX_PASSWORD_LENGTH;
+            
+            // Listen to input changes
+            passwordInputField.onValueChanged.AddListener(OnPasswordInputChanged);
+            passwordInputField.onEndEdit.AddListener(OnPasswordInputEnd);
+            
+            Debug.Log("✅ InputField configured for Android keyboard");
+        }
+    }
+    
+    /// <summary>
+    /// Called by PasswordUISetup to assign UI references
+    /// </summary>
+    public void AssignUIReferences(
+        TextMeshProUGUI passwordDisplay,
+        TextMeshProUGUI strength,
+        TextMeshProUGUI hints,
+        TextMeshProUGUI charCount,
+        TextMeshProUGUI crackTime,
+        TextMeshProUGUI accountName,
+        Image bar,
+        Button toggleBtn,
+        Button setBtn,
+        GameObject avatarPanel,
+        GameObject passwordPanel,
+        TMP_InputField inputField)
+    {
+        passwordDisplayText = passwordDisplay;
+        strengthText = strength;
+        hintsText = hints;
+        characterCountText = charCount;
+        crackTimeText = crackTime;
+        currentAccountNameText = accountName;
+        strengthBar = bar;
+        toggleVisibilityButton = toggleBtn;
+        setPasswordButton = setBtn;
+        avatarSelectionPanel = avatarPanel;
+        passwordCheckerPanel = passwordPanel;
+        passwordInputField = inputField;
+        
+        Debug.Log("✅ All UI references assigned successfully!");
+    }
+    
+    private void OnPasswordInputChanged(string input)
+    {
+        // Update password from input field
+        currentPassword.Clear();
+        currentPassword.Append(input);
+        UpdateDisplay();
+    }
+    
+    private void OnPasswordInputEnd(string input)
+    {
+        // Final update when editing ends
+        currentPassword.Clear();
+        currentPassword.Append(input);
+        UpdateDisplay();
     }
     
     public void ShowAvatarSelection()
@@ -87,6 +150,12 @@ public class PasswordStrengthChecker : MonoBehaviour
         
         if (passwordCheckerPanel != null)
             passwordCheckerPanel.SetActive(false);
+        
+        // Clear input field
+        if (passwordInputField != null)
+        {
+            passwordInputField.text = "";
+        }
     }
     
     public void SelectAccount(int accountIndex)
@@ -103,11 +172,23 @@ public class PasswordStrengthChecker : MonoBehaviour
         InitializeUI();
         UpdateDisplay();
         
-        // Update account name display with custom names
+        // Focus input field for Android keyboard
+        if (passwordInputField != null)
+        {
+            StartCoroutine(FocusInputFieldDelayed());
+        }
+        
         if (currentAccountNameText != null && accountIndex >= 0 && accountIndex < avatarNames.Length)
         {
             currentAccountNameText.text = $"Setting password for: <b>{avatarNames[accountIndex]}</b>";
         }
+    }
+    
+    private IEnumerator FocusInputFieldDelayed()
+    {
+        yield return new WaitForSeconds(0.1f);
+        passwordInputField.ActivateInputField();
+        passwordInputField.Select();
     }
     
     public string[] GetAvatarNames()
@@ -115,20 +196,23 @@ public class PasswordStrengthChecker : MonoBehaviour
         return avatarNames;
     }
     
+    public Sprite[] GetAvatarImages()
+    {
+        return avatarImages;
+    }
+    
     private void OnSetPasswordClicked()
     {
         if (currentPassword.Length == 0)
         {
-            Debug.Log("Cannot set empty password!");
+            Debug.Log("❌ Cannot set empty password!");
             return;
         }
         
-        // Save the password for this account
         accountPasswords[currentAccountIndex] = currentPassword.ToString();
         
-        Debug.Log($"✅ Password set for account {currentAccountIndex}!");
+        Debug.Log($"✅ Password set for account {currentAccountIndex}: {avatarNames[currentAccountIndex]}");
         
-        // Show confirmation animation
         if (setPasswordButton != null)
         {
             TextMeshProUGUI btnText = setPasswordButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -138,7 +222,6 @@ public class PasswordStrengthChecker : MonoBehaviour
             }
         }
         
-        // Return to avatar selection after short delay
         StartCoroutine(ReturnToAvatarSelection());
     }
     
@@ -146,13 +229,12 @@ public class PasswordStrengthChecker : MonoBehaviour
     {
         yield return new WaitForSeconds(1.5f);
         
-        // Reset button text
         if (setPasswordButton != null)
         {
             TextMeshProUGUI btnText = setPasswordButton.GetComponentInChildren<TextMeshProUGUI>();
             if (btnText != null)
             {
-                btnText.text = "Set Password";
+                btnText.text = "✓ Set Password";
             }
         }
         
@@ -174,11 +256,25 @@ public class PasswordStrengthChecker : MonoBehaviour
         
         if (crackTimeText != null)
             crackTimeText.text = "";
+        
+        if (passwordInputField != null)
+        {
+            passwordInputField.text = "";
+        }
     }
     
     public void TogglePasswordVisibility()
     {
         showPassword = !showPassword;
+        
+        if (passwordInputField != null)
+        {
+            passwordInputField.contentType = showPassword ? 
+                TMP_InputField.ContentType.Standard : 
+                TMP_InputField.ContentType.Password;
+            passwordInputField.ForceLabelUpdate();
+        }
+        
         UpdateDisplay();
         
         if (toggleVisibilityButton != null)
@@ -190,126 +286,7 @@ public class PasswordStrengthChecker : MonoBehaviour
             }
         }
         
-        Debug.Log($"Password visibility: {(showPassword ? "VISIBLE" : "HIDDEN")}");
-    }
-    
-    private void HandleKeyboardInput()
-    {
-        #if ENABLE_INPUT_SYSTEM
-        HandleNewInputSystem();
-        #else
-        HandleLegacyInputSystem();
-        #endif
-    }
-    
-    #if ENABLE_INPUT_SYSTEM
-    private void HandleNewInputSystem()
-    {
-        var keyboard = Keyboard.current;
-        if (keyboard == null) return;
-        
-        if (keyboard.backspaceKey.wasPressedThisFrame)
-        {
-            if (currentPassword.Length > 0)
-            {
-                currentPassword.Length--;
-                UpdateDisplay();
-            }
-            return;
-        }
-        
-        string textInput = GetNewInputSystemCharacters(keyboard);
-        
-        foreach (char c in textInput)
-        {
-            if (!char.IsControl(c) && currentPassword.Length < MAX_PASSWORD_LENGTH)
-            {
-                currentPassword.Append(c);
-                UpdateDisplay();
-            }
-        }
-    }
-    
-    private string GetNewInputSystemCharacters(Keyboard keyboard)
-    {
-        StringBuilder chars = new StringBuilder();
-        
-        if (keyboard.aKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'A' : 'a');
-        if (keyboard.bKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'B' : 'b');
-        if (keyboard.cKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'C' : 'c');
-        if (keyboard.dKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'D' : 'd');
-        if (keyboard.eKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'E' : 'e');
-        if (keyboard.fKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'F' : 'f');
-        if (keyboard.gKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'G' : 'g');
-        if (keyboard.hKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'H' : 'h');
-        if (keyboard.iKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'I' : 'i');
-        if (keyboard.jKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'J' : 'j');
-        if (keyboard.kKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'K' : 'k');
-        if (keyboard.lKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'L' : 'l');
-        if (keyboard.mKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'M' : 'm');
-        if (keyboard.nKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'N' : 'n');
-        if (keyboard.oKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'O' : 'o');
-        if (keyboard.pKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'P' : 'p');
-        if (keyboard.qKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'Q' : 'q');
-        if (keyboard.rKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'R' : 'r');
-        if (keyboard.sKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'S' : 's');
-        if (keyboard.tKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'T' : 't');
-        if (keyboard.uKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'U' : 'u');
-        if (keyboard.vKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'V' : 'v');
-        if (keyboard.wKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'W' : 'w');
-        if (keyboard.xKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'X' : 'x');
-        if (keyboard.yKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'Y' : 'y');
-        if (keyboard.zKey.wasPressedThisFrame) chars.Append(keyboard.shiftKey.isPressed ? 'Z' : 'z');
-        
-        bool shift = keyboard.shiftKey.isPressed;
-        if (keyboard.digit1Key.wasPressedThisFrame) chars.Append(shift ? '!' : '1');
-        if (keyboard.digit2Key.wasPressedThisFrame) chars.Append(shift ? '@' : '2');
-        if (keyboard.digit3Key.wasPressedThisFrame) chars.Append(shift ? '#' : '3');
-        if (keyboard.digit4Key.wasPressedThisFrame) chars.Append(shift ? '$' : '4');
-        if (keyboard.digit5Key.wasPressedThisFrame) chars.Append(shift ? '%' : '5');
-        if (keyboard.digit6Key.wasPressedThisFrame) chars.Append(shift ? '^' : '6');
-        if (keyboard.digit7Key.wasPressedThisFrame) chars.Append(shift ? '&' : '7');
-        if (keyboard.digit8Key.wasPressedThisFrame) chars.Append(shift ? '*' : '8');
-        if (keyboard.digit9Key.wasPressedThisFrame) chars.Append(shift ? '(' : '9');
-        if (keyboard.digit0Key.wasPressedThisFrame) chars.Append(shift ? ')' : '0');
-        
-        if (keyboard.minusKey.wasPressedThisFrame) chars.Append(shift ? '_' : '-');
-        if (keyboard.equalsKey.wasPressedThisFrame) chars.Append(shift ? '+' : '=');
-        if (keyboard.leftBracketKey.wasPressedThisFrame) chars.Append(shift ? '{' : '[');
-        if (keyboard.rightBracketKey.wasPressedThisFrame) chars.Append(shift ? '}' : ']');
-        if (keyboard.backslashKey.wasPressedThisFrame) chars.Append(shift ? '|' : '\\');
-        if (keyboard.semicolonKey.wasPressedThisFrame) chars.Append(shift ? ':' : ';');
-        if (keyboard.quoteKey.wasPressedThisFrame) chars.Append(shift ? '"' : '\'');
-        if (keyboard.commaKey.wasPressedThisFrame) chars.Append(shift ? '<' : ',');
-        if (keyboard.periodKey.wasPressedThisFrame) chars.Append(shift ? '>' : '.');
-        if (keyboard.slashKey.wasPressedThisFrame) chars.Append(shift ? '?' : '/');
-        if (keyboard.spaceKey.wasPressedThisFrame) chars.Append(' ');
-        
-        return chars.ToString();
-    }
-    #endif
-    
-    private void HandleLegacyInputSystem()
-    {
-        if (Input.GetKeyDown(KeyCode.Backspace))
-        {
-            if (currentPassword.Length > 0)
-            {
-                currentPassword.Length--;
-                UpdateDisplay();
-            }
-            return;
-        }
-        
-        string input = Input.inputString;
-        foreach (char c in input)
-        {
-            if (!char.IsControl(c) && currentPassword.Length < MAX_PASSWORD_LENGTH)
-            {
-                currentPassword.Append(c);
-                UpdateDisplay();
-            }
-        }
+        Debug.Log($"👁️ Password visibility: {(showPassword ? "VISIBLE" : "HIDDEN")}");
     }
     
     private void UpdateDisplay()

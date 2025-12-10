@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 public class CutSceneChapter0 : MonoBehaviour
 {
     [Header("Scene Settings")]
-    [SerializeField] public string sceneName = "Chapter-0";
+    [SerializeField] public string sceneName = "";
     
     // Optional: Use scene index instead of name
     [SerializeField] private bool useSceneIndex = false;
-    [SerializeField] private int sceneIndex = 0;
+    [SerializeField] public int sceneIndex= 0;
 
     void OnEnable()
     {

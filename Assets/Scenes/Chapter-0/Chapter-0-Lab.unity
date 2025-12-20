@@ -3562,6 +3562,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2936742196773136213, guid: 8fb90b4f81ed690409da77cfc926231e, type: 3}
+      propertyPath: joystickCameraSensitivity
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 6164023577540145021, guid: 8fb90b4f81ed690409da77cfc926231e, type: 3}
       propertyPath: m_LocalScale.x
       value: 2

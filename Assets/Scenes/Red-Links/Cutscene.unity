@@ -10335,7 +10335,7 @@ MonoBehaviour:
   cameraInputY: 0
   movementJoystick: {fileID: 0}
   cameraJoystick: {fileID: 0}
-  joystickCameraSensitivity: 4
+  joystickCameraSensitivity: 10
   interactInput: 0
   acceptInput: 1
 --- !u!95 &2004387883094948917

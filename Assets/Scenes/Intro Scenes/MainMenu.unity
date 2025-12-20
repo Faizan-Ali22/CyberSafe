@@ -773,8 +773,8 @@ MonoBehaviour:
   backgroundImage: {fileID: 21300000, guid: 478821b289ae36d4180a41988089846b, type: 3}
   buttonTitle: TITLE
   buttonDescription: DESCRIPTION
-  useCustomResources: 0
-  chapterIndex: 3
+  useCustomResources: 1
+  chapterIndex: 4
   enableStatus: 1
   statusItem: 1
 --- !u!1 &41882427
@@ -3440,7 +3440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf60a35436be04545a1ab5ee9901fbe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName: The-Attack
+  sceneName: Chapter03
   showDebugLogs: 0
 --- !u!95 &181372848
 Animator:
@@ -3543,9 +3543,9 @@ MonoBehaviour:
   buttonTitle: Chapter 3
   buttonDescription: DESCRIPTION
   useCustomResources: 1
-  chapterIndex: 0
+  chapterIndex: 3
   enableStatus: 1
-  statusItem: 0
+  statusItem: 1
 --- !u!1 &193888099
 GameObject:
   m_ObjectHideFlags: 0
@@ -6917,6 +6917,7 @@ GameObject:
   - component: {fileID: 437570903}
   - component: {fileID: 437570902}
   - component: {fileID: 437570901}
+  - component: {fileID: 437570904}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -6998,6 +6999,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &437570904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437570900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!1 &442362710
 GameObject:
   m_ObjectHideFlags: 0
@@ -12850,7 +12895,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 899589556}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
@@ -14313,7 +14358,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf60a35436be04545a1ab5ee9901fbe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName: The-Attack
+  sceneName: Chapter01
   showDebugLogs: 0
 --- !u!95 &970581118
 Animator:
@@ -14416,9 +14461,9 @@ MonoBehaviour:
   buttonTitle: Chapter 1
   buttonDescription: DESCRIPTION
   useCustomResources: 1
-  chapterIndex: 0
+  chapterIndex: 1
   enableStatus: 1
-  statusItem: 0
+  statusItem: 1
 --- !u!1 &976407955
 GameObject:
   m_ObjectHideFlags: 0
@@ -16650,7 +16695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7caeb717347a1a44a8f0ca9e7d7d992a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chapterCompleted: 0000000000000000
+  chapterCompleted: 0100000000000000
   chapterUnlocked: 0100000000000000
 --- !u!4 &1087878501
 Transform:
@@ -22803,7 +22848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf60a35436be04545a1ab5ee9901fbe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName: The-Attack
+  sceneName: RedLinks
   showDebugLogs: 0
 --- !u!95 &1569118733
 Animator:
@@ -22906,9 +22951,9 @@ MonoBehaviour:
   buttonTitle: Chapter 2
   buttonDescription: DESCRIPTION
   useCustomResources: 1
-  chapterIndex: 0
+  chapterIndex: 2
   enableStatus: 1
-  statusItem: 0
+  statusItem: 1
 --- !u!1 &1584729251
 GameObject:
   m_ObjectHideFlags: 0

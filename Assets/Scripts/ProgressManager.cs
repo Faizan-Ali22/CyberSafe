@@ -1,9 +1,11 @@
 using UnityEngine;
 
-public class ProgressManager : MonoBehaviour
+/// <summary>
+/// Manages player progress across chapters. Persists across scene loads.
+/// Uses PersistentSingleton pattern to ensure single instance survives scene transitions.
+/// </summary>
+public class ProgressManager : PersistentSingleton<ProgressManager>
 {
-    public static ProgressManager Instance { get; private set; }
-
     // Total chapters
     public const int ChapterCount = 8;
 
@@ -14,18 +16,11 @@ public class ProgressManager : MonoBehaviour
     private const string SaveKeyCompleted = "ChapterCompleted";
     private const string SaveKeyUnlocked  = "ChapterUnlocked";
 
-    private void Awake()
+    /// <summary>
+    /// Initializes progress data when singleton is established.
+    /// </summary>
+    protected override void OnPersistentSingletonAwake()
     {
-        // Singleton setup
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
         InitializeDefaultUnlocks();
         LoadProgress();
     }

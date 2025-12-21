@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
-using UnityEngine. UI;
+using UnityEngine.UI;
 using TMPro;
-using UnityEngine. Events;
+using UnityEngine.Events;
 
-public class DialogueManager : MonoBehaviour
+/// <summary>
+/// Manages dialogue display and progression in the game.
+/// Uses Singleton pattern for scene-scoped single instance.
+/// </summary>
+public class DialogueManager : Singleton<DialogueManager>
 {
-    public static DialogueManager Instance;
-
     [Header("UI References")]
     public GameObject dialoguePanel;
     public TextMeshProUGUI speakerNameText;
@@ -45,18 +47,6 @@ public class DialogueManager : MonoBehaviour
     private Coroutine autoPlayCoroutine;
    // private AudioSource audioSource;
     private DialogueLine currentLine;
-
-    private void Awake()
-    {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-
-        // audioSource = GetComponent<AudioSource>();
-        // if (audioSource == null)
-        //     audioSource = gameObject.AddComponent<AudioSource>();
-    }
 
     private void Start()
     {

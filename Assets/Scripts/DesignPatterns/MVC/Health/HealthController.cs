@@ -171,11 +171,12 @@ public class HealthController : MonoBehaviour
     /// <summary>
     /// Calculates heal amount based on remaining shields (for MazeGameManager compatibility).
     /// </summary>
-    /// <param name="remainingShieldsIncludingCurrent">Number of remaining shields including current.</param>
-    /// <returns>Heal amount.</returns>
+    /// <param name="remainingShieldsIncludingCurrent">Number of remaining shields including current. Must be greater than 0.</param>
+    /// <returns>Heal amount, or 0 if no shields remaining.</returns>
     public float CalculateShieldHeal(int remainingShieldsIncludingCurrent)
     {
-        if (remainingShieldsIncludingCurrent <= 0) return 0f;
+        // Guard against division by zero - only calculate if we have shields
+        if (remainingShieldsIncludingCurrent < 1) return 0f;
 
         float missing = _model.MaxHealth - _model.CurrentHealth;
         return missing / remainingShieldsIncludingCurrent;
@@ -184,9 +185,11 @@ public class HealthController : MonoBehaviour
     /// <summary>
     /// Applies shield heal based on remaining shields.
     /// </summary>
-    /// <param name="remainingShieldsIncludingCurrent">Number of remaining shields.</param>
+    /// <param name="remainingShieldsIncludingCurrent">Number of remaining shields. Must be greater than 0.</param>
     public void ApplyShieldHeal(int remainingShieldsIncludingCurrent)
     {
+        if (remainingShieldsIncludingCurrent < 1) return;
+        
         float healAmount = CalculateShieldHeal(remainingShieldsIncludingCurrent);
         Heal(healAmount);
     }

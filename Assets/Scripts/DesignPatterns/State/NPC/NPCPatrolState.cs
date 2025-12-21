@@ -6,6 +6,16 @@ using System.Collections.Generic;
 /// </summary>
 public class NPCPatrolState : NPCStateBase
 {
+    /// <summary>
+    /// Distance threshold for rotation to prevent jitter at close range.
+    /// </summary>
+    private const float ROTATION_THRESHOLD = 0.1f;
+    
+    /// <summary>
+    /// Distance threshold to consider waypoint reached.
+    /// </summary>
+    private const float WAYPOINT_REACHED_THRESHOLD = 0.05f;
+    
     private int _currentWaypointIndex = 0;
     private bool _isMoving = true;
 
@@ -37,7 +47,7 @@ public class NPCPatrolState : NPCStateBase
             Vector3 direction = target.position - owner.transform.position;
             float distance = direction.magnitude;
 
-            if (distance > 0.1f && direction != Vector3.zero)
+            if (distance > ROTATION_THRESHOLD && direction != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
                 owner.transform.rotation = Quaternion.Lerp(
@@ -48,7 +58,7 @@ public class NPCPatrolState : NPCStateBase
             }
 
             // Check if reached waypoint
-            if (distance < 0.05f)
+            if (distance < WAYPOINT_REACHED_THRESHOLD)
             {
                 _currentWaypointIndex++;
                 if (owner.IsLooping && _currentWaypointIndex >= owner.Waypoints.Count)

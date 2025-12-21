@@ -5,7 +5,10 @@ using UnityEngine;
 /// </summary>
 public class NPCFollowState : NPCStateBase
 {
-    private float _stoppingDistance = 2f;
+    private const float DEFAULT_STOPPING_DISTANCE = 2f;
+    
+    private float _stoppingDistance = DEFAULT_STOPPING_DISTANCE;
+    private bool _isWalking = false;
 
     public void SetStoppingDistance(float distance)
     {
@@ -16,6 +19,7 @@ public class NPCFollowState : NPCStateBase
     {
         Debug.Log($"[NPCFollowState] {owner.name} starting to follow target.");
         owner.SetAnimationTrigger("Walk");
+        _isWalking = true;
     }
 
     public override void Update(NPCStateMachineComponent owner)
@@ -45,16 +49,27 @@ public class NPCFollowState : NPCStateBase
                 );
             }
 
-            owner.SetAnimationTrigger("Walk");
+            // Only set animation if state changed
+            if (!_isWalking)
+            {
+                owner.SetAnimationTrigger("Walk");
+                _isWalking = true;
+            }
         }
         else
         {
-            owner.SetAnimationTrigger("Idle");
+            // Only set animation if state changed
+            if (_isWalking)
+            {
+                owner.SetAnimationTrigger("Idle");
+                _isWalking = false;
+            }
         }
     }
 
     public override void Exit(NPCStateMachineComponent owner)
     {
+        _isWalking = false;
         Debug.Log($"[NPCFollowState] {owner.name} stopped following.");
     }
 }

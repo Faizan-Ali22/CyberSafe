@@ -3,24 +3,14 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-
-/// <summary>
-/// Manages the Malware Maze minigame including shield collection, health, and timer.
-/// Uses Singleton pattern for scene-scoped single instance.
-/// Uses Object Pool pattern to pre-warm shields and prevent runtime lag.
-/// </summary>
-public class MazeGameManager : Singleton<MazeGameManager>
+public class MazeGameManager : MonoBehaviour
 {
+   public static MazeGameManager Instance { get; private set; }
+
     [Header("Shields")]
     public GameObject shieldPrefab;
     public List<Transform> shieldSpawnPoints;
     public int shieldsPerRun = 3;
-
-    [Header("Object Pool Settings")]
-    [Tooltip("Enable object pooling for shields (recommended for performance)")]
-    public bool useObjectPool = true;
-    [Tooltip("Number of shields to pre-instantiate in the pool")]
-    public int poolInitialSize = 10;
 
     [Header("Timer")]
     public float levelTimeSeconds = 60f;
@@ -65,9 +55,15 @@ public class MazeGameManager : Singleton<MazeGameManager>
     private bool isReturning = false;
     private bool isFailed = false;
 
-    // Object pool for shields
-    private ShieldPool _shieldPool;
-    private List<PoolableShield> _activeShields = new List<PoolableShield>();
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     private IEnumerator Start()
     {
@@ -77,12 +73,6 @@ public class MazeGameManager : Singleton<MazeGameManager>
         if (retryPanel) retryPanel.SetActive(false);
 
         shieldsPerRun = Mathf.Clamp(shieldsPerRun, 1, shieldSpawnPoints.Count);
-
-        // Initialize object pool if enabled
-        if (useObjectPool && shieldPrefab != null)
-        {
-            yield return StartCoroutine(InitializeShieldPool());
-        }
 
         SpawnShields();
 
@@ -99,22 +89,6 @@ public class MazeGameManager : Singleton<MazeGameManager>
             yield return new WaitForSeconds(mazeIntroPopupDuration);
             mazeIntroPopup.SetActive(false);
         }
-    }
-
-    /// <summary>
-    /// Initializes and pre-warms the shield object pool.
-    /// </summary>
-    private IEnumerator InitializeShieldPool()
-    {
-        // Create the pool container
-        var poolContainer = new GameObject("ShieldPool");
-        poolContainer.transform.SetParent(transform);
-        _shieldPool = poolContainer.AddComponent<ShieldPool>();
-        _shieldPool.Initialize(shieldPrefab);
-
-        // Pre-warm the pool asynchronously
-        yield return StartCoroutine(_shieldPool.PreWarmAsync());
-        Debug.Log("MazeGameManager: Shield pool pre-warmed and ready.");
     }
 
     private void Update()
@@ -161,67 +135,18 @@ public class MazeGameManager : Singleton<MazeGameManager>
         for (int i = 0; i < toSpawn; i++)
         {
             Quaternion rot = points[i].rotation * Quaternion.Euler(-90f, 0f, 0f);
-            
-            if (useObjectPool && _shieldPool != null)
+            var go = Instantiate(shieldPrefab, points[i].position, rot);
+            var pickup = go.GetComponent<ShieldPickup>();
+            if (!pickup)
             {
-                // Use object pool for better performance
-                var poolableShield = _shieldPool.GetShield(points[i].position, rot);
-                if (poolableShield != null)
-                {
-                    poolableShield.manager = this;
-                    _activeShields.Add(poolableShield);
-                    spawned++;
-                }
-                else
-                {
-                    Debug.LogError("MazeGameManager: Failed to get shield from pool.");
-                }
+                Debug.LogError("Spawned shield missing ShieldPickup component.");
+                continue;
             }
-            else
-            {
-                // Fallback to direct instantiation (backward compatibility)
-                var go = Instantiate(shieldPrefab, points[i].position, rot);
-                var pickup = go.GetComponent<ShieldPickup>();
-                if (!pickup)
-                {
-                    Debug.LogError("Spawned shield missing ShieldPickup component.");
-                    continue;
-                }
-                pickup.manager = this;
-                spawned++;
-            }
+            pickup.manager = this;
+            spawned++;
         }
 
         Debug.Log($"MazeGameManager: Spawned {spawned} shields, need to collect all to return.");
-        UpdateShieldUI();
-    }
-
-    /// <summary>
-    /// Called when a poolable shield is collected.
-    /// Returns the shield to the pool instead of destroying it.
-    /// </summary>
-    /// <param name="shield">The collected shield.</param>
-    public void OnPoolableShieldCollected(PoolableShield shield)
-    {
-        if (isReturning || isFailed) return;
-
-        collected++;
-        Debug.Log($"MazeGameManager: Shield collected {collected}/{spawned}");
-
-        // Return shield to pool instead of destroying
-        _activeShields.Remove(shield);
-        _shieldPool?.ReturnShield(shield);
-
-        // Heal based on remaining shields so all will bring you to 100%
-        ApplyShieldHeal();
-
-        ShowPopup(collected - 1);
-
-        if (spawned > 0 && collected >= spawned)
-        {
-            StartCoroutine(ReturnToLab());
-        }
-
         UpdateShieldUI();
     }
 

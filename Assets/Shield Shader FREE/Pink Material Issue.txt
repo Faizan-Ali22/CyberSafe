@@ -1,0 +1,42 @@
+
+FAQ – Pink Material Issue / Shader Setup
+
+Why does the material turn pink when importing into URP or the Built-in Render Pipeline?
+This usually happens if Shader Graph or the correct render pipeline settings are not configured properly. Follow the steps below to fix it.
+
+------------------------------------------------------------
+✅ Solution 1 – Unity Version
+------------------------------------------------------------
+- Make sure you are using a Unity version that supports Shader Graph for your chosen render pipeline (Built-in, URP, or HDRP).
+- This asset was created and tested in Unity 2021.3.24f1.
+
+------------------------------------------------------------
+✅ Solution 2 – Install Shader Graph
+------------------------------------------------------------
+- Install Shader Graph 12.1.11 or newer via the Package Manager.
+- To install:
+  Window > Package Manager > [Packages: Unity Registry] > Shader Graph
+
+------------------------------------------------------------
+✅ Solution 3 – Configure the Shader Graph
+------------------------------------------------------------
+1. Navigate to this asset’s Shader Graph folder (e.g., Assets > [Asset Name] > Shadergraph).
+2. Open the Shader Graph file(s). (If there are multiple, repeat the steps for each one.)
+3. In the Graph Inspector (top-right), go to Graph Settings.
+4. Under Active Targets [+]:
+   - Add the render pipeline you are using (e.g., Built-in Render Pipeline, URP, etc.).
+   - Remove any pipelines you are not using.
+5. Set the following:
+   - Surface Type: Transparent
+   - Blending Mode: Additive
+6. Save the graph – done!
+
+------------------------------------------------------------
+🔧 Extra Note (For URP)
+------------------------------------------------------------
+If the shader looks incorrect in URP, try disabling "Preserve Specular Lighting"
+from the Graph Inspector (if enabled).
+
+------------------------------------------------------------
+📩 Contact: srstudioskerala@gmail.com
+------------------------------------------------------------

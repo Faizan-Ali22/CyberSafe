@@ -1,0 +1,65 @@
+	
+- - - - - - - - - - - - - - - - - - - - - Shield Shader FREE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+Shield Shader FREE is the free version of the "Shield Hologram Shader"
+asset pack. This version includes a selection of shield materials suitable for sci-fi, fantasy, and stylized visual effects.
+
+Version Comparison
+Free Version: - 10 Materials | Basic color customization
+Full Version: - 25+ Materials | Additional color controls | Distortion and pattern opacity | Extra overlay patterns for visual detailing | Animation properties | Emission control and extended settings.
+
+Note: Materials/Shaders are highly customizable.You can create Unlimited variations of Shader's by changing material properties. For quick use, 10+ Shaders are included in the pack.Also, this asset uses Shadergraph with URP support.
+
+Technical Details :-
+		- Materials/Shaders : 10+ (Custom Material's made with Shader graph)
+		- Customizable Shaders : YES
+		- Animated Shaders : Not included in the free version 
+		- Model included : Little Ghost DEMO(With 1 "Idle" Animation)
+		- Model format : FBX
+		- Polygon count : 2612 (Ghost)
+				
+Features:-
+	- Customizable Materials
+	- Included lowpoly ghost model comes with one animation
+	- Optimized Shader's
+	- Easy to use(Drag and drop the Material's to your Meshes)
+	- Easy to create new shader variation's
+
+Shaders/Materials Properties :
+
+- Fresnel Power : Default value is 3. Controls the intensity of the glowing outer edge around the mesh.
+- Color : Fresnel color
+- Texture1 : An overlay texture (Black and White with unique patterns), With Color, 
+tiling and offset properties.
+
+Folder details:-
+	Materials : Where the materials for the model located.	
+	Meshes : Contain FBX format of the 3d model.	
+	(Other folders - Prefabs, Scenes)
+
+How to use:-	
+	Simply drag and drop the Material's to your Meshes and use it.
+	(Materials located under 
+	Asset >  Shield Shader FREE > Materials).
+
+❓ Frequently Asked Questions:
+
+Q: Can I apply these shaders to my own 3D mesh?
+A: Yes, you can easily assign the materials to any custom mesh in your project.
+
+Q: Can I change animation speed or direction? 
+A: Not in the free version.
+
+Q: Can I create new Shader variations?
+A: Yes, you can create unlimited variations using only the Unity Editor by tweaking material properties—no coding required.
+
+Q: Will this shader work on URP, Built-in, and other render pipelines?
+A: Yes. This asset is compatible with any render pipeline. It was originally submitted using URP, but it also includes a setup guide for other pipelines. 
+You can get it working in different pipelines within seconds.
+.....................................................................................................................
+
+About Me : "SR Studios Kerala", Indie Game developer & 2D-3D Artist from Alappuzha, Kerala, India
+contact : srstudioskerala@gmail.com
+ 
+
+................Thank you for downloading this package................................

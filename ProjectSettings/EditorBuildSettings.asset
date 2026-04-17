@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Chapter-0/The-Attack.unity
     guid: 69a5bd5fddd07cf49b593320fc3ee4dc
   - enabled: 1
-    path: Assets/Scenes/Chapter-0/Chapter-0.unity
+    path: Assets/Scenes/Chapter-0/Chapter-0 Before Change.unity
     guid: 4b0c4ede9effb4346b02bd7429afa568
   - enabled: 1
     path: Assets/Scenes/Chapter-0/Chapter-A.unity

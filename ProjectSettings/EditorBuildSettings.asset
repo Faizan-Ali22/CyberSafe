@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Chapter-0/Chapter-0 Before Change.unity
     guid: 4b0c4ede9effb4346b02bd7429afa568
   - enabled: 1
-    path: Assets/Scenes/Chapter-0/Chapter-A.unity
+    path: Assets/Scenes/Chapter-0/Chapter-A after change.unity
     guid: 1587f9c4d9d94a7438da4bfe369d6816
   - enabled: 1
     path: Assets/Scenes/Chapter-0/Chapter-B.unity

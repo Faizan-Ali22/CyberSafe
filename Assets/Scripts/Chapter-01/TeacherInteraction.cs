@@ -119,7 +119,7 @@ public class TeacherInteraction : MonoBehaviour
             new DialogueLine
             {
             speakerName = "Teacher",
-            dialogue = "Exactly. And the first rule is speed: the longer it runs, the more it can spread—and the more data we can lose.",
+            dialogue = "Exactly. And the first rule is speed:\n the longer it runs, the more it can spread and the more data we can lose.",
             speakerAnimator = teacherAnimator,
             animationTrigger = talkTriggerName,
             cameraTarget = teacherCloseUpTarget,
@@ -128,7 +128,7 @@ public class TeacherInteraction : MonoBehaviour
             new DialogueLine
             {
             speakerName = "Teacher",
-            dialogue = "I’ve told the other students to leave.\n Ayan, I need you to check some PC—one by one—before this gets worse.",
+            dialogue = "The other students fixed their Pc's.\n Ayan, I need you to check your and your friends PC before this gets worse.",
             speakerAnimator = teacherAnimator,
             animationTrigger = talkTriggerName,
             cameraTarget = teacherMediumShotTarget,
@@ -137,7 +137,7 @@ public class TeacherInteraction : MonoBehaviour
             new DialogueLine
             {
             speakerName = "Teacher",
-            dialogue = "Start with the basics:\nmake sure the firewall is ON, update the antivirus, and run a full scan.\nIf a PC looks infected, isolate it immediately.",
+            dialogue = "Start with the basics:\nmake sure the firewall is ON, update the antivirus, and run a full scan.If a PC looks infected, isolate it immediately.",
             speakerAnimator = teacherAnimator,
             animationTrigger = talkTriggerName,
             cameraTarget = teacherCloseUpTarget,
@@ -155,7 +155,7 @@ public class TeacherInteraction : MonoBehaviour
             new DialogueLine
             {
             speakerName = "Teacher",
-            dialogue = "Anything unusual—unknown programs, warnings, disabled security, or that same NULL screen. Don’t panic—follow steps, not feelings.",
+            dialogue = "Anything unusual unknown programs, viruses, disabled security, or that same NULL screen. Don’t panic,follow steps.",
             speakerAnimator = teacherAnimator,
             animationTrigger = talkTriggerName,
             cameraTarget = teacherMediumShotTarget,
@@ -164,7 +164,7 @@ public class TeacherInteraction : MonoBehaviour
             new DialogueLine
             {
             speakerName = "Teacher",
-            dialogue = "We’ll run this like a drill. You’re about to do a quick Minigame—learn the response steps, then use them to protect the lab.",
+            dialogue = "We’ll run this like a drill. You’re about to do a quick Minigame learn the response steps, then use them to protect your PCs.",
             speakerAnimator = teacherAnimator,
             animationTrigger = talkTriggerName,
             cameraTarget = teacherCloseUpTarget,

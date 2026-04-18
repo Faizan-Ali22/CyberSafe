@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class GlobalPauseManager : MonoBehaviour
 {
@@ -15,11 +16,13 @@ public class GlobalPauseManager : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
     [SerializeField] private bool useEscapeKey = true;
+    [SerializeField] private float inputGuardAfterResumeSeconds = 0.2f;
 
     [Header("Optional: Hide pause in these scenes")]
     [SerializeField] private string[] disableInScenes;
 
     private bool isPaused;
+    private float ignoreMenuUntilUnscaledTime;
 
     public bool IsPaused => isPaused;
 
@@ -35,18 +38,13 @@ public class GlobalPauseManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Wire buttons once
-        if (resumeButton != null)
+        if (HasDuplicateButtonAssignments())
         {
-            resumeButton.onClick.RemoveListener(ResumeGame);
-            resumeButton.onClick.AddListener(ResumeGame);
+            Debug.LogWarning("[GlobalPauseManager] Duplicate pause button assignments detected. Fix references in Inspector.", this);
         }
 
-        if (backToMenuButton != null)
-        {
-            backToMenuButton.onClick.RemoveListener(BackToMainMenu);
-            backToMenuButton.onClick.AddListener(BackToMainMenu);
-        }
+        // Wire buttons once
+        EnsureRuntimeBindings();
 
         SceneManager.sceneLoaded += OnSceneLoaded;
 
@@ -113,6 +111,9 @@ public class GlobalPauseManager : MonoBehaviour
         if (isPaused) return;
         if (!CanPauseInCurrentScene()) return;
 
+        // Re-assert correct button bindings every pause cycle.
+        EnsureRuntimeBindings();
+
         isPaused = true;
         SetPauseUI(true);
 
@@ -124,10 +125,29 @@ public class GlobalPauseManager : MonoBehaviour
     {
         if (!isPaused) return;
         ForceUnpause();
+        ignoreMenuUntilUnscaledTime = Time.unscaledTime + Mathf.Max(0f, inputGuardAfterResumeSeconds);
+    }
+
+    public void OnPauseButtonPressed()
+    {
+        TogglePause();
+    }
+
+    public void OnResumeButtonPressed()
+    {
+        ResumeGame();
+    }
+
+    public void OnMainMenuButtonPressed()
+    {
+        BackToMainMenu();
     }
 
     public void BackToMainMenu()
     {
+        if (Time.unscaledTime < ignoreMenuUntilUnscaledTime)
+            return;
+
         ForceUnpause();
         SceneManager.LoadScene(mainMenuSceneName);
     }
@@ -145,5 +165,36 @@ public class GlobalPauseManager : MonoBehaviour
     {
         if (pausePanel != null)
             pausePanel.SetActive(visible);
+    }
+
+    private void BindExclusive(Button button, UnityAction callback)
+    {
+        if (button == null || callback == null) return;
+
+        // Clear both runtime and persistent Inspector listeners.
+        button.onClick = new Button.ButtonClickedEvent();
+        button.onClick.AddListener(callback);
+    }
+
+    private void EnsureRuntimeBindings()
+    {
+        BindExclusive(resumeButton, OnResumeButtonPressed);
+
+        // Safety: if both fields reference the same button, keep resume behavior.
+        if (backToMenuButton == resumeButton && backToMenuButton != null)
+        {
+            Debug.LogWarning("[GlobalPauseManager] backToMenuButton matches resumeButton. Skipping menu binding for safety.", this);
+            return;
+        }
+
+        BindExclusive(backToMenuButton, OnMainMenuButtonPressed);
+    }
+
+    private bool HasDuplicateButtonAssignments()
+    {
+        if (resumeButton == null || backToMenuButton == null)
+            return false;
+
+        return resumeButton == backToMenuButton;
     }
 }

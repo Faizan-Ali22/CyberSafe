@@ -3294,7 +3294,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -104.3, y: -35.6}
+  m_AnchoredPosition: {x: -112.8, y: -35.6}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1593789373
@@ -7678,7 +7678,7 @@ MonoBehaviour:
   cameraInputY: 0
   movementJoystick: {fileID: 330958907}
   cameraJoystick: {fileID: 850552571}
-  joystickCameraSensitivity: 15
+  joystickCameraSensitivity: 30
   interactInput: 0
   acceptInput: 1
 --- !u!4 &4203792010789698716

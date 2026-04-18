@@ -7,6 +7,9 @@ public class MonitorTapHotspot : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string mazeSceneName = "Game01";
 
+    [Header("This monitor's index (0 or 1)")]
+    [SerializeField] private int hackedIndex = 0;
+
     [Header("Intro")]
     [SerializeField] private Canvas logoIntroCanvas;
     [SerializeField] private CanvasGroup logoCanvasGroup;
@@ -36,10 +39,15 @@ public class MonitorTapHotspot : MonoBehaviour
         }
     }
 
-    // This is what each Button will call, with a different index value.
-    public void OnTappedWithIndex(int hackedIndex)
+    public void OnTapped()
     {
         if (busy) return;
+
+        if (hackedIndex < 0 || hackedIndex > 1)
+        {
+            Debug.LogWarning($"[MonitorTapHotspot] Invalid hackedIndex={hackedIndex}. Use 0 or 1.");
+            return;
+        }
 
         HackedRunState.SetLastHackedIndex(hackedIndex);
         Debug.Log($"MonitorTapHotspot: tapped hacked index {hackedIndex}", this);
@@ -53,15 +61,20 @@ public class MonitorTapHotspot : MonoBehaviour
         StartCoroutine(LoadMazeRoutine());
     }
 
+    // optional if using button events with arg
+    public void OnTappedWithIndex(int index)
+    {
+        hackedIndex = index;
+        OnTapped();
+    }
+
     private IEnumerator LoadMazeRoutine()
     {
         busy = true;
 
-        // Begin async load immediately
         AsyncOperation op = SceneManager.LoadSceneAsync(mazeSceneName);
         op.allowSceneActivation = false;
 
-        // Fade in logo (counts toward total intro time)
         float fadeInTime = 0f;
         if (logoIntroCanvas) logoIntroCanvas.enabled = true;
         if (logoCanvasGroup)
@@ -74,24 +87,19 @@ public class MonitorTapHotspot : MonoBehaviour
             fadeInTime = Time.realtimeSinceStartup - start;
         }
 
-        // Wait remaining intro time, if any
         float remaining = logoDuration - fadeInTime;
         if (remaining > 0f)
             yield return new WaitForSecondsRealtime(remaining);
 
-        // Save player pose
         if (playerTransform) LabReturnState.SavePlayerPose(playerTransform);
 
-        // Wait until scene is ready
         while (op.progress < 0.9f)
             yield return null;
 
-        // Activate immediately (skip fade-out to avoid extra delay)
         op.allowSceneActivation = true;
         while (!op.isDone)
             yield return null;
 
-        // Optional: hide logo after switch
         if (logoCanvasGroup)
         {
             logoCanvasGroup.alpha = 0f;

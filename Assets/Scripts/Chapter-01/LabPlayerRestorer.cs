@@ -11,14 +11,22 @@ public class LabPlayerRestorer : MonoBehaviour
             LabReturnState.RestorePlayerPose(playerTransform);
         }
 
-        // Keep teacher idle if already done
+        // Keep teacher done state
         if (LabReturnState.IsTeacherDone())
         {
             var mgr = FindFirstObjectByType<MonitorScreenManager>();
             if (mgr) mgr.ApplyState();
 
             var teacher = FindFirstObjectByType<TeacherInteraction>();
-            if (teacher) teacher.enabled = false; // or set a flag if you prefer
+            if (teacher) teacher.enabled = false;
+        }
+
+        // Sync Task2 UI and completion check after returning from Game01
+        var task2 = FindFirstObjectByType<Task2Controller>();
+        if (task2 != null)
+        {
+            task2.RefreshTask2UI();
+            task2.TryCompleteTask2();
         }
     }
 }

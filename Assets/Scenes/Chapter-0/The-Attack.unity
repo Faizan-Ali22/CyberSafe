@@ -547,8 +547,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 505621384}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.05828844, y: 0.68109375, z: -0.05454545, w: 0.7278314}
-  m_LocalPosition: {x: -4.183, y: 3.87, z: -2.1429996}
+  m_LocalRotation: {x: 0, y: 0.9848078, z: -0.17364821, w: 0}
+  m_LocalPosition: {x: -1.63, y: 6.87, z: 11.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1327,7 +1327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d824fd54f75d614981bc1a850886b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName: Chapter-0
+  sceneName: Chapter-0 Before Change
   useSceneIndex: 0
   sceneIndex: 0
 --- !u!4 &1601178186

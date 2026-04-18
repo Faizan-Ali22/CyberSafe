@@ -13,7 +13,7 @@ public class TeacherInteraction : MonoBehaviour
     public GameObject[] uiElementsToEnableAfter;
 
     [Header("UI to Disable After Interaction")]
-    public GameObject[] uiElementsToDisableAfter; // NEW: For Task1
+    public GameObject[] uiElementsToDisableAfter;
 
     [Header("Dialogue")]
     public DialogueLine[] dialogueLines;
@@ -33,23 +33,35 @@ public class TeacherInteraction : MonoBehaviour
     [Header("Cinematic Settings")]
     public float initialCameraTransitionTime = 1.5f;
 
-    [Header("Animation Settings")]
+    [Header("Animation Settings (Trigger Talk)")]
     public string talkTriggerName = "Talk";
+
+    // Kept for compatibility, but not required in the optimized Animator setup
     public string idleTriggerName = "Idle";
+
+    [Header("Idle State Settings (Hard Fix)")]
+    [Tooltip("Must match the EXACT Animator state name (in your screenshots it's 'idle' lowercase).")]
+    public string idleStateName = "idle";
+
+    [Tooltip("Animator layer index (usually 0).")]
+    public int animatorLayer = 0;
+
+    [Tooltip("Small crossfade to snap out of last talk frame smoothly.")]
+    public float idleCrossfadeTime = 0.1f;
 
     private bool hasInteracted = false;
 
     private void Start()
     {
         SetupDialogueLines();
-        
+
         // Ensure post-interaction UI to enable is disabled at start
         foreach (var ui in uiElementsToEnableAfter)
         {
             if (ui != null)
                 ui.SetActive(false);
         }
-        
+
         if (tapToInteract != null)
         {
             tapToInteract.OnInteract += OnPlayerTapped;
@@ -70,48 +82,93 @@ public class TeacherInteraction : MonoBehaviour
         {
             new DialogueLine
             {
-                speakerName = "Ayan",
-                dialogue = "Sir, what happened?",
-                speakerAnimator = null,
-                animationTrigger = "",
-                cameraTarget = teacherMediumShotTarget,
-                cameraTransitionTime = 0.5f
+            speakerName = "Ayan",
+            dialogue = "Sir! What just happened? Every screen just… glitched.",
+            speakerAnimator = null,
+            animationTrigger = "",
+            cameraTarget = teacherMediumShotTarget,
+            cameraTransitionTime = 0.5f
             },
             new DialogueLine
             {
-                speakerName = "Teacher",
-                dialogue = "Looks like we have been hit by a Cyber Attack.",
-                speakerAnimator = teacherAnimator,
-                animationTrigger = talkTriggerName,
-                cameraTarget = teacherCloseUpTarget,
-                cameraTransitionTime = 0.8f
+            speakerName = "Teacher",
+            dialogue = "We’ve been hit by a CyberAttack. From what I’m seeing… it looks like Malware.",
+            speakerAnimator = teacherAnimator,
+            animationTrigger = talkTriggerName,
+            cameraTarget = teacherCloseUpTarget,
+            cameraTransitionTime = 0.8f
             },
             new DialogueLine
             {
-                speakerName = "Teacher",
-                dialogue = "I have advised the students to leave the lab while we fix this mess.",
-                speakerAnimator = teacherAnimator,
-                animationTrigger = talkTriggerName,
-                cameraTarget = null,
-                cameraTransitionTime = 0f
+            speakerName = "Teacher",
+            dialogue = "Malware is “Malicious Software” A program that sneaks into a device to spy, steal data, or damage files.",
+            speakerAnimator = teacherAnimator,
+            animationTrigger = talkTriggerName,
+            cameraTarget = null,
+            cameraTransitionTime = 0f
             },
             new DialogueLine
             {
-                speakerName = "Teacher",
-                dialogue = "Ayan, I want you to check each and every PC and see what's the matter.",
-                speakerAnimator = teacherAnimator,
-                animationTrigger = talkTriggerName,
-                cameraTarget = teacherMediumShotTarget,
-                cameraTransitionTime = 1f
+            speakerName = "Ayan",
+            dialogue = "So it’s not just a glitch… it’s something inside the PCs?",
+            speakerAnimator = null,
+            animationTrigger = "",
+            cameraTarget = teacherMediumShotTarget,
+            cameraTransitionTime = 0.5f
             },
             new DialogueLine
             {
-                speakerName = "Teacher",
-                dialogue = "If there is some kind of Malware, fix it.",
-                speakerAnimator = teacherAnimator,
-                animationTrigger = talkTriggerName,
-                cameraTarget = teacherCloseUpTarget,
-                cameraTransitionTime = 0.8f
+            speakerName = "Teacher",
+            dialogue = "Exactly. And the first rule is speed: the longer it runs, the more it can spread—and the more data we can lose.",
+            speakerAnimator = teacherAnimator,
+            animationTrigger = talkTriggerName,
+            cameraTarget = teacherCloseUpTarget,
+            cameraTransitionTime = 0.8f
+            },
+            new DialogueLine
+            {
+            speakerName = "Teacher",
+            dialogue = "I’ve told the other students to leave.\n Ayan, I need you to check some PC—one by one—before this gets worse.",
+            speakerAnimator = teacherAnimator,
+            animationTrigger = talkTriggerName,
+            cameraTarget = teacherMediumShotTarget,
+            cameraTransitionTime = 1f
+            },
+            new DialogueLine
+            {
+            speakerName = "Teacher",
+            dialogue = "Start with the basics:\nmake sure the firewall is ON, update the antivirus, and run a full scan.\nIf a PC looks infected, isolate it immediately.",
+            speakerAnimator = teacherAnimator,
+            animationTrigger = talkTriggerName,
+            cameraTarget = teacherCloseUpTarget,
+            cameraTransitionTime = 0.8f
+            },
+            new DialogueLine
+            {
+            speakerName = "Ayan",
+            dialogue = "Firewall on… update… scan… isolate if it’s infected. Got it. \nWhat am I looking for?",
+            speakerAnimator = null,
+            animationTrigger = "",
+            cameraTarget = teacherMediumShotTarget,
+            cameraTransitionTime = 0.5f
+            },
+            new DialogueLine
+            {
+            speakerName = "Teacher",
+            dialogue = "Anything unusual—unknown programs, warnings, disabled security, or that same NULL screen. Don’t panic—follow steps, not feelings.",
+            speakerAnimator = teacherAnimator,
+            animationTrigger = talkTriggerName,
+            cameraTarget = teacherMediumShotTarget,
+            cameraTransitionTime = 0.8f
+            },
+            new DialogueLine
+            {
+            speakerName = "Teacher",
+            dialogue = "We’ll run this like a drill. You’re about to do a quick Minigame—learn the response steps, then use them to protect the lab.",
+            speakerAnimator = teacherAnimator,
+            animationTrigger = talkTriggerName,
+            cameraTarget = teacherCloseUpTarget,
+            cameraTransitionTime = 0.8f
             }
         };
     }
@@ -127,7 +184,7 @@ public class TeacherInteraction : MonoBehaviour
         hasInteracted = true;
 
         if (tapToInteract != null)
-            tapToInteract. DisableInteraction();
+            tapToInteract.DisableInteraction();
 
         foreach (var script in playerScriptsToDisable)
         {
@@ -143,31 +200,32 @@ public class TeacherInteraction : MonoBehaviour
 
         if (playerTransform != null && teacherTransform != null)
         {
-            StartCoroutine(SmoothLookAt(playerTransform, teacherTransform. position, 0.5f));
+            StartCoroutine(SmoothLookAt(playerTransform, teacherTransform.position, 0.5f));
         }
 
         if (CinematicCameraController.Instance != null)
         {
-            CinematicCameraController. Instance.SwitchToCinematicCamera(
-                teacherMediumShotTarget, 
+            CinematicCameraController.Instance.SwitchToCinematicCamera(
+                teacherMediumShotTarget,
                 initialCameraTransitionTime
             );
         }
 
         yield return new WaitForSeconds(initialCameraTransitionTime);
 
-        ForceTeacherIdle();
+        // Ensure we start dialogue from a clean idle pose
+        ForceTeacherIdleHard();
 
-        DialogueManager.Instance. onDialogueEnd. AddListener(EndInteraction);
-        DialogueManager.Instance. StartDialogue(dialogueLines);
+        DialogueManager.Instance.onDialogueEnd.AddListener(EndInteraction);
+        DialogueManager.Instance.StartDialogue(dialogueLines);
     }
 
     private IEnumerator SmoothLookAt(Transform obj, Vector3 targetPos, float duration)
     {
         Quaternion startRot = obj.rotation;
         Vector3 direction = (targetPos - obj.position).normalized;
-        direction. y = 0;
-        Quaternion targetRot = Quaternion. LookRotation(direction);
+        direction.y = 0;
+        Quaternion targetRot = Quaternion.LookRotation(direction);
 
         float elapsed = 0f;
 
@@ -189,16 +247,16 @@ public class TeacherInteraction : MonoBehaviour
 
     private IEnumerator EndInteractionRoutine()
     {
-        DialogueManager.Instance. onDialogueEnd.RemoveListener(EndInteraction);
+        DialogueManager.Instance.onDialogueEnd.RemoveListener(EndInteraction);
 
-        // Force teacher back to idle
-        ForceTeacherIdle();
+        // Force teacher back to idle when dialogue ends
+        ForceTeacherIdleHard();
 
         yield return null;
 
         if (CinematicCameraController.Instance != null)
         {
-            CinematicCameraController.Instance. SwitchToMainCamera(1.5f);
+            CinematicCameraController.Instance.SwitchToMainCamera(1.5f);
         }
 
         yield return new WaitForSeconds(1.5f);
@@ -210,39 +268,52 @@ public class TeacherInteraction : MonoBehaviour
                 script.enabled = true;
         }
 
-        // Re-enable original UI elements (that were disabled during interaction)
+        // Re-enable original UI elements
         foreach (var ui in uiElementsToDisable)
         {
             if (ui != null)
                 ui.SetActive(true);
         }
 
-        // DISABLE these UI elements after interaction (Task1)
+        // Disable UI after interaction (Task1)
         foreach (var ui in uiElementsToDisableAfter)
         {
             if (ui != null)
                 ui.SetActive(false);
         }
 
-        // ENABLE these UI elements after interaction (Task2)
+        // Enable UI after interaction (Task2)
         foreach (var ui in uiElementsToEnableAfter)
         {
             if (ui != null)
                 ui.SetActive(true);
         }
+
+        // Safety: one more frame later to beat any animator transition timing
+        yield return null;
+        ForceTeacherIdleHard();
     }
 
-    private void ForceTeacherIdle()
+    /// <summary>
+    /// Hard force idle pose. This fixes "stuck on last talk frame" even if Animator transitions are imperfect.
+    /// In the optimized Animator setup, the teacher returns to idle automatically via Exit Time,
+    /// but this guarantees it at key moments (start/end).
+    /// </summary>
+    private void ForceTeacherIdleHard()
     {
         if (teacherAnimator == null) return;
 
+        // Clear triggers that might keep or re-enter talk
         teacherAnimator.ResetTrigger(talkTriggerName);
-        teacherAnimator. SetTrigger(idleTriggerName);
-        
-        // Uncomment if triggers don't work:
-        // teacherAnimator.Play("Idle", 0, 0f);
+        teacherAnimator.ResetTrigger(idleTriggerName);
 
-        Debug.Log("Teacher forced to Idle state");
+        // Hard return to Idle state
+        if (!string.IsNullOrWhiteSpace(idleStateName))
+        {
+            teacherAnimator.CrossFadeInFixedTime(idleStateName, idleCrossfadeTime, animatorLayer);
+        }
+
+        Debug.Log("Teacher forced to Idle state (hard)");
     }
 
     private void OnDrawGizmosSelected()
@@ -251,14 +322,14 @@ public class TeacherInteraction : MonoBehaviour
         if (teacherCloseUpTarget != null)
         {
             Gizmos.DrawWireSphere(teacherCloseUpTarget.position, 0.3f);
-            Gizmos. DrawLine(teacherCloseUpTarget.position, teacherCloseUpTarget.position + teacherCloseUpTarget.forward);
+            Gizmos.DrawLine(teacherCloseUpTarget.position, teacherCloseUpTarget.position + teacherCloseUpTarget.forward);
         }
-        
+
         Gizmos.color = Color.yellow;
         if (teacherMediumShotTarget != null)
         {
-            Gizmos. DrawWireSphere(teacherMediumShotTarget. position, 0.3f);
-            Gizmos. DrawLine(teacherMediumShotTarget.position, teacherMediumShotTarget.position + teacherMediumShotTarget.forward);
+            Gizmos.DrawWireSphere(teacherMediumShotTarget.position, 0.3f);
+            Gizmos.DrawLine(teacherMediumShotTarget.position, teacherMediumShotTarget.position + teacherMediumShotTarget.forward);
         }
     }
 }

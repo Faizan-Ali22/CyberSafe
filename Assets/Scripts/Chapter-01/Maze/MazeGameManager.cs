@@ -3,9 +3,10 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+
 public class MazeGameManager : MonoBehaviour
 {
-   public static MazeGameManager Instance { get; private set; }
+    public static MazeGameManager Instance { get; private set; }
 
     [Header("Shields")]
     public GameObject shieldPrefab;
@@ -25,7 +26,8 @@ public class MazeGameManager : MonoBehaviour
     [Header("UI")]
     public GameObject popupCanvas;
     public TextMeshProUGUI popupText;
-    public string[] popupMessages = {
+    public string[] popupMessages =
+    {
         "Antivirus activated!\nThis program finds and removes malware hiding on the PC.",
         "Firewall boost enabled!\nIt blocks suspicious traffic trying to reach this computer.",
         "Security update installed!\nFixes bugs that hackers use to break into systems."
@@ -42,13 +44,9 @@ public class MazeGameManager : MonoBehaviour
     public string labSceneName = "Chapter01";
     public float returnDelay = 0.5f;
 
-    [Header("Next Chapter")]
-    [Tooltip("Scene to load after all 5 hacked screens are cleared. Leave empty to always return to lab.")]
-    public string nextChapterSceneName = "RedLinks";
-
     [Header("Intro Popup (in Maze scene)")]
-    public GameObject mazeIntroPopup;          // optional panel with a brief message
-    public float mazeIntroPopupDuration = 1.0f;  // shown before gameplay starts
+    public GameObject mazeIntroPopup;
+    public float mazeIntroPopupDuration = 1.0f;
 
     private int collected = 0;
     private int spawned = 0;
@@ -82,7 +80,6 @@ public class MazeGameManager : MonoBehaviour
         UpdateTimerUI();
         UpdateHealthUI();
 
-        // Optional: brief intro popup in the Maze scene itself
         if (mazeIntroPopup != null)
         {
             mazeIntroPopup.SetActive(true);
@@ -124,7 +121,7 @@ public class MazeGameManager : MonoBehaviour
         spawned = 0;
 
         var points = new List<Transform>(shieldSpawnPoints);
-        // Shuffle
+
         for (int i = 0; i < points.Count; i++)
         {
             int k = Random.Range(i, points.Count);
@@ -146,7 +143,7 @@ public class MazeGameManager : MonoBehaviour
             spawned++;
         }
 
-        Debug.Log($"MazeGameManager: Spawned {spawned} shields, need to collect all to return.");
+        Debug.Log($"MazeGameManager: Spawned {spawned} shields.");
         UpdateShieldUI();
     }
 
@@ -155,16 +152,12 @@ public class MazeGameManager : MonoBehaviour
         if (isReturning || isFailed) return;
 
         collected++;
-        Debug.Log($"MazeGameManager: Shield collected {collected}/{spawned}");
-
-        // Heal based on remaining shields so all will bring you to 100%
         ApplyShieldHeal();
-
         ShowPopup(collected - 1);
 
         if (spawned > 0 && collected >= spawned)
         {
-            StartCoroutine(ReturnToLab());
+            StartCoroutine(ReturnToLabOnWin());
         }
 
         UpdateShieldUI();
@@ -174,7 +167,7 @@ public class MazeGameManager : MonoBehaviour
     {
         if (popupCanvas == null || popupText == null) return;
         popupCanvas.SetActive(true);
-        var msg = popupMessages.Length > 0 ? popupMessages[index % popupMessages.Length] : "Shield collected!";
+        string msg = popupMessages.Length > 0 ? popupMessages[index % popupMessages.Length] : "Shield collected!";
         popupText.text = msg;
         StartCoroutine(HidePopupAfter(1.0f));
     }
@@ -185,36 +178,25 @@ public class MazeGameManager : MonoBehaviour
         if (popupCanvas) popupCanvas.SetActive(false);
     }
 
-    private IEnumerator ReturnToLab()
+    private IEnumerator ReturnToLabOnWin()
     {
         isReturning = true;
         yield return new WaitForSeconds(returnDelay);
 
         int hackedIndex = HackedRunState.GetLastHackedIndex();
-        Debug.Log($"ReturnToLab: last hacked index = {hackedIndex}");
+        Debug.Log($"[MazeGameManager] Win. Last hacked index = {hackedIndex}");
 
         if (hackedIndex >= 0)
         {
             SessionProgress.MarkScreenCleared(hackedIndex);
-        }
-
-        bool allFiveDone = SessionProgress.HackedClearedCount >= 5;
-
-        if (allFiveDone && ProgressManager.Instance != null)
-        {
-            ProgressManager.Instance.SetChapterCompleted(1, true);
-        }
-
-        if (allFiveDone && !string.IsNullOrEmpty(nextChapterSceneName))
-        {
-            Debug.Log($"All 5 hacked screens cleared. Loading next chapter scene: {nextChapterSceneName}");
-            SceneManager.LoadScene(nextChapterSceneName);
+            Debug.Log($"[MazeGameManager] Marked cleared: {hackedIndex}");
         }
         else
         {
-            Debug.Log($"Returning to lab scene: {labSceneName}");
-            SceneManager.LoadScene(labSceneName);
+            Debug.LogWarning("[MazeGameManager] No valid hacked index found.");
         }
+
+        SceneManager.LoadScene(labSceneName);
     }
 
     public void DamagePlayer(float amount)
@@ -271,14 +253,11 @@ public class MazeGameManager : MonoBehaviour
         pcHealthUI?.SetValue(currentHealth / maxHealth, $"PC Health {Mathf.CeilToInt(currentHealth)}");
     }
 
-    // Heal logic when collecting a shield
     private void ApplyShieldHeal()
     {
         if (spawned <= 0) return;
 
-        // Remaining shields INCLUDING this one
         float remainingIncludingThis = Mathf.Max(1, spawned - collected + 1);
-
         float missing = maxHealth - currentHealth;
         float heal = missing / remainingIncludingThis;
 

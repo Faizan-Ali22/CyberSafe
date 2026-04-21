@@ -14,13 +14,13 @@ public class MazeGameManager : MonoBehaviour
     public int shieldsPerRun = 3;
 
     [Header("Timer")]
-    public float levelTimeSeconds = 60f;
+    public float levelTimeSeconds = 150.0f;
     private float timeLeft;
 
     [Header("PC Health")]
     public float maxHealth = 100f;
     public float healthDrainPerSecond = 2f;
-    public float virusHitDamage = 20f;
+    public float virusHitDamage = 8f;
     private float currentHealth;
 
     [Header("UI")]
@@ -169,7 +169,7 @@ public class MazeGameManager : MonoBehaviour
         popupCanvas.SetActive(true);
         string msg = popupMessages.Length > 0 ? popupMessages[index % popupMessages.Length] : "Shield collected!";
         popupText.text = msg;
-        StartCoroutine(HidePopupAfter(1.0f));
+        StartCoroutine(HidePopupAfter(2.0f));
     }
 
     private IEnumerator HidePopupAfter(float t)

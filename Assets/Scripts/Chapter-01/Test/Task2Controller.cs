@@ -83,7 +83,11 @@ public class Task2Controller : MonoBehaviour
         SetTask2Completed(true);
 
         // Unlock Chapter 2
-        ChapterUnlockProgress.UnlockChapter(unlockChapterIndex);
+        if (ProgressManager.Instance != null) 
+        {
+            // Mark Chapter 1 as complete, which automatically unlocks Chapter 2
+            ProgressManager.Instance.SetChapterCompleted(unlockChapterIndex - 1, true);
+        }
 
         ApplyCompletedStateUI();
 

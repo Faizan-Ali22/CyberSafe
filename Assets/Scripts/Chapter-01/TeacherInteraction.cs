@@ -53,6 +53,9 @@ public class TeacherInteraction : MonoBehaviour
 
     private void Start()
     {
+        // Don't modify the initial UI layout if the player already finished this conversation
+        if (LabReturnState.IsTeacherDone()) return; 
+
         SetupDialogueLines();
 
         // Ensure post-interaction UI to enable is disabled at start
@@ -330,6 +333,29 @@ public class TeacherInteraction : MonoBehaviour
         {
             Gizmos.DrawWireSphere(teacherMediumShotTarget.position, 0.3f);
             Gizmos.DrawLine(teacherMediumShotTarget.position, teacherMediumShotTarget.position + teacherMediumShotTarget.forward);
+        }
+    }
+
+    /// <summary>
+    /// Called by LabPlayerRestorer to instantly fast-forward the UI 
+    /// to the Post-Teacher Conversation state (Task 1 OFF, Task 2 ON).
+    /// </summary>
+    public void ApplyPostInteractionState()
+    {
+        foreach (var ui in uiElementsToDisableAfter)
+        {
+            if (ui != null) ui.SetActive(false);
+        }
+
+        foreach (var ui in uiElementsToEnableAfter)
+        {
+            if (ui != null) ui.SetActive(true);
+        }
+
+        if (tapToInteract != null)
+        {
+            // Remove the floating interact button over the teacher completely
+            tapToInteract.gameObject.SetActive(false);
         }
     }
 }

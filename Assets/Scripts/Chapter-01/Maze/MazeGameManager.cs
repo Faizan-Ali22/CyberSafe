@@ -48,6 +48,10 @@ public class MazeGameManager : MonoBehaviour
     public GameObject mazeIntroPopup;
     public float mazeIntroPopupDuration = 1.0f;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip shieldPickupSound;
+
     private int collected = 0;
     private int spawned = 0;
     private bool isReturning = false;
@@ -151,6 +155,12 @@ public class MazeGameManager : MonoBehaviour
     {
         if (isReturning || isFailed) return;
 
+        // Play the pickup sound
+        if (audioSource != null && shieldPickupSound != null)
+        {
+            audioSource.PlayOneShot(shieldPickupSound);
+        }
+
         collected++;
         ApplyShieldHeal();
         ShowPopup(collected - 1);
@@ -169,7 +179,11 @@ public class MazeGameManager : MonoBehaviour
         popupCanvas.SetActive(true);
         string msg = popupMessages.Length > 0 ? popupMessages[index % popupMessages.Length] : "Shield collected!";
         popupText.text = msg;
-        StartCoroutine(HidePopupAfter(2.0f));
+
+        // Use the proper length if the clip exists; otherwise default to 2.0 seconds
+        float displayDuration = (shieldPickupSound != null) ? shieldPickupSound.length : 2.0f;
+        
+        StartCoroutine(HidePopupAfter(displayDuration));
     }
 
     private IEnumerator HidePopupAfter(float t)

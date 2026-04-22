@@ -14,7 +14,7 @@ public class MazeGameManager : MonoBehaviour
     public int shieldsPerRun = 3;
 
     [Header("Timer")]
-    public float levelTimeSeconds = 150.0f;
+    public float levelTimeSeconds = 200.0f;
     private float timeLeft;
 
     [Header("PC Health")]
@@ -49,8 +49,12 @@ public class MazeGameManager : MonoBehaviour
     public float mazeIntroPopupDuration = 1.0f;
 
     [Header("Audio")]
-    public AudioSource audioSource;
+    public AudioSource sfxAudioSource; // Renamed for clarity (use this for effects)
     public AudioClip shieldPickupSound;
+    
+    [Space(10)]
+    public AudioSource bgmAudioSource; // New AudioSource just for music
+    public AudioClip backgroundMusicClip; // Set your music track here
 
     private int collected = 0;
     private int spawned = 0;
@@ -73,6 +77,14 @@ public class MazeGameManager : MonoBehaviour
         if (shieldSpawnPoints == null || shieldSpawnPoints.Count == 0) Debug.LogError("MazeGameManager: no shieldSpawnPoints assigned.");
         if (popupCanvas) popupCanvas.SetActive(false);
         if (retryPanel) retryPanel.SetActive(false);
+
+        // Start background music
+        if (bgmAudioSource != null && backgroundMusicClip != null)
+        {
+            bgmAudioSource.clip = backgroundMusicClip;
+            bgmAudioSource.loop = true; // Make it loop
+            bgmAudioSource.Play();
+        }
 
         shieldsPerRun = Mathf.Clamp(shieldsPerRun, 1, shieldSpawnPoints.Count);
 
@@ -155,10 +167,10 @@ public class MazeGameManager : MonoBehaviour
     {
         if (isReturning || isFailed) return;
 
-        // Play the pickup sound
-        if (audioSource != null && shieldPickupSound != null)
+        // Play the pickup sound using the SFX source
+        if (sfxAudioSource != null && shieldPickupSound != null)
         {
-            audioSource.PlayOneShot(shieldPickupSound);
+            sfxAudioSource.PlayOneShot(shieldPickupSound);
         }
 
         collected++;

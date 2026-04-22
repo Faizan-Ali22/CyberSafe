@@ -27,6 +27,10 @@ public class MainMenuFlow : MonoBehaviour
     [SerializeField] private float firstSelectAnimTime = 1f;
     [SerializeField] private float secondSelectAnimTime = 1f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip transitionAudio; // Assign your 2-second clip here
+
     void Awake()
     {
         if (bgRoot != null)
@@ -55,12 +59,20 @@ public class MainMenuFlow : MonoBehaviour
     private IEnumerator PlayIntroAnimation()
     {
         yield return new WaitForSeconds(animStartDelay);
+        PlayTransitionAudio(); // <--- Add this here
         mainMenuAnimator.SetTrigger("Start");
         yield return new WaitForSeconds(introAnimTime);
         SetMainUIActive(true);
         SetCanvasInteractable(mainMenuGroup, true);
     }
 
+    private void PlayTransitionAudio()
+    {
+        if (audioSource != null && transitionAudio != null)
+        {
+            audioSource.PlayOneShot(transitionAudio);
+        }
+    }
 
     public void OnClickStartButton()
     {
@@ -113,9 +125,12 @@ public class MainMenuFlow : MonoBehaviour
         
         SetCanvas(selectMenuGroup, 1f, false);
         yield return new WaitForSeconds(animStartDelay);
+        
+        PlayTransitionAudio(); // <--- Add this here (First 60-frame transition)
         selectMenuAnimator.SetTrigger("Start");
         yield return new WaitForSeconds(firstSelectAnimTime);
         
+        PlayTransitionAudio(); // <--- Add this here (if needed for the second phase)
         selectMenuAnimator.SetTrigger("Select");
         yield return new WaitForSeconds(secondSelectAnimTime);
         
@@ -134,9 +149,12 @@ public class MainMenuFlow : MonoBehaviour
         
         SetCanvas(selectMenuGroup, 1f, false);
         yield return new WaitForSeconds(animStartDelay);
+        
+        PlayTransitionAudio(); // <--- Add this here
         selectMenuAnimator.SetTrigger("Start");
         yield return new WaitForSeconds(firstSelectAnimTime);
         
+        PlayTransitionAudio(); // <--- Add this here (if needed for the second phase)
         selectMenuAnimator.SetTrigger("Select");
         yield return new WaitForSeconds(secondSelectAnimTime);
         
@@ -157,8 +175,11 @@ public class MainMenuFlow : MonoBehaviour
         
         ResetSelectMenuAnimator();
 
+        PlayTransitionAudio(); // <--- Add this here for the Back animation
         mainMenuAnimator.SetTrigger("Back");
         yield return new WaitForSeconds(introAnimTime);
+        
+        PlayTransitionAudio(); // <--- Add this here for the UI revealing again
         mainMenuAnimator.SetTrigger("Start");
         yield return new WaitForSeconds(introAnimTime);
 

@@ -292,6 +292,9 @@ public class TeacherInteraction : MonoBehaviour
                 ui.SetActive(true);
         }
 
+        // ADD THIS LINE HERE: Save the progress when the live dialogue ends!
+        LabReturnState.SetTeacherDone(true);
+
         // Safety: one more frame later to beat any animator transition timing
         yield return null;
         ForceTeacherIdleHard();
@@ -357,5 +360,8 @@ public class TeacherInteraction : MonoBehaviour
             // Remove the floating interact button over the teacher completely
             tapToInteract.gameObject.SetActive(false);
         }
+
+        // Add this line to save the progress!
+        LabReturnState.SetTeacherDone(true);
     }
 }

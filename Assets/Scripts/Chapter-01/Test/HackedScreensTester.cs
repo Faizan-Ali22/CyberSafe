@@ -42,6 +42,14 @@ public class HackedScreensTester : MonoBehaviour
             ApplyToSession();
             CacheLast();
             RefreshScreens();
+
+            // Tell Task2Controller to check again
+            var task2 = Task2Controller.GetInstance();
+            if (task2 != null)
+            {
+                task2.RefreshTask2UI();
+                task2.TryCompleteTask2();
+            }
         }
     }
 

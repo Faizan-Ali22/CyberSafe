@@ -235,7 +235,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1970490150649454896
 RectTransform:
   m_ObjectHideFlags: 0
@@ -345,6 +345,7 @@ MonoBehaviour:
   - Intro-Room 1
   - Chapter-0-Lab
   - Start-Attack
+  - Game01
 --- !u!114 &5719923221755696004
 MonoBehaviour:
   m_ObjectHideFlags: 0

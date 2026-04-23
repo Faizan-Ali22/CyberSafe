@@ -14,23 +14,26 @@ public class LabPlayerRestorer : MonoBehaviour
         // Keep teacher done state and sync the UI properly
         if (LabReturnState.IsTeacherDone())
         {
-            var teacher = FindFirstObjectByType<TeacherInteraction>();
+            // Find teacher (even if inactive)
+            var teacher = Object.FindFirstObjectByType<TeacherInteraction>(FindObjectsInactive.Include);
             if (teacher)
             {
-                // Force the Task 1 vs Task 2 UI to match the "post-conversation" state
+                // Force Task 1 OFF, Task 2 UI ON, interact icons OFF
                 teacher.ApplyPostInteractionState();
                 teacher.enabled = false;
             }
 
-            // Important: Apply hacked screen statuses AFTER the teacher script turns their parent objects ON
-            var mgr = FindFirstObjectByType<MonitorScreenManager>();
+            // Apply hacked screen statuses out in the Lab
+            var mgr = Object.FindFirstObjectByType<MonitorScreenManager>(FindObjectsInactive.Include);
             if (mgr) mgr.ApplyState();
         }
 
-        // Sync Task2 UI and completion check after returning from Game01
-        var task2 = FindFirstObjectByType<Task2Controller>();
+        // Find Task2Controller EVEN IF IT IS DISABLED in the inspector
+        var task2 = Object.FindFirstObjectByType<Task2Controller>(FindObjectsInactive.Include);
         if (task2 != null)
         {
+            // Note: If the teacher is done, task2 GameObject should be made active by teacher.ApplyPostInteractionState(). 
+            // We just ask it to refresh its numbers here.
             task2.RefreshTask2UI();
             task2.TryCompleteTask2();
         }

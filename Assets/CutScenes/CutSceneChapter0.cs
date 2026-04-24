@@ -13,6 +13,8 @@ public class CutSceneChapter0 : MonoBehaviour
 
     void OnEnable()
     {
+        MarkChapterProgress();
+
         if (useSceneIndex)
         {
             StartCoroutine(LoadSceneAsync(sceneIndex));
@@ -21,6 +23,24 @@ public class CutSceneChapter0 : MonoBehaviour
         {
             StartCoroutine(LoadSceneAsync(sceneName));
         }
+    }
+
+    private void MarkChapterProgress()
+    {
+        if (ProgressManager.Instance == null)
+        {
+            Debug.LogWarning("CutSceneChapter0: ProgressManager instance not found.");
+            return;
+        }
+
+        // Chapter Completed: Element 0, Element 1
+        ProgressManager.Instance.SetChapterCompletedOnly(0, true);
+        ProgressManager.Instance.SetChapterCompletedOnly(1, true);
+
+        // Chapter Unlocked: Element 0, Element 1, Element 2
+        ProgressManager.Instance.SetChapterUnlocked(0, true);
+        ProgressManager.Instance.SetChapterUnlocked(1, true);
+        ProgressManager.Instance.SetChapterUnlocked(2, true);
     }
     
     private IEnumerator LoadSceneAsync(string name)

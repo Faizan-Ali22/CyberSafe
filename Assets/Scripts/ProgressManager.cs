@@ -1,20 +1,17 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
 public class ProgressManager : PersistentSingleton<ProgressManager>
 {
-    // Total chapters
     public const int ChapterCount = 8;
 
-    // Progress data
     public bool[] chapterCompleted = new bool[ChapterCount];
-    public bool[] chapterUnlocked  = new bool[ChapterCount];
+    public bool[] chapterUnlocked = new bool[ChapterCount];
 
     private const string SaveKeyCompleted = "ChapterCompleted";
-    private const string SaveKeyUnlocked  = "ChapterUnlocked";
+    private const string SaveKeyUnlocked = "ChapterUnlocked";
 
-    /// <summary>
-    /// Initializes progress data when singleton is established.
-    /// </summary>
     protected override void OnPersistentSingletonAwake()
     {
         InitializeDefaultUnlocks();
@@ -23,35 +20,25 @@ public class ProgressManager : PersistentSingleton<ProgressManager>
 
     private void InitializeDefaultUnlocks()
     {
-        // Only chapter 0 unlocked at the beginning
         for (int i = 0; i < ChapterCount; i++)
         {
-            chapterUnlocked[i]  = (i == 0);
+            chapterUnlocked[i] = (i == 0);
             chapterCompleted[i] = false;
         }
     }
 
-    #region Public API
-
     public bool IsChapterUnlocked(int chapterIndex)
     {
-        if (!IsValidChapter(chapterIndex))
-            return false;
-
+        if (!IsValidChapter(chapterIndex)) return false;
         return chapterUnlocked[chapterIndex];
     }
 
     public bool IsChapterCompleted(int chapterIndex)
     {
-        if (!IsValidChapter(chapterIndex))
-            return false;
-
+        if (!IsValidChapter(chapterIndex)) return false;
         return chapterCompleted[chapterIndex];
     }
 
-    /// <summary>
-    /// Mark a chapter completed and unlock the next one.
-    /// </summary>
     public void SetChapterCompleted(int chapterIndex, bool completed = true)
     {
         if (!IsValidChapter(chapterIndex))
@@ -72,31 +59,20 @@ public class ProgressManager : PersistentSingleton<ProgressManager>
         SaveProgress();
     }
 
-    /// <summary>
-    /// Mark a chapter completed WITHOUT automatically unlocking the next one.
-    /// </summary>
     public void SetChapterCompletedOnly(int chapterIndex, bool completed = true)
     {
         if (!IsValidChapter(chapterIndex)) return;
-        
         chapterCompleted[chapterIndex] = completed;
         SaveProgress();
     }
 
-    /// <summary>
-    /// Explicitly control the unlock state of a specific chapter.
-    /// </summary>
     public void SetChapterUnlocked(int chapterIndex, bool unlocked = true)
     {
         if (!IsValidChapter(chapterIndex)) return;
-
         chapterUnlocked[chapterIndex] = unlocked;
         SaveProgress();
     }
 
-    /// <summary>
-    /// Dev / debug: reset everything to default.
-    /// </summary>
     public void ResetAllProgress()
     {
         InitializeDefaultUnlocks();
@@ -106,23 +82,19 @@ public class ProgressManager : PersistentSingleton<ProgressManager>
         Debug.Log("ProgressManager: All progress reset.");
     }
 
-    #endregion
-
-    #region Save / Load
-
     private void SaveProgress()
     {
         char[] completedBits = new char[ChapterCount];
-        char[] unlockedBits  = new char[ChapterCount];
+        char[] unlockedBits = new char[ChapterCount];
 
         for (int i = 0; i < ChapterCount; i++)
         {
             completedBits[i] = chapterCompleted[i] ? '1' : '0';
-            unlockedBits[i]  = chapterUnlocked[i]  ? '1' : '0';
+            unlockedBits[i] = chapterUnlocked[i] ? '1' : '0';
         }
 
         PlayerPrefs.SetString(SaveKeyCompleted, new string(completedBits));
-        PlayerPrefs.SetString(SaveKeyUnlocked,  new string(unlockedBits));
+        PlayerPrefs.SetString(SaveKeyUnlocked, new string(unlockedBits));
         PlayerPrefs.Save();
     }
 
@@ -132,10 +104,10 @@ public class ProgressManager : PersistentSingleton<ProgressManager>
             return;
 
         string completedData = PlayerPrefs.GetString(SaveKeyCompleted);
-        string unlockedData  = PlayerPrefs.GetString(SaveKeyUnlocked);
+        string unlockedData = PlayerPrefs.GetString(SaveKeyUnlocked);
 
         int limitCompleted = Mathf.Min(completedData.Length, ChapterCount);
-        int limitUnlocked  = Mathf.Min(unlockedData.Length,  ChapterCount);
+        int limitUnlocked = Mathf.Min(unlockedData.Length, ChapterCount);
 
         for (int i = 0; i < limitCompleted; i++)
             chapterCompleted[i] = (completedData[i] == '1');
@@ -144,12 +116,23 @@ public class ProgressManager : PersistentSingleton<ProgressManager>
             chapterUnlocked[i] = (unlockedData[i] == '1');
     }
 
-    #endregion
-
     private bool IsValidChapter(int index)
     {
         return index >= 0 && index < ChapterCount;
     }
 
-    
+    [ContextMenu("Wipe Data Now")]
+    public void WipeData()
+    {
+        SessionProgress.Reset();
+        PlayerPrefs.DeleteKey("Task2Completed");
+        PlayerPrefs.DeleteKey("Task2RewardShown");
+        PlayerPrefs.DeleteKey("Task2Completed_v2");
+        PlayerPrefs.DeleteKey("Task2RewardShown_v2");
+
+        ResetAllProgress();
+        PlayerPrefs.Save();
+
+        Debug.Log("All progress fully wiped! Starting a fresh run.");
+    }
 }

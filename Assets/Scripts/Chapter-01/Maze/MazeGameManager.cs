@@ -14,13 +14,13 @@ public class MazeGameManager : MonoBehaviour
     public int shieldsPerRun = 3;
 
     [Header("Timer")]
-    public float levelTimeSeconds = 200.0f;
+    public float levelTimeSeconds = 230.0f;
     private float timeLeft;
 
     [Header("PC Health")]
     public float maxHealth = 100f;
-    public float healthDrainPerSecond = 2f;
-    public float virusHitDamage = 8f;
+    public float healthDrainPerSecond = 1.0f;
+    public float virusHitDamage = 2.0f;
     private float currentHealth;
 
     [Header("UI")]

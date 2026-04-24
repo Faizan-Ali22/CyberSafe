@@ -10,33 +10,34 @@ public class Task2Controller : MonoBehaviour
     [SerializeField] private int requiredClears = 2;
 
     [Header("Task2 UI")]
-    [SerializeField] private GameObject task2Panel;           // Task2 panel root
-    [SerializeField] private TMP_Text task2ProgressText;      // "Task 2: Check PCs (x/2)"
-    [SerializeField] private GameObject task2CompletedTick;   // optional check icon
+    [SerializeField] private GameObject task2Panel;           
+    [SerializeField] private TMP_Text task2ProgressText;     
+    [SerializeField] private GameObject task2CompletedTick;   
 
     [Header("Reward Popup")]
-    [SerializeField] private GameObject completionPopupRoot;  // popup panel root
-    [SerializeField] private TMP_Text badgeTitleText;         // "Badge Earned: Malware Defender"
-    [SerializeField] private TMP_Text nextInstructionText;    // next instruction text
-    [SerializeField] private Button continueButton;           // close popup button
+    [SerializeField] private GameObject completionPopupRoot;  
+    [SerializeField] private TMP_Text badgeTitleText;         
+    [SerializeField] private TMP_Text nextInstructionText;    
+    [SerializeField] private Button continueButton;           
 
     [Header("Scene Transition")]
-    [Tooltip("Type the exact name of the Scene you want to load (e.g., MainMenu or Chapter02)")]
-    [SerializeField] private string nextSceneName = "MainMenu";
+    [Tooltip("Type the exact name of the Scene you want to load (e.g., MainMenu or Reward01)")]
+    [SerializeField] private string nextSceneName = "Reward01";
 
     [Header("Scene Audio")]
     [Tooltip("The AudioSource that plays the 4-second looping background music.")]
     [SerializeField] private AudioSource backgroundMusicSource;
     [Tooltip("The AudioSource that plays the 1.2-second badge earned sound.")]
     [SerializeField] private AudioSource badgeEarnedSource;
+    [Tooltip("The AudioSource that plays the 54-second school interior sound on loop.")]
+    [SerializeField] private AudioSource schoolInteriorSource;
 
     [Header("Unlock Settings")]
-    [Tooltip("Chapter 2 = index 1")]
+    [Tooltip("Index of the Chapter to unlock when completed. (Chapter 2 = index 1)")]
     [SerializeField] private int unlockChapterIndex = 1;
 
     [Header("PlayerPrefs Keys")]
     [SerializeField] private string task2CompleteKey = "Task2Completed";
-    [SerializeField] private string task2RewardShownKey = "Task2RewardShown";
 
     private void Awake()
     {
@@ -60,6 +61,10 @@ public class Task2Controller : MonoBehaviour
         if (IsTask2Completed())
         {
             ApplyCompletedStateUI();
+            
+            // If they returned to the level via select menu and it's already done, 
+            // open the escape door (continuing point) immediately!
+            ShowCompletionPopup(); 
         }
         else
         {
@@ -70,6 +75,16 @@ public class Task2Controller : MonoBehaviour
                 if (!backgroundMusicSource.isPlaying)
                 {
                     backgroundMusicSource.Play();
+                }
+            }
+
+            // ADD THIS: Play the school interior background sound
+            if (schoolInteriorSource != null)
+            {
+                schoolInteriorSource.loop = true;
+                if (!schoolInteriorSource.isPlaying)
+                {
+                    schoolInteriorSource.Play();
                 }
             }
         }
@@ -88,7 +103,7 @@ public class Task2Controller : MonoBehaviour
         if (task2ProgressText != null)
             task2ProgressText.text = $"{cleared}/{requiredClears}";
 
-        // Force the tick OFF whenever we refresh
+        // Force the tick OFF whenever we refresh initially
         if (task2CompletedTick != null)
             task2CompletedTick.SetActive(false);
 
@@ -110,46 +125,52 @@ public class Task2Controller : MonoBehaviour
     {
         SetTask2Completed(true);
 
-        // Unlock Chapter 2
+        // Tell ProgressManager exactly which elements to Complete and Unlock
         if (ProgressManager.Instance != null) 
         {
-            ProgressManager.Instance.SetChapterCompleted(unlockChapterIndex - 1, true);
+            // Set Chapter 0 and 1 as Completed
+            ProgressManager.Instance.SetChapterCompletedOnly(0, true);
+            ProgressManager.Instance.SetChapterCompletedOnly(1, true);
+
+            // Set Chapter 0 and 1 as Unlocked
+            ProgressManager.Instance.SetChapterUnlocked(0, true);
+            ProgressManager.Instance.SetChapterUnlocked(1, true);
+            
+            // Explicitly lock Chapter 2 in case it was accidentally unlocked before
+            ProgressManager.Instance.SetChapterUnlocked(2, false); 
         }
 
         ApplyCompletedStateUI();
 
-        bool alreadyShown = PlayerPrefs.GetInt(task2RewardShownKey, 0) == 1;
-        if (!alreadyShown)
-        {
-            // Start the 5-second timer before showing the badge
-            StartCoroutine(ShowPopupWithDelay(5.0f));
-            
-            PlayerPrefs.SetInt(task2RewardShownKey, 1);
-            PlayerPrefs.Save();
-        }
-
-        Debug.Log("[Task2Controller] Task2 complete. Badge + Chapter2 unlocked.");
-    }
-
-    // THE 5-SECOND TIMER
-    private IEnumerator ShowPopupWithDelay(float delay)
-    {
-        // Wait 5 seconds
-        yield return new WaitForSeconds(delay);
-
-        // Stop the background music right before the badge appears
-        if (backgroundMusicSource != null && backgroundMusicSource.isPlaying)
+        // Immediately kill the looping beep sound 
+        if (backgroundMusicSource != null)
         {
             backgroundMusicSource.Stop();
         }
 
-        // Play the badge sound effect
+        // ADD THIS: Stop the school interior sound
+        if (schoolInteriorSource != null)
+        {
+            schoolInteriorSource.Stop();
+        }
+
+        // Show popup instantly! 
+        StartCoroutine(ShowPopupWithDelay(1.5f));
+        
+        Debug.Log("[Task2Controller] Task2 complete. Badge showing + exact Chapters Updated!");
+    }
+
+    private IEnumerator ShowPopupWithDelay(float delay)
+    {
+        // Wait extremely brief 0.5s so text says "Complete" first
+        yield return new WaitForSeconds(delay);
+
         if (badgeEarnedSource != null)
         {
+            badgeEarnedSource.loop = true; // Make it loop here
             badgeEarnedSource.Play();
         }
 
-        // Show the UI popup
         ShowCompletionPopup();
     }
 
@@ -171,7 +192,7 @@ public class Task2Controller : MonoBehaviour
             badgeTitleText.text = "Badge Earned: Malware Defender";
 
         if (nextInstructionText != null)    
-            nextInstructionText.text = "Great job! Chapter 2 is now unlocked. Go to Main Menu > Chapter Select to continue.";
+            nextInstructionText.text = "Great job! Chapter 2 is now unlocked.";
     }
 
     public void CloseCompletionPopup()
@@ -181,7 +202,6 @@ public class Task2Controller : MonoBehaviour
 
         if (!string.IsNullOrEmpty(nextSceneName))
         {
-            Debug.Log($"Loading next scene: {nextSceneName}");
             SceneManager.LoadScene(nextSceneName);
         }
     }

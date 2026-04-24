@@ -1,9 +1,5 @@
 using UnityEngine;
-
-/// <summary>
-/// Manages player progress across chapters. Persists across scene loads.
-/// Uses PersistentSingleton pattern to ensure single instance survives scene transitions.
-/// </summary>
+using System.Collections;
 public class ProgressManager : PersistentSingleton<ProgressManager>
 {
     // Total chapters
@@ -77,6 +73,28 @@ public class ProgressManager : PersistentSingleton<ProgressManager>
     }
 
     /// <summary>
+    /// Mark a chapter completed WITHOUT automatically unlocking the next one.
+    /// </summary>
+    public void SetChapterCompletedOnly(int chapterIndex, bool completed = true)
+    {
+        if (!IsValidChapter(chapterIndex)) return;
+        
+        chapterCompleted[chapterIndex] = completed;
+        SaveProgress();
+    }
+
+    /// <summary>
+    /// Explicitly control the unlock state of a specific chapter.
+    /// </summary>
+    public void SetChapterUnlocked(int chapterIndex, bool unlocked = true)
+    {
+        if (!IsValidChapter(chapterIndex)) return;
+
+        chapterUnlocked[chapterIndex] = unlocked;
+        SaveProgress();
+    }
+
+    /// <summary>
     /// Dev / debug: reset everything to default.
     /// </summary>
     public void ResetAllProgress()
@@ -132,4 +150,6 @@ public class ProgressManager : PersistentSingleton<ProgressManager>
     {
         return index >= 0 && index < ChapterCount;
     }
+
+    
 }

@@ -51,7 +51,7 @@ public class GameProgressManager : MonoBehaviour
         // Try finding the savedText again when returning to main campus scene
         if (savedText == null)
         {
-            var foundText = GameObject.Find("SavedText");
+            var foundText = GameObject.Find("SavedText"); // <--- This looks for a game object named EXACTLY "SavedText"
             if (foundText != null)
                 savedText = foundText.GetComponent<TMP_Text>();
         }
@@ -79,7 +79,12 @@ public class GameProgressManager : MonoBehaviour
     private void UpdateUI()
     {
         if (savedText != null)
+        {
             savedText.text = $"Saved colleges {savedCount}/{totalToSave}";
+            
+            // Force TMP to update its mesh (fixes the invisible text bug)
+            savedText.ForceMeshUpdate(true);
+        }
     }
 
     // 🟩 Save & Load PlayerPrefs

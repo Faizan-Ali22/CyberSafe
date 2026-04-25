@@ -71,21 +71,49 @@ public class Bilal : MonoBehaviour
         yield return new WaitForSeconds(2f);
         Flash.SetActive(false);
         Hacked.SetActive(true);
+
+        // --- NEW LOGIC: Wait briefly, then tell StudentInteraction that we failed ---
+        yield return new WaitForSeconds(3f); 
+        if (studentController != null)
+        {
+            studentController.OnMinigameFailed();
+        }
     }
 
     public void OnPhishing() { OpenMsg.SetActive(false); RightChoice.SetActive(true); }
 
     public void OnGivePhoneBack()
     {
-        // THIS IS THE KEY LINK BACK TO THE MAIN GAME
+        // Call OnMinigameSuccess instead of the old CloseMinigameAndFinish
         if (studentController != null)
         {
-            studentController.CloseMinigameAndFinish();
+            studentController.OnMinigameSuccess();
         }
         else
         {
             Debug.LogError("Bilal.cs: You forgot to assign the Student Interaction script in the Inspector!");
         }
+    }
+
+    public void ResetMinigame()
+    {
+        // 1. Stop any lingering wrong-choice sequences (like the 3-second wait)
+        StopAllCoroutines(); 
+        
+        // 2. Aggressively force EVERY screen to turn off first
+        LockScreen.SetActive(false); 
+        LockScreenMsg.SetActive(false); 
+        OpenMsg.SetActive(false);
+        RightChoice.SetActive(false); 
+        WrongChoice.SetActive(false); 
+        Flash.SetActive(false); 
+        Hacked.SetActive(false);
+        
+        // 3. Turn ONLY the Lock screen on
+        LockScreen.SetActive(true);
+        
+        // 4. Restart the 5-second automatic delay sequence
+        StartCoroutine(AutoTransitionFromLockScreen()); 
     }
 
     private void SetAllScreensInactive()

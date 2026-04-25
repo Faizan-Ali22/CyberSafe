@@ -51,8 +51,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Red-Links/Cutscene.unity
     guid: 9ffa82facae4bf547ba2d58d9e2adee4
   - enabled: 1
-    path: Assets/Scenes/Red-Links/Chapter2.unity
-    guid: 2706cb7613685a54dbaca2ff75682312
+    path: Assets/Scenes/Red-Links/Chapter-02.unity
+    guid: f66fc429ae6bae644be133b362cc602e
   - enabled: 1
     path: Assets/Scenes/Password-Panic/Chapter03.unity
     guid: 49eccb3fec6c57442a064c6d653eb08c

@@ -52,6 +52,10 @@ public class StudentInteraction : MonoBehaviour
     [SerializeField] public GameObject MiniMap;
     [SerializeField] public string nextSceneName = "";
 
+    [Header("Fail State Setup")]
+    public GameObject retryPanel;
+    public string disbeliefTrigger = "Disbelief";
+
     private bool hasInteracted = false;
     private bool isPlayerInZone = false;
     private float soundTimer = 0f;
@@ -60,6 +64,13 @@ public class StudentInteraction : MonoBehaviour
 
     private void Start()
     {
+        // --- NEW CHECK: Skip entirely if this NPC was already saved in previous session ---
+        if (GameProgressManager.Instance != null && GameProgressManager.Instance.WasNPCSaved(gameObject.name))
+        {
+            if (tapToInteract != null) tapToInteract.gameObject.SetActive(false);
+            this.enabled = false;
+            return;
+        }
         
         audioSource = GetComponent<AudioSource>();
         audioSource.clip = notificationSound;
@@ -254,5 +265,86 @@ public class StudentInteraction : MonoBehaviour
         if (studentAnimator == null) return;
         studentAnimator.ResetTrigger(talkTriggerName);
         studentAnimator.SetTrigger(idleTriggerName);
+    }
+
+    public void OnMinigameSuccess()
+    {
+        // 1. Update Game Progress
+        if (GameProgressManager.Instance != null)
+        {
+            GameProgressManager.Instance.IncrementSaved(gameObject.name);
+        }
+
+        // 2. Shut down the minigame & UI
+        if (minigameCanvas != null) minigameCanvas.SetActive(false);
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
+        
+        // 3. Keep Sound and Interaction disabled permanently for this NPC
+        if (tapToInteract != null) tapToInteract.gameObject.SetActive(false);
+        this.enabled = false; // Disables the Update() function so the "Ting" sound stops triggering.
+
+        // 4. Run your standard interaction finish routine
+        StartCoroutine(FinishInteractionRoutine());
+        
+        // Avoid calling LoadNextSceneAfterDelay() here unless GameProgressManager says 2/2 is complete
+    }
+
+    public void OnMinigameFailed()
+    {
+        StartCoroutine(FailRoutine());
+    }
+
+    private IEnumerator FailRoutine()
+    {
+        // 1. Turn off Minigame and fix orientation
+        if (minigameCanvas != null) minigameCanvas.SetActive(false);
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
+
+        // 2. Switch back to Bilal's Camera (assuming camMediumShot or similar was your cinematic view)
+        if (StudentCinematicManager.Instance != null && camMediumShot != null)
+        {
+             StudentCinematicManager.Instance.SwitchToCinematicCamera(camMediumShot, 0.5f);
+        }
+
+        // 3. Play the Disbelief animation
+        if (studentAnimator != null)
+        {
+             studentAnimator.SetTrigger(disbeliefTrigger);
+        }
+
+        // 4. Wait for animation to finish (assuming it takes ~3 seconds, adjust as needed)
+        yield return new WaitForSeconds(3f);
+
+        // 5. Show Retry Panel
+        if (retryPanel != null) retryPanel.SetActive(true);
+    }
+
+    public void RetryMinigame()
+    {
+        // 1. Hide the retry panel
+        if (retryPanel != null) retryPanel.SetActive(false);
+        
+        // 2. Reset the NPC's animation back to sitting
+        if (studentAnimator != null)
+        {
+            studentAnimator.ResetTrigger(disbeliefTrigger); // Safeguard
+            studentAnimator.SetTrigger(idleTriggerName);
+        }
+
+        // 3. Switch the orientation back to Portrait
+        Screen.orientation = ScreenOrientation.Portrait;
+        
+        // 4. Reshow the Minigame Canvas and reset its internal UI
+        if (minigameCanvas != null) 
+        {
+            minigameCanvas.SetActive(true);
+            
+            // Find the Bilal script and tell it to restart
+            Bilal bilalScript = minigameCanvas.GetComponentInChildren<Bilal>(true);
+            if (bilalScript != null)
+            {
+                bilalScript.ResetMinigame();
+            }
+        }
     }
 }

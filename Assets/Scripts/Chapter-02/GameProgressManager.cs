@@ -2,20 +2,24 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-
+using TMPro;
 public class GameProgressManager : MonoBehaviour
 {
     public static GameProgressManager Instance;
 
     [Header("UI References")]
-    [Tooltip("Assign 'Saved colleges 0/5' UI Text in the main scene.")]
-    public Text savedText;
+    [Tooltip("Assign 'Saved colleges 0/2' UI Text in the main scene.")]
+    public TMP_Text savedText;
 
     [Header("Progress Settings")]
-    public int totalToSave = 5;
+    public int totalToSave = 2;
 
     private int savedCount = 0;
     private HashSet<string> savedNPCs = new HashSet<string>();
+
+    [Header("Testing & Debug")]
+    [Tooltip("Check this box in the Inspector while playing to reset everything instantly.")]
+    public bool resetNow = false;
 
     void Awake()
     {
@@ -49,16 +53,21 @@ public class GameProgressManager : MonoBehaviour
         {
             var foundText = GameObject.Find("SavedText");
             if (foundText != null)
-                savedText = foundText.GetComponent<Text>();
+                savedText = foundText.GetComponent<TMP_Text>();
         }
 
         UpdateUI();
     }
 
     // 🟩 Called from RightChoiceController (after player saves a student)
-    public void IncrementSaved()
+    public void IncrementSaved(string studentID)
     {
+        // Don't count the same student twice!
+        if (savedNPCs.Contains(studentID)) return;
+
+        savedNPCs.Add(studentID);
         savedCount = Mathf.Clamp(savedCount + 1, 0, totalToSave);
+        
         SaveProgress();
         UpdateUI();
 
@@ -99,8 +108,18 @@ public class GameProgressManager : MonoBehaviour
     // 🟩 What happens when all are saved
     private void OnAllStudentsSaved()
     {
-        Debug.Log("🎉 All students have been saved from cyberattacks!");
-        // TODO: Trigger a win screen, credits, or unlock next chapter.
+        Debug.Log("🎉 All students have been saved from Phishing Attacks! (2/2)");
+
+        // 1. Tell ProgressManager that Chapter Index 2 (which is Element 2) is Completed!
+        // By default, SetChapterCompleted automatically unlocks the next chapter (Element 3).
+        if (ProgressManager.Instance != null)
+        {
+            ProgressManager.Instance.SetChapterCompleted(2, true); 
+        }
+
+        // 2. TODO: Trigger your Badge PopUp UI here.
+        // Something like:
+        // if (badgePanel != null) badgePanel.SetActive(true);
     }
 
     // 🟩 Optional manual reset for debugging or new game
@@ -145,5 +164,33 @@ public class GameProgressManager : MonoBehaviour
     public bool WasNPCSaved(string npcName)
     {
         return savedNPCs.Contains(npcName);
+    }
+
+    // Add this Update method
+    void Update()
+    {
+        if (resetNow)
+        {
+            // Reset this script's progress (0/2 students)
+            ResetAllProgress();
+            
+            // Reset the global ProgressManager (Chapters)
+            if (ProgressManager.Instance != null)
+            {
+                ProgressManager.Instance.ResetAllProgress();
+                
+                // You mentioned you want it to default to this specific state for testing:
+                // Completed: 0, 1. Unlocked: 0, 1, 2.
+                ProgressManager.Instance.SetChapterCompletedOnly(0, true);
+                ProgressManager.Instance.SetChapterCompletedOnly(1, true);
+                
+                ProgressManager.Instance.SetChapterUnlocked(0, true);
+                ProgressManager.Instance.SetChapterUnlocked(1, true);
+                ProgressManager.Instance.SetChapterUnlocked(2, true);
+            }
+
+            Debug.Log("🚧 TESTING TRIGGERED: Game Progress and Chapters reset to testing defaults.");
+            resetNow = false; // Uncheck the box automatically
+        }
     }
 }

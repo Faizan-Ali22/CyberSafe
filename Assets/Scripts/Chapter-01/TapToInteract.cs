@@ -62,13 +62,23 @@ public class TapToInteract : MonoBehaviour
         float distance = Vector3.Distance(player.position, targetTransform.position);
         
         // --- THE FIX IS HERE ---
-        // We check if the Instance exists BEFORE asking if dialogue is active.
-        // This prevents the "NullReferenceException" when there is no Teacher Manager.
+        // We use HasInstance to avoid creating a warning loop when it doesn't exist
         bool isDialogueOpen = false;
         
-        if (DialogueManager.Instance != null)
+        // 1. Safely check Chapter 1 Dialogue Manager
+        if (DialogueManager.HasInstance)
         {
             isDialogueOpen = DialogueManager.Instance.IsDialogueActive();
+        }
+
+        // 2. Safely check Chapter 2 Student Dialogue Manager too!
+        if (StudentDialogueManager.Instance != null && StudentDialogueManager.Instance.dialoguePanel != null)
+        {
+            // If the panel is active on screen, dialogue is open
+            if (StudentDialogueManager.Instance.dialoguePanel.activeSelf)
+            {
+                isDialogueOpen = true;
+            }
         }
 
         // Only show button if close enough AND no dialogue is playing

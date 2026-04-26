@@ -5,7 +5,7 @@ public class StudentCinematicManager : MonoBehaviour
      public static StudentCinematicManager Instance;
 
     public Camera mainCamera;
-    public Camera cinematicCamera; // Assign your extra camera here
+    public Camera cinematicCamera; 
 
     private void Awake()
     {
@@ -17,10 +17,15 @@ public class StudentCinematicManager : MonoBehaviour
 
     public void SwitchToCinematicCamera(Transform target, float duration)
     {
-        if (mainCamera != null) mainCamera.gameObject.SetActive(false);
-        if (cinematicCamera != null)
+        if (cinematicCamera != null && mainCamera != null)
         {
+            // NEW: Teleport the cinematic camera to the player's view instantly!
+            cinematicCamera.transform.position = mainCamera.transform.position;
+            cinematicCamera.transform.rotation = mainCamera.transform.rotation;
+
             cinematicCamera.gameObject.SetActive(true);
+            mainCamera.gameObject.SetActive(false);
+            
             StopAllCoroutines();
             StartCoroutine(MoveCamera(target, duration));
         }

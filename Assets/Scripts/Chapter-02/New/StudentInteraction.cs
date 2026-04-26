@@ -8,6 +8,8 @@ public class StudentInteraction : MonoBehaviour
 {
    [Header("Minigame Configuration")]
     public GameObject minigameCanvas; // Drag the Canvas containing "Bilal.cs" here
+    public Bilal bilalMinigame; // <--- ADD THIS
+    public Amna amnaMinigame;   // <--- ADD THIS
     
     [Header("Sound Trigger Settings")]
     public AudioClip notificationSound;
@@ -107,7 +109,12 @@ public class StudentInteraction : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // NEW CHECK: Ignore if we haven't saved enough students yet
+            // --- ADD THIS NEW CHECK ---
+            // If we already saved this specific student, NEVER show the prompt again!
+            if (GameProgressManager.Instance != null && GameProgressManager.Instance.WasNPCSaved(gameObject.name))
+                return;
+
+            // Ignore if we haven't saved enough students yet
             if (GameProgressManager.Instance != null && GameProgressManager.Instance.GetSavedCount() < requiredSavedCount)
                 return;
 
@@ -191,12 +198,17 @@ public class StudentInteraction : MonoBehaviour
             playerRigidbody.constraints = RigidbodyConstraints.FreezeAll;
         }
 
-        // 3. Show Minigame
+        // 3. Show Minigame Canvas
         if (minigameCanvas != null)
         {
             minigameCanvas.SetActive(true);
             MiniMap.SetActive(false);
         }
+
+        // 4. --- THIS IS THE FIX --- 
+        // Restart the script logic now that the canvas is actually visible!
+        if (bilalMinigame != null) bilalMinigame.ResetMinigame();
+        if (amnaMinigame != null) amnaMinigame.ResetMinigame();
     }
 
     // Called by Bilal.cs when "Give Phone Back" is pressed
@@ -345,20 +357,10 @@ public class StudentInteraction : MonoBehaviour
         if (minigameCanvas != null) 
         {
             minigameCanvas.SetActive(true);
-            
-            // First, try to find the Bilal script and tell it to restart
-            Bilal bilalScript = minigameCanvas.GetComponentInChildren<Bilal>(true);
-            if (bilalScript != null)
-            {
-                bilalScript.ResetMinigame();
-            }
-
-            // If it wasn't Bilal, try to find the Amna script and tell it to restart
-            Amna amnaScript = minigameCanvas.GetComponentInChildren<Amna>(true);
-            if (amnaScript != null)
-            {
-                amnaScript.ResetMinigame();
-            }
         }
+
+        // 5. Explicitly reset the logic script!
+        if (bilalMinigame != null) bilalMinigame.ResetMinigame();
+        if (amnaMinigame != null) amnaMinigame.ResetMinigame();
     }
 }

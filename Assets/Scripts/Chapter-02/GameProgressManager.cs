@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+
 public class GameProgressManager : MonoBehaviour
 {
     public static GameProgressManager Instance;
@@ -23,11 +24,16 @@ public class GameProgressManager : MonoBehaviour
     public bool resetNow = false;
 
     [Header("End Sequence Properties")]
-    public GameObject badgePanel; // Drag your 2/2 Badge UI panel here
+    public GameObject badgePanel; 
+    public TMP_Text badgeTitleText;         
+    public TMP_Text nextInstructionText;    
+    public Button continueButton;           
+    public AudioSource badgeEarnedSource;
+    [Tooltip("Type the exact name of the Chapter 3 Cutscene/Scene")]
+    public string nextSceneName = "Chapter03"; 
 
     void Awake()
     {
-        // Singleton pattern for persistence across scenes
         if (Instance == null)
         {
             Instance = this;
@@ -37,6 +43,13 @@ public class GameProgressManager : MonoBehaviour
         {
             Destroy(gameObject);
             return;
+        }
+
+        // Hook up the continue button automatically
+        if (continueButton != null)
+        {
+            continueButton.onClick.RemoveListener(CloseCompletionPopup);
+            continueButton.onClick.AddListener(CloseCompletionPopup);
         }
 
         LoadProgress();
@@ -49,13 +62,11 @@ public class GameProgressManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // 🟩 Automatically re-hook UI if scene changes
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Try finding the savedText again when returning to main campus scene
         if (savedText == null)
         {
-            var foundText = GameObject.Find("SavedText"); // <--- This looks for a game object named EXACTLY "SavedText"
+            var foundText = GameObject.Find("SavedText"); 
             if (foundText != null)
                 savedText = foundText.GetComponent<TMP_Text>();
         }
@@ -63,10 +74,8 @@ public class GameProgressManager : MonoBehaviour
         UpdateUI();
     }
 
-    // 🟩 Called from RightChoiceController (after player saves a student)
     public void IncrementSaved(string studentID)
     {
-        // Don't count the same student twice!
         if (savedNPCs.Contains(studentID)) return;
 
         savedNPCs.Add(studentID);
@@ -79,23 +88,18 @@ public class GameProgressManager : MonoBehaviour
             OnAllStudentsSaved();
     }
 
-    // 🟩 Update UI text
     private void UpdateUI()
     {
         if (savedText != null)
         {
             savedText.text = $"Saved colleges {savedCount}/{totalToSave}";
-            
-            // Force TMP to update its mesh (fixes the invisible text bug)
             savedText.ForceMeshUpdate(true);
         }
     }
 
-    // 🟩 Save & Load PlayerPrefs
     private void SaveProgress()
     {
         PlayerPrefs.SetInt("SavedCount", savedCount);
-        // Convert saved NPCs to string and save
         string savedNPCsString = string.Join(",", savedNPCs);
         PlayerPrefs.SetString("SavedNPCs", savedNPCsString);
         PlayerPrefs.Save();
@@ -114,36 +118,63 @@ public class GameProgressManager : MonoBehaviour
 
     public int GetSavedCount() => savedCount;
 
-    // 🟩 What happens when all are saved
     private void OnAllStudentsSaved()
     {
         Debug.Log("🎉 All students have been saved from Phishing Attacks! (2/2)");
 
-        // 1. Tell ProgressManager that Chapter Index 2 (Element 2) is Completed!
-        // This automatically unlocks Element 3 as well.
         if (ProgressManager.Instance != null)
         {
             ProgressManager.Instance.SetChapterCompleted(2, true); 
         }
 
-        // 2. Start the 5-second delay before showing the badge
         StartCoroutine(ShowBadgeWithDelay(5f));
     }
 
-    // 🟩 The 5-second waiting routine
     private IEnumerator ShowBadgeWithDelay(float delay)
     {
-        // Wait for the specified time
         yield return new WaitForSeconds(delay);
 
-        // Turn on the Badge Panel!
+        // Update popup text
+        if (badgeTitleText != null) badgeTitleText.text = "Badge Earned: Phish Spotter";
+        if (nextInstructionText != null) nextInstructionText.text = "Great job! Chapter 3 is now unlocked.";
+
+        // Play the looping sound
+        if (badgeEarnedSource != null)
+        {
+            badgeEarnedSource.loop = true;
+            badgeEarnedSource.Play();
+        }
+
+        // Show panel
         if (badgePanel != null)
         {
             badgePanel.SetActive(true);
         }
     }
 
-    // 🟩 Optional manual reset for debugging or new game
+    // 🟩 Called when the Continue button is clicked
+    public void CloseCompletionPopup()
+    {
+        // Stop the sound
+        if (badgeEarnedSource != null)
+        {
+            badgeEarnedSource.Stop();
+        }
+
+        // Hide the panel
+        if (badgePanel != null)
+        {
+            badgePanel.SetActive(false);
+        }
+
+        // Load the next scene
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+    }
+
+    // --- Developer debug functions below ---
     [ContextMenu("Reset Progress (Count Only)")]
     public void ResetProgressCountOnly()
     {
@@ -152,24 +183,17 @@ public class GameProgressManager : MonoBehaviour
         UpdateUI();
     }
 
-    // 🟩 Reset all progress and PlayerPrefs
     [ContextMenu("Reset All Progress")]
     public void ResetAllProgress()
     {
-        // Reset local variables
         savedCount = 0;
         savedNPCs.Clear();
-
-        // Clear all PlayerPrefs
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
-
-        // Update UI
         UpdateUI();
         Debug.Log("🔄 All progress and PlayerPrefs have been reset!");
     }
 
-    // 🟩 Reset only game progress
     [ContextMenu("Reset Game Progress")]
     public void ResetProgress()
     {
@@ -187,31 +211,31 @@ public class GameProgressManager : MonoBehaviour
         return savedNPCs.Contains(npcName);
     }
 
-    // Add this Update method
     void Update()
     {
+        // --- ADD THIS TO BULLETPROOF THE TEXT ---
+        // Constantly make sure the text object remains active on screen
+        if (savedText != null && !savedText.gameObject.activeSelf)
+        {
+            savedText.gameObject.SetActive(true);
+        }
+
         if (resetNow)
         {
-            // Reset this script's progress (0/2 students)
             ResetAllProgress();
             
-            // Reset the global ProgressManager (Chapters)
             if (ProgressManager.Instance != null)
             {
                 ProgressManager.Instance.ResetAllProgress();
-                
-                // You mentioned you want it to default to this specific state for testing:
-                // Completed: 0, 1. Unlocked: 0, 1, 2.
                 ProgressManager.Instance.SetChapterCompletedOnly(0, true);
                 ProgressManager.Instance.SetChapterCompletedOnly(1, true);
-                
                 ProgressManager.Instance.SetChapterUnlocked(0, true);
                 ProgressManager.Instance.SetChapterUnlocked(1, true);
                 ProgressManager.Instance.SetChapterUnlocked(2, true);
             }
 
-            Debug.Log("🚧 TESTING TRIGGERED: Game Progress and Chapters reset to testing defaults.");
-            resetNow = false; // Uncheck the box automatically
+            Debug.Log("🚧 TESTING TRIGGERED: Game Progress and Chapters reset.");
+            resetNow = false; 
         }
     }
 }

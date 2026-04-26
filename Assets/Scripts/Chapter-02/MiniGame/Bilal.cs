@@ -80,7 +80,11 @@ public class Bilal : MonoBehaviour
         }
     }
 
-    public void OnPhishing() { OpenMsg.SetActive(false); RightChoice.SetActive(true); }
+    public void OnPhishing()
+    { 
+        OpenMsg.SetActive(false); 
+        RightChoice.SetActive(true);
+    }
 
     public void OnGivePhoneBack()
     {

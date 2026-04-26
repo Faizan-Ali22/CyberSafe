@@ -44,7 +44,7 @@ public class Amna : MonoBehaviour
 
     IEnumerator AutoTransitionFromLockScreen()
     {
-        yield return new WaitForSeconds(5.0f);
+        yield return new WaitForSeconds(2.0f);
         if (sfxSource != null && notificationSound != null)
             sfxSource.PlayOneShot(notificationSound);
         yield return new WaitForSeconds(0.5f);
@@ -52,8 +52,16 @@ public class Amna : MonoBehaviour
         LockScreenMsg.SetActive(true);
     }
 
-    public void OnTap() { LockScreen.SetActive(false); LockScreenMsg.SetActive(true); }
-    public void OnOpen() { LockScreenMsg.SetActive(false); OpenMsg.SetActive(true); }
+    public void OnTap()
+     { 
+        LockScreen.SetActive(false); 
+        LockScreenMsg.SetActive(true); 
+    }
+    public void OnOpen()
+     { 
+        LockScreenMsg.SetActive(false); 
+        OpenMsg.SetActive(true); 
+     }
 
     public void OnLegit() 
     { 

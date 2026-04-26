@@ -56,6 +56,9 @@ public class StudentInteraction : MonoBehaviour
     public GameObject retryPanel;
     public string disbeliefTrigger = "Disbelief";
 
+    [Header("Unlock Condition")]
+    public int requiredSavedCount = 0; // 0 for Bilal, 1 for Amna
+
     private bool hasInteracted = false;
     private bool isPlayerInZone = false;
     private float soundTimer = 0f;
@@ -104,6 +107,10 @@ public class StudentInteraction : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            // NEW CHECK: Ignore if we haven't saved enough students yet
+            if (GameProgressManager.Instance != null && GameProgressManager.Instance.GetSavedCount() < requiredSavedCount)
+                return;
+
             isPlayerInZone = true;
             soundTimer = soundInterval; 
             if (tapToInteract != null && !hasInteracted) tapToInteract.gameObject.SetActive(true);
@@ -339,11 +346,18 @@ public class StudentInteraction : MonoBehaviour
         {
             minigameCanvas.SetActive(true);
             
-            // Find the Bilal script and tell it to restart
+            // First, try to find the Bilal script and tell it to restart
             Bilal bilalScript = minigameCanvas.GetComponentInChildren<Bilal>(true);
             if (bilalScript != null)
             {
                 bilalScript.ResetMinigame();
+            }
+
+            // If it wasn't Bilal, try to find the Amna script and tell it to restart
+            Amna amnaScript = minigameCanvas.GetComponentInChildren<Amna>(true);
+            if (amnaScript != null)
+            {
+                amnaScript.ResetMinigame();
             }
         }
     }

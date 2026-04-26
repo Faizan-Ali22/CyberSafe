@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 public class GameProgressManager : MonoBehaviour
@@ -20,6 +21,9 @@ public class GameProgressManager : MonoBehaviour
     [Header("Testing & Debug")]
     [Tooltip("Check this box in the Inspector while playing to reset everything instantly.")]
     public bool resetNow = false;
+
+    [Header("End Sequence Properties")]
+    public GameObject badgePanel; // Drag your 2/2 Badge UI panel here
 
     void Awake()
     {
@@ -115,16 +119,28 @@ public class GameProgressManager : MonoBehaviour
     {
         Debug.Log("🎉 All students have been saved from Phishing Attacks! (2/2)");
 
-        // 1. Tell ProgressManager that Chapter Index 2 (which is Element 2) is Completed!
-        // By default, SetChapterCompleted automatically unlocks the next chapter (Element 3).
+        // 1. Tell ProgressManager that Chapter Index 2 (Element 2) is Completed!
+        // This automatically unlocks Element 3 as well.
         if (ProgressManager.Instance != null)
         {
             ProgressManager.Instance.SetChapterCompleted(2, true); 
         }
 
-        // 2. TODO: Trigger your Badge PopUp UI here.
-        // Something like:
-        // if (badgePanel != null) badgePanel.SetActive(true);
+        // 2. Start the 5-second delay before showing the badge
+        StartCoroutine(ShowBadgeWithDelay(5f));
+    }
+
+    // 🟩 The 5-second waiting routine
+    private IEnumerator ShowBadgeWithDelay(float delay)
+    {
+        // Wait for the specified time
+        yield return new WaitForSeconds(delay);
+
+        // Turn on the Badge Panel!
+        if (badgePanel != null)
+        {
+            badgePanel.SetActive(true);
+        }
     }
 
     // 🟩 Optional manual reset for debugging or new game

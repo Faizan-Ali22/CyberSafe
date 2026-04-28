@@ -281,13 +281,9 @@ public class MazeGameManager : MonoBehaviour
 
     private void ApplyShieldHeal()
     {
-        if (spawned <= 0) return;
-
-        float remainingIncludingThis = Mathf.Max(1, spawned - collected + 1);
-        float missing = maxHealth - currentHealth;
-        float heal = missing / remainingIncludingThis;
-
-        currentHealth = Mathf.Min(maxHealth, currentHealth + heal);
+        // Instantly fill health back to maximum
+        currentHealth = maxHealth;
+        
         UpdateHealthUI();
     }
 }

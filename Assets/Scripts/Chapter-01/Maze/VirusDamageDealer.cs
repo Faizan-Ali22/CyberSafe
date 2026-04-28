@@ -4,7 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Collider))]
 public class VirusDamageDealer : MonoBehaviour
 {
-    public float damageAmount = 20f;
+    public float damageAmount = 5.0f;
     
     [Header("Camera Shake Settings")]
     public float shakeDuration = 0.1f;

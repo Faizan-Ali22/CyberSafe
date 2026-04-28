@@ -879,7 +879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: Cutscene
-  useSceneIndex: 0
+  useSceneIndex: 1
   sceneIndex: 14
 --- !u!4 &1521755753
 Transform:

@@ -1328,8 +1328,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: Chapter-0 Before Change
-  useSceneIndex: 0
-  sceneIndex: 0
+  useSceneIndex: 1
+  sceneIndex: 3
 --- !u!4 &1601178186
 Transform:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ public class GoToCampus : MonoBehaviour
 
     [Header("Scene")]
     [SerializeField] private string nextSceneName;
-    [SerializeField] private int nextSceneIndex = 6; // Use -1 to use scene name instead
+    [SerializeField] private int nextSceneIndex = 5; // Use -1 to use scene name instead
 
     [Header("Settings")]
     [SerializeField] private string playerTag = "Player";

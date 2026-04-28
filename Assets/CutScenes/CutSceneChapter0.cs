@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 public class CutSceneChapter0 : MonoBehaviour
 {
     [Header("Scene Settings")]
-    [SerializeField] public string sceneName = "";
+    [SerializeField] public string sceneName = "Chapter-0 Before Change";
     
     // Optional: Use scene index instead of name
-    [SerializeField] private bool useSceneIndex = false;
-    [SerializeField] public int sceneIndex= 0;
+    [SerializeField] private bool useSceneIndex = true;
+    [SerializeField] public int sceneIndex= 3;
 
     void OnEnable()
     {
@@ -34,13 +34,10 @@ public class CutSceneChapter0 : MonoBehaviour
         }
 
         // Chapter Completed: Element 0, Element 1
-        ProgressManager.Instance.SetChapterCompletedOnly(0, true);
-        ProgressManager.Instance.SetChapterCompletedOnly(1, true);
 
         // Chapter Unlocked: Element 0, Element 1, Element 2
         ProgressManager.Instance.SetChapterUnlocked(0, true);
-        ProgressManager.Instance.SetChapterUnlocked(1, true);
-        ProgressManager.Instance.SetChapterUnlocked(2, true);
+ 
     }
     
     private IEnumerator LoadSceneAsync(string name)

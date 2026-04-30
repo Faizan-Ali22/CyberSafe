@@ -10,9 +10,7 @@ using System.Collections.Generic;
 using TMPro;
 using System.Text;
 
-/// <summary>
-/// Password Strength Checker - Unity 6 + Android Compatible
-/// Professional 175 IQ implementation with mobile keyboard support
+
 /// </summary>
 public class PasswordStrengthChecker : MonoBehaviour
 {
@@ -24,7 +22,6 @@ public class PasswordStrengthChecker : MonoBehaviour
     [SerializeField] private Sprite[] avatarImages = new Sprite[5];
     
     [Header("UI References - AUTO-ASSIGNED")]
-    [SerializeField] private TextMeshProUGUI passwordDisplayText;
     [SerializeField] private TextMeshProUGUI strengthText;
     [SerializeField] private TextMeshProUGUI hintsText;
     [SerializeField] private TextMeshProUGUI characterCountText;
@@ -98,7 +95,6 @@ public class PasswordStrengthChecker : MonoBehaviour
     /// Called by PasswordUISetup to assign UI references
     /// </summary>
     public void AssignUIReferences(
-        TextMeshProUGUI passwordDisplay,
         TextMeshProUGUI strength,
         TextMeshProUGUI hints,
         TextMeshProUGUI charCount,
@@ -111,7 +107,6 @@ public class PasswordStrengthChecker : MonoBehaviour
         GameObject passwordPanel,
         TMP_InputField inputField)
     {
-        passwordDisplayText = passwordDisplay;
         strengthText = strength;
         hintsText = hints;
         characterCountText = charCount;
@@ -123,7 +118,7 @@ public class PasswordStrengthChecker : MonoBehaviour
         avatarSelectionPanel = avatarPanel;
         passwordCheckerPanel = passwordPanel;
         passwordInputField = inputField;
-        
+
         Debug.Log("✅ All UI references assigned successfully!");
     }
     
@@ -175,7 +170,8 @@ public class PasswordStrengthChecker : MonoBehaviour
         // Focus input field for Android keyboard
         if (passwordInputField != null)
         {
-            StartCoroutine(FocusInputFieldDelayed());
+            passwordInputField.ActivateInputField();
+            passwordInputField.Select();
         }
         
         if (currentAccountNameText != null && accountIndex >= 0 && accountIndex < avatarNames.Length)
@@ -248,19 +244,14 @@ public class PasswordStrengthChecker : MonoBehaviour
     
     private void InitializeUI()
     {
-        if (passwordDisplayText != null)
-            passwordDisplayText.text = "Start typing your password...";
-        
         if (characterCountText != null)
             characterCountText.text = "Characters: 0";
-        
+
         if (crackTimeText != null)
             crackTimeText.text = "";
-        
+
         if (passwordInputField != null)
-        {
             passwordInputField.text = "";
-        }
     }
     
     public void TogglePasswordVisibility()
@@ -292,27 +283,19 @@ public class PasswordStrengthChecker : MonoBehaviour
     private void UpdateDisplay()
     {
         string password = currentPassword.ToString();
-        
-        if (passwordDisplayText != null)
-        {
-            if (password.Length == 0)
-                passwordDisplayText.text = "Start typing your password...";
-            else
-                passwordDisplayText.text = showPassword ? password : new string('●', password.Length);
-        }
-        
+
         if (characterCountText != null)
             characterCountText.text = $"Characters: {password.Length}";
-        
+
         PasswordStrength strength = CalculateStrength(password);
         UpdateStrengthDisplay(strength);
-        
+
         if (crackTimeText != null)
         {
             string crackTime = CalculateCrackTime(password, strength);
             crackTimeText.text = crackTime;
         }
-        
+
         string hints = GenerateHints(password, strength);
         if (hintsText != null)
             hintsText.text = hints;

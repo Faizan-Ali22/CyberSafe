@@ -63,10 +63,11 @@ public class PasswordUISetup : MonoBehaviour
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-        scaler.matchWidthOrHeight = 0.5f;
+        
+        // Change from 0.5f to 1.0f (Matches UI perfectly to screen Height, great for Landscape UI)
+        scaler.matchWidthOrHeight = 1.0f; 
         
         canvasObj.AddComponent<GraphicRaycaster>();
-        
         Debug.Log("✅ Canvas created - Android compatible");
     }
 
@@ -114,7 +115,6 @@ public class PasswordUISetup : MonoBehaviour
         if (checker != null)
         {
             checker.AssignUIReferences(
-                passwordDisplayText,
                 strengthText,
                 hintsText,
                 characterCountText,
@@ -142,6 +142,12 @@ public class PasswordUISetup : MonoBehaviour
         RectTransform panelRect = avatarPanel.GetComponent<RectTransform>();
         panelRect.anchorMin = Vector2.zero;
         panelRect.anchorMax = Vector2.one;
+        
+        // ADD THESE 3 LINES explicitly lock the stretch to screen boundaries
+        panelRect.anchoredPosition = Vector2.zero;
+        panelRect.offsetMin = Vector2.zero;
+        panelRect.offsetMax = Vector2.zero;
+        
         panelRect.sizeDelta = Vector2.zero;
         avatarPanel.GetComponent<Image>().color = new Color(0.05f, 0.05f, 0.1f, 1f);
         
@@ -294,91 +300,126 @@ public class PasswordUISetup : MonoBehaviour
     {
         passwordPanel = CreateUIPanel("PasswordCheckerPanel", targetCanvas.transform);
         RectTransform panelRect = passwordPanel.GetComponent<RectTransform>();
-        // Make it full screen like the Avatar Panel
+        
         panelRect.anchorMin = Vector2.zero;
         panelRect.anchorMax = Vector2.one;
-        panelRect.sizeDelta = Vector2.zero;
         
+        // Explicitly lock the stretch to screen boundaries
+        panelRect.anchoredPosition = Vector2.zero;
+        panelRect.offsetMin = Vector2.zero;
+        panelRect.offsetMax = Vector2.zero;
+        
+        panelRect.sizeDelta = Vector2.zero;
         Image panelImg = passwordPanel.GetComponent<Image>();
-        panelImg.color = new Color(0.05f, 0.05f, 0.1f, 1f); // Same dark background
+        panelImg.color = new Color(0.05f, 0.05f, 0.1f, 1f);
         panelImg.raycastTarget = false;
         
         passwordPanel.SetActive(false);
         
-        // Back button
+        // 1. Back button (Top Left - Bigger & closer to corner)
         GameObject backBtn = CreateButton("BackButton", passwordPanel.transform, "← Back");
-        PositionElement(backBtn.GetComponent<RectTransform>(), -550, 420, 150, 60);
+        PositionElement(backBtn.GetComponent<RectTransform>(), -830, 480, 220, 80);
         backBtn.GetComponent<Button>().onClick.AddListener(() => checker.ShowAvatarSelection());
-        backBtn.GetComponent<Image>().color = new Color(0.3f, 0.3f, 0.4f);
+        backBtn.GetComponent<Image>().color = new Color(0.04f, 0.04f, 0.15f); // Match Dark blue
         
-        // Account name
+        TextMeshProUGUI backBtnText = backBtn.GetComponentInChildren<TextMeshProUGUI>();
+        backBtnText.fontSize = 28; // Increased font size
+        backBtnText.fontStyle = FontStyles.Bold;
+        
+        // 2. Account name (Top Center)
         currentAccountNameText = CreateText("AccountName", passwordPanel.transform,
-            "Setting password for: <b>User</b>", 28);
-        PositionElement(currentAccountNameText.rectTransform, 0, 420, 800, 60);
+            "Setting password for: <b>User</b>", 32); // Increased
+        PositionElement(currentAccountNameText.rectTransform, 0, 470, 800, 60);
         currentAccountNameText.alignment = TextAlignmentOptions.Center;
         currentAccountNameText.color = new Color(0.3f, 0.8f, 1f);
         currentAccountNameText.raycastTarget = false;
         
-        // Title (Matching Avatar Screen font size)
+        // 3. Title
         TextMeshProUGUI title = CreateText("Title", passwordPanel.transform,
-            "<b>🔐 Password Strength Analyzer</b>", 36);
-        PositionElement(title.rectTransform, 0, 350, 1000, 80);
+            "<b>🔐 Password Strength Analyzer</b>", 42); // Increased
+        PositionElement(title.rectTransform, 0, 400, 1000, 80);
         title.alignment = TextAlignmentOptions.Center;
         title.color = new Color(0.3f, 0.8f, 1f);
         title.raycastTarget = false;
+
+        // 4. Hints panel (Moved to Top Right - Bigger & clearer)
+        GameObject hintsPanel = CreateUIPanel("HintsPanel", passwordPanel.transform);
+        PositionElement(hintsPanel.GetComponent<RectTransform>(), 659.6f, 418.6f, 600f, 240f);
+        hintsPanel.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.15f);
+        hintsPanel.GetComponent<Image>().raycastTarget = false;
         
-        // Input field box (Wider)
-        GameObject displayBox = CreateUIPanel("DisplayBox", passwordPanel.transform);
-        PositionElement(displayBox.GetComponent<RectTransform>(), 0, 230, 1200, 90);
-        displayBox.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.2f);
+        hintsText = CreateText("HintsText", hintsPanel.transform,
+            "💡 Improvement Suggestions:\n" +
+            "• Use at least 12 characters\n" +
+            "• Mix uppercase and lowercase letters\n" +
+            "• Include numbers and special characters\n" +
+            "• Avoid common words and patterns", 30);
+        PositionElement(hintsText.rectTransform, 0, 0, 560f, 210f);
+        hintsText.alignment = TextAlignmentOptions.TopLeft;
+        hintsText.color = new Color(0.9f, 0.9f, 0.9f);
+        hintsText.raycastTarget = false;
         
-        // TMP_InputField for Android keyboard
-        passwordInputField = CreateTMPInputField("PasswordInput", displayBox.transform);
-        PositionElement(passwordInputField.GetComponent<RectTransform>(), -60, 0, 1000, 70);
-        
-        // Password display (shows masked version, wider and bigger font)
-        passwordDisplayText = CreateText("PasswordDisplay", displayBox.transform,
-            "Start typing your password...", 32);
-        PositionElement(passwordDisplayText.rectTransform, -60, 0, 1000, 70);
-        passwordDisplayText.alignment = TextAlignmentOptions.Center;
-        passwordDisplayText.color = Color.white;
-        passwordDisplayText.raycastTarget = false;
-        passwordDisplayText.overflowMode = TextOverflowModes.Ellipsis;
-        
-        // Toggle button
-        GameObject toggleButton = CreateButton("ToggleButton", displayBox.transform, "👁️ Show");
-        PositionElement(toggleButton.GetComponent<RectTransform>(), 500, 0, 140, 70);
-        toggleVisibilityButton = toggleButton.GetComponent<Button>();
-        toggleVisibilityButton.GetComponent<Image>().color = new Color(0.2f, 0.4f, 0.6f);
-        
-        TextMeshProUGUI toggleBtnText = toggleButton.GetComponentInChildren<TextMeshProUGUI>();
-        toggleBtnText.fontSize = 20;
-        toggleBtnText.alignment = TextAlignmentOptions.Center;
-        toggleBtnText.color = Color.white;
-        toggleBtnText.fontStyle = FontStyles.Bold;
-        
-        // Character count
+        // 5. Character count (Moved ABOVE the input box)
         characterCountText = CreateText("CharacterCount", passwordPanel.transform,
-            "Characters: 0", 22);
-        PositionElement(characterCountText.rectTransform, 0, 150, 1200, 40);
+            "Characters: 0", 26); // Increased
+        PositionElement(characterCountText.rectTransform, 0, 320, 1000, 40);
         characterCountText.alignment = TextAlignmentOptions.Center;
         characterCountText.color = new Color(0.7f, 0.7f, 0.7f);
         characterCountText.raycastTarget = false;
         
-        // Strength bar background (Wider)
+        // 6. Input field box (Wider and taller)
+        GameObject displayBox = CreateUIPanel("DisplayBox", passwordPanel.transform);
+        PositionElement(displayBox.GetComponent<RectTransform>(), 0, 220, 1200, 100);
+        displayBox.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.2f);
+        
+        passwordInputField = CreateTMPInputField("PasswordInput", displayBox.transform);
+        PositionElement(passwordInputField.GetComponent<RectTransform>(), -90, 0, 1000, 80);
+        
+        // Set actual InputField font sizes
+        TMP_InputField inputComp = passwordInputField.GetComponent<TMP_InputField>();
+        if (inputComp.textComponent != null) inputComp.textComponent.fontSize = 36;
+        if (inputComp.placeholder != null) inputComp.placeholder.GetComponent<TextMeshProUGUI>().fontSize = 32;
+
+        // passwordDisplayText = CreateText("PasswordDisplay", displayBox.transform,
+        //     "Start typing your password...", 36); // Increased
+        // PositionElement(passwordDisplayText.rectTransform, -90, 0, 1000, 80);
+        // passwordDisplayText.alignment = TextAlignmentOptions.Center;
+        // passwordDisplayText.color = Color.white;
+        // passwordDisplayText.raycastTarget = false;
+        // passwordDisplayText.overflowMode = TextOverflowModes.Ellipsis;
+        
+        GameObject toggleButton = CreateButton("ToggleButton", displayBox.transform, "👁️ Show");
+        PositionElement(toggleButton.GetComponent<RectTransform>(), 510, 0, 160, 80);
+        toggleVisibilityButton = toggleButton.GetComponent<Button>();
+        toggleVisibilityButton.GetComponent<Image>().color = new Color(0.1f, 0.2f, 0.4f);
+        
+        TextMeshProUGUI toggleBtnText = toggleButton.GetComponentInChildren<TextMeshProUGUI>();
+        toggleBtnText.fontSize = 24; // Increased
+        toggleBtnText.alignment = TextAlignmentOptions.Center;
+        toggleBtnText.color = Color.white;
+        toggleBtnText.fontStyle = FontStyles.Bold;
+        
+        // 7. Strength text (Moved ABOVE the strength bar)
+        strengthText = CreateText("StrengthText", passwordPanel.transform,
+            "Strength: None\nScore: 0/100", 32); // Increased
+        PositionElement(strengthText.rectTransform, 0, 100, 1200, 90);
+        strengthText.alignment = TextAlignmentOptions.Center;
+        strengthText.fontStyle = FontStyles.Bold;
+        strengthText.raycastTarget = false;
+        
+        // 8. Strength bar background
         GameObject barBg = CreateUIPanel("StrengthBarBG", passwordPanel.transform);
-        PositionElement(barBg.GetComponent<RectTransform>(), 0, 100, 1200, 40);
+        PositionElement(barBg.GetComponent<RectTransform>(), 0, -5, 1200, 50); // Taller bar
         barBg.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.25f);
         barBg.GetComponent<Image>().raycastTarget = false;
         
-        // Strength bar fill
         GameObject barFill = CreateUIPanel("StrengthBarFill", barBg.transform);
         RectTransform barFillRect = barFill.GetComponent<RectTransform>();
         barFillRect.anchorMin = new Vector2(0, 0);
         barFillRect.anchorMax = new Vector2(0, 1);
         barFillRect.pivot = new Vector2(0, 0.5f);
         barFillRect.anchoredPosition = Vector2.zero;
-        barFillRect.sizeDelta = new Vector2(1200, 0);
+        barFillRect.sizeDelta = new Vector2(1200, 0); // Max Width match
         
         strengthBar = barFill.GetComponent<Image>();
         strengthBar.color = new Color(1f, 0.2f, 0.2f);
@@ -387,65 +428,40 @@ public class PasswordUISetup : MonoBehaviour
         strengthBar.fillAmount = 0;
         strengthBar.raycastTarget = false;
         
-        // Strength text
-        strengthText = CreateText("StrengthText", passwordPanel.transform,
-            "Strength: None\nScore: 0/100", 28);
-        PositionElement(strengthText.rectTransform, 0, 10, 1200, 80);
-        strengthText.alignment = TextAlignmentOptions.Center;
-        strengthText.fontStyle = FontStyles.Bold;
-        strengthText.raycastTarget = false;
-        
-        // Crack time box (Wider)
+        // 9. Crack time box (Taller text, dark tint)
         GameObject crackTimeBox = CreateUIPanel("CrackTimeBox", passwordPanel.transform);
-        PositionElement(crackTimeBox.GetComponent<RectTransform>(), 0, -90, 1200, 100);
-        crackTimeBox.GetComponent<Image>().color = new Color(0.12f, 0.12f, 0.18f);
+        PositionElement(crackTimeBox.GetComponent<RectTransform>(), 0, -120, 1200, 120);
+        crackTimeBox.GetComponent<Image>().color = new Color(0.08f, 0.08f, 0.15f);
         crackTimeBox.GetComponent<Image>().raycastTarget = false;
         
-        crackTimeText = CreateText("CrackTimeText", crackTimeBox.transform, "", 24);
-        PositionElement(crackTimeText.rectTransform, 0, 0, 1150, 90);
+        crackTimeText = CreateText("CrackTimeText", crackTimeBox.transform, "", 30); // Increased readability
+        PositionElement(crackTimeText.rectTransform, 0, 0, 1150, 100);
         crackTimeText.alignment = TextAlignmentOptions.Center;
         crackTimeText.color = Color.white;
         crackTimeText.raycastTarget = false;
         crackTimeText.enableAutoSizing = false;
         
-        // Hints panel (Wider)
-        GameObject hintsPanel = CreateUIPanel("HintsPanel", passwordPanel.transform);
-        PositionElement(hintsPanel.GetComponent<RectTransform>(), 0, -250, 1200, 180);
-        hintsPanel.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.2f);
-        hintsPanel.GetComponent<Image>().raycastTarget = false;
-        
-        hintsText = CreateText("HintsText", hintsPanel.transform,
-            "💡 Tips for a Strong Password:\n" +
-            "• Use at least 12 characters\n" +
-            "• Mix uppercase and lowercase letters\n" +
-            "• Include numbers and special characters\n" +
-            "• Avoid common words and patterns", 20);
-        PositionElement(hintsText.rectTransform, 0, 0, 1150, 160);
-        hintsText.alignment = TextAlignmentOptions.TopLeft;
-        hintsText.color = new Color(0.9f, 0.9f, 0.9f);
-        hintsText.raycastTarget = false;
-        
-        // Set password button (Shifted down slightly to accommodate wider ui)
+        // 10. Set password button (Bigger text and button dimension)
         GameObject setPassBtn = CreateButton("SetPasswordButton", passwordPanel.transform, "✓ Set Password");
-        PositionElement(setPassBtn.GetComponent<RectTransform>(), 0, -400, 500, 80);
+        PositionElement(setPassBtn.GetComponent<RectTransform>(), 0, -280, 600, 90);
         setPasswordButton = setPassBtn.GetComponent<Button>();
         setPasswordButton.GetComponent<Image>().color = new Color(0.2f, 0.8f, 0.3f);
         
         TextMeshProUGUI setPassBtnText = setPassBtn.GetComponentInChildren<TextMeshProUGUI>();
-        setPassBtnText.fontSize = 28;
+        setPassBtnText.fontSize = 32; // Increased noticeably
         setPassBtnText.fontStyle = FontStyles.Bold;
         setPassBtnText.color = Color.white;
         
         ColorBlock setBtnColors = setPasswordButton.colors;
-        setBtnColors.normalColor = new Color(0.2f, 0.8f, 0.3f);
-        setBtnColors.highlightedColor = new Color(0.3f, 1f, 0.4f);
-        setBtnColors.pressedColor = new Color(0.15f, 0.6f, 0.25f);
-        setBtnColors.selectedColor = new Color(0.25f, 0.9f, 0.35f);
+        setBtnColors.normalColor = new Color(0.0f, 0.7f, 0.1f);
+        setBtnColors.highlightedColor = new Color(0.2f, 0.9f, 0.3f);
+        setBtnColors.pressedColor = new Color(0.0f, 0.5f, 0.1f);
+        setBtnColors.selectedColor = new Color(0.1f, 0.8f, 0.2f);
         setPasswordButton.colors = setBtnColors;
         
         Canvas.ForceUpdateCanvases();
         
-        Debug.Log("✅ Password UI Complete - Android keyboard enabled!");
+        Debug.Log("✅ Password UI Complete - Bigger Fonts & Layout Adjusted!");
     }
     
     private GameObject CreateUIPanel(string name, Transform parent)
@@ -543,7 +559,7 @@ public class PasswordUISetup : MonoBehaviour
         placeholderRect.offsetMax = new Vector2(-10, -5);
 
         TextMeshProUGUI placeholder = placeholderObj.AddComponent<TextMeshProUGUI>();
-        placeholder.text = "Tap to enter password...";
+        placeholder.text = "Start typing your password...";
         placeholder.fontSize = 24;
         placeholder.color = new Color(1f, 1f, 1f, 0.3f);
         placeholder.enableAutoSizing = false;

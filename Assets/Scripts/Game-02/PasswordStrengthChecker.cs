@@ -1,19 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using System;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
-using System.Collections;
-using System.Collections.Generic;
+
 using TMPro;
 using System.Text;
-
 
 /// </summary>
 public class PasswordStrengthChecker : MonoBehaviour
 {
+    [Header("Audio")]
+    [SerializeField] private AudioClip typingClip;
+    [SerializeField] private AudioSource typingAudioSource;
+
     [Header("Avatar Names (Customize Here!)")]
     [SerializeField] private string[] avatarNames = { "Alice", "Bob", "Charlie", "Diana", "Eve" };
     
@@ -128,6 +133,12 @@ public class PasswordStrengthChecker : MonoBehaviour
         currentPassword.Clear();
         currentPassword.Append(input);
         UpdateDisplay();
+
+        // Play typing sound on each keystroke
+        if (typingAudioSource != null && typingClip != null)
+        {
+            typingAudioSource.PlayOneShot(typingClip);
+        }
     }
     
     private void OnPasswordInputEnd(string input)

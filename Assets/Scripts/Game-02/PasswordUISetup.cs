@@ -33,6 +33,8 @@ public class PasswordUISetup : MonoBehaviour
     private Button toggleVisibilityButton;
     private Button setPasswordButton;
     private TMP_InputField passwordInputField;
+    private AudioSource typingAudioSource;
+    private AudioClip typingClip;
     
     private void Awake()
     {
@@ -151,11 +153,10 @@ public class PasswordUISetup : MonoBehaviour
         panelRect.sizeDelta = Vector2.zero;
         avatarPanel.GetComponent<Image>().color = new Color(0.05f, 0.05f, 0.1f, 1f);
         
+        // Avatar selection title
         TextMeshProUGUI title = CreateText("Title", avatarPanel.transform,
-            "<b>🔐 Select Account to Set Password</b>", 36);
-        PositionElement(title.rectTransform, 0, 300, 1000, 80);
-        title.alignment = TextAlignmentOptions.Center;
-        title.color = new Color(0.3f, 0.8f, 1f);
+            "<b>🔐 Select Account to Set Password</b>", 54);
+        PositionElement(title.rectTransform, 0, 459, 1000, 80);
         
         string[] names = checker.GetAvatarNames();
         Sprite[] customImages = checker.GetAvatarImages();
@@ -168,8 +169,8 @@ public class PasswordUISetup : MonoBehaviour
             new Color(0.8f, 0.4f, 1f)
         };
         
-        float startX = -400f;
-        float spacing = 200f;
+        float startX = -578.99f;
+        float spacing = 283.4f;
         
         for (int i = 0; i < 5; i++)
         {
@@ -178,17 +179,17 @@ public class PasswordUISetup : MonoBehaviour
             string avatarEmoji = (avatarSprite == null) ? emojis[i] : "";
             
             GameObject avatarBtn = CreateAvatarButton(
-                $"Avatar_{i}", 
-                avatarPanel.transform, 
-                names[i], 
+                $"Avatar_{i}",
+                avatarPanel.transform,
+                names[i],
                 avatarEmoji,
                 avatarSprite,
                 colors[i],
                 i
             );
-            
+
             float xPos = startX + (i * spacing);
-            PositionElement(avatarBtn.GetComponent<RectTransform>(), xPos, 50, 180, 250);
+            PositionElement(avatarBtn.GetComponent<RectTransform>(), xPos, 181.1993f, 255.0656f, 354.2578f);
             avatarButtons.Add(avatarBtn);
         }
     }
@@ -207,8 +208,12 @@ public class PasswordUISetup : MonoBehaviour
         GameObject circle = new GameObject("AvatarContainer");
         circle.transform.SetParent(btnObj.transform, false);
         RectTransform circleRect = circle.AddComponent<RectTransform>();
-        circleRect.sizeDelta = new Vector2(120, 120);
-        circleRect.anchoredPosition = new Vector2(0, 30);
+        
+        // --- UPDATED SIZES AND POSITION ---
+        circleRect.sizeDelta = new Vector2(205, 205);
+        circleRect.anchoredPosition = new Vector2(0, 74.2f);
+        // ----------------------------------
+        
         Image circleImg = circle.AddComponent<Image>();
         circleImg.raycastTarget = false;
         
@@ -228,13 +233,15 @@ public class PasswordUISetup : MonoBehaviour
             
             // Create emoji text
             TextMeshProUGUI emojiText = CreateText("Emoji", circle.transform, emoji, 60);
-            emojiText.rectTransform.sizeDelta = new Vector2(120, 120);
+            
+            // --- UPDATED EMOJI SIZE TO MATCH CONTAINER ---
+            emojiText.rectTransform.sizeDelta = new Vector2(205, 205);
             emojiText.rectTransform.anchoredPosition = Vector2.zero;
             emojiText.alignment = TextAlignmentOptions.Center;
             emojiText.raycastTarget = false;
         }
         
-        TextMeshProUGUI nameText = CreateText("Name", btnObj.transform, userName, 22);
+        TextMeshProUGUI nameText = CreateText("Name", btnObj.transform, userName, 44);
         nameText.rectTransform.sizeDelta = new Vector2(180, 40);
         nameText.rectTransform.anchoredPosition = new Vector2(0, -50);
         nameText.alignment = TextAlignmentOptions.Center;
@@ -242,9 +249,9 @@ public class PasswordUISetup : MonoBehaviour
         nameText.color = Color.white;
         nameText.raycastTarget = false;
         
-        TextMeshProUGUI statusText = CreateText("Status", btnObj.transform, "No Password", 16);
+        TextMeshProUGUI statusText = CreateText("Status", btnObj.transform, "No Password", 35);
         statusText.rectTransform.sizeDelta = new Vector2(180, 30);
-        statusText.rectTransform.anchoredPosition = new Vector2(0, -90);
+        statusText.rectTransform.anchoredPosition = new Vector2(0, -120);
         statusText.alignment = TextAlignmentOptions.Center;
         statusText.color = new Color(0.7f, 0.7f, 0.7f);
         statusText.raycastTarget = false;
@@ -344,7 +351,7 @@ public class PasswordUISetup : MonoBehaviour
 
         // 4. Hints panel (Moved to Top Right - Bigger & clearer)
         GameObject hintsPanel = CreateUIPanel("HintsPanel", passwordPanel.transform);
-        PositionElement(hintsPanel.GetComponent<RectTransform>(), 659.6f, 418.6f, 600f, 240f);
+        PositionElement(hintsPanel.GetComponent<RectTransform>(), 656f, 420f, 600f, 240f);
         hintsPanel.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.15f);
         hintsPanel.GetComponent<Image>().raycastTarget = false;
         
@@ -362,14 +369,14 @@ public class PasswordUISetup : MonoBehaviour
         // 5. Character count (Moved ABOVE the input box)
         characterCountText = CreateText("CharacterCount", passwordPanel.transform,
             "Characters: 0", 26); // Increased
-        PositionElement(characterCountText.rectTransform, 0, 320, 1000, 40);
+        PositionElement(characterCountText.rectTransform, 0f, 282f, 1000f, 40f);
         characterCountText.alignment = TextAlignmentOptions.Center;
         characterCountText.color = new Color(0.7f, 0.7f, 0.7f);
         characterCountText.raycastTarget = false;
         
         // 6. Input field box (Wider and taller)
         GameObject displayBox = CreateUIPanel("DisplayBox", passwordPanel.transform);
-        PositionElement(displayBox.GetComponent<RectTransform>(), 0, 220, 1200, 100);
+        PositionElement(displayBox.GetComponent<RectTransform>(), 0f, 202f, 1200f, 100f);
         displayBox.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.2f);
         
         passwordInputField = CreateTMPInputField("PasswordInput", displayBox.transform);
@@ -380,14 +387,7 @@ public class PasswordUISetup : MonoBehaviour
         if (inputComp.textComponent != null) inputComp.textComponent.fontSize = 36;
         if (inputComp.placeholder != null) inputComp.placeholder.GetComponent<TextMeshProUGUI>().fontSize = 32;
 
-        // passwordDisplayText = CreateText("PasswordDisplay", displayBox.transform,
-        //     "Start typing your password...", 36); // Increased
-        // PositionElement(passwordDisplayText.rectTransform, -90, 0, 1000, 80);
-        // passwordDisplayText.alignment = TextAlignmentOptions.Center;
-        // passwordDisplayText.color = Color.white;
-        // passwordDisplayText.raycastTarget = false;
-        // passwordDisplayText.overflowMode = TextOverflowModes.Ellipsis;
-        
+       
         GameObject toggleButton = CreateButton("ToggleButton", displayBox.transform, "👁️ Show");
         PositionElement(toggleButton.GetComponent<RectTransform>(), 510, 0, 160, 80);
         toggleVisibilityButton = toggleButton.GetComponent<Button>();
@@ -409,7 +409,7 @@ public class PasswordUISetup : MonoBehaviour
         
         // 8. Strength bar background
         GameObject barBg = CreateUIPanel("StrengthBarBG", passwordPanel.transform);
-        PositionElement(barBg.GetComponent<RectTransform>(), 0, -5, 1200, 50); // Taller bar
+        PositionElement(barBg.GetComponent<RectTransform>(), 0f, 37f, 1200f, 50f); // Taller bar
         barBg.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.25f);
         barBg.GetComponent<Image>().raycastTarget = false;
         
@@ -430,7 +430,7 @@ public class PasswordUISetup : MonoBehaviour
         
         // 9. Crack time box (Taller text, dark tint)
         GameObject crackTimeBox = CreateUIPanel("CrackTimeBox", passwordPanel.transform);
-        PositionElement(crackTimeBox.GetComponent<RectTransform>(), 0, -120, 1200, 120);
+        PositionElement(crackTimeBox.GetComponent<RectTransform>(), 0f, -59f, 1200f, 120f);
         crackTimeBox.GetComponent<Image>().color = new Color(0.08f, 0.08f, 0.15f);
         crackTimeBox.GetComponent<Image>().raycastTarget = false;
         
@@ -443,7 +443,7 @@ public class PasswordUISetup : MonoBehaviour
         
         // 10. Set password button (Bigger text and button dimension)
         GameObject setPassBtn = CreateButton("SetPasswordButton", passwordPanel.transform, "✓ Set Password");
-        PositionElement(setPassBtn.GetComponent<RectTransform>(), 0, -280, 600, 90);
+        PositionElement(setPassBtn.GetComponent<RectTransform>(), 0f, -142f, 600f, 90f);
         setPasswordButton = setPassBtn.GetComponent<Button>();
         setPasswordButton.GetComponent<Image>().color = new Color(0.2f, 0.8f, 0.3f);
         

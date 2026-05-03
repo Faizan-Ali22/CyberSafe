@@ -371,7 +371,7 @@ RectTransform:
   m_GameObject: {fileID: 15541638}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
+  m_LocalScale: {x: 0.96675605, y: 0.96675605, z: 0.96675605}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1112544239}
@@ -415,7 +415,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0f37b6bc3caa31f41ba62ead84960a1f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ce3ec132658297c41b318c31002db6e9, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -16916,7 +16916,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7f4efd3b3fbdab6478da95e959020bb5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6f6e95d406c962d408375a1401bc4508, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -27110,7 +27110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf60a35436be04545a1ab5ee9901fbe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName: Chapter04
+  sceneName: Chapter4
   showDebugLogs: 0
 --- !u!95 &1873967524
 Animator:

@@ -57,7 +57,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Password-Panic/Game-02.unity
     guid: 91a8f0831742e634884fff507eee60f7
   - enabled: 1
-    path: Assets/Scenes/Ransomeware/Chapter04.unity
+    path: Assets/Scenes/Ransomeware/Chapter4.unity
+    guid: 6e82f484e6ad8b54cb5c7d56c6bd1bc1
+  - enabled: 1
+    path: Assets/Scenes/Ransomeware/DeadDropGame.unity
     guid: 7003d94e279ba8c45acccc38073d8ad0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

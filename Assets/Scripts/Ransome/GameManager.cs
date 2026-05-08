@@ -14,6 +14,10 @@ public int[] filesPerWave = new int[] { 5, 8, 11 };
 public int[] trapsPerWave = new int[] { 2, 4, 5 };
 public float waveSpeedIncrement = 1.5f;
 
+[Header("Win Conditions")]
+[Tooltip("Percentage of important files that must be saved to win (e.g., 0.8 = 80%)")]
+[Range(0f, 1f)]
+public float requiredSavePercentage = 0.8f;
 public GameState State { get; private set; } = GameState.Idle;
 public float WavePercent { get; private set; }
 public int CurrentWave { get; private set; } = 1;
@@ -148,7 +152,20 @@ public void RegisterFileLost(bool isImportant) {
 if (!IsRunActive) return;
 TotalLost++;
 }
+public bool HasPlayerWon() 
+{
+    // If they clicked the fake decrypt button, it's an instant loss
+    if (State == GameState.GameOverTrap) return false; 
+    
+    // Prevent division by zero if no important files spawned
+    if (TotalImportant == 0) return true; 
 
+    // Calculate the percentage of important files saved
+    float savedPercent = (float)SavedImportant / TotalImportant;
+    
+    // Return true if they met or exceeded the requirement
+    return savedPercent >= requiredSavePercentage;
+}
 void ResetRunStats() {
 TotalImportant = 0;
 SavedImportant = 0;

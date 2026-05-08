@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class CutSceneDeaddrop : MonoBehaviour
 {
     [Header("Scene Settings")]
-    [SerializeField] public string sceneName = "DeadDropGame";
+    [SerializeField] public string sceneName = "Game";
     
     // Optional: Use scene index instead of name
     [SerializeField] private bool useSceneIndex = true;

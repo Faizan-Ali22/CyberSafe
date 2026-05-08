@@ -9,6 +9,7 @@ public class PasswordPanicGameManager : MonoBehaviour
     [SerializeField] private PasswordStrengthChecker passwordChecker;
     [SerializeField] private GameObject completedPanel;
     [SerializeField] private Button continueButton;
+    [SerializeField] private GameObject passwordUiCanvas; // <- drag the parent Canvas here
     
     [Header("Debug Settings")]
     [Tooltip("Check this in play mode to reset progress for testing")]
@@ -53,16 +54,18 @@ public class PasswordPanicGameManager : MonoBehaviour
     private bool CheckAllPasswordsSet()
     {
         int setPasswordsCount = 0;
+        bool newlySaved = false;
 
         for (int i = 0; i < TOTAL_AVATARS; i++)
         {
             // Check if the player set the password securely in this active session
             bool isSetNow = passwordChecker != null && passwordChecker.IsPasswordSet(i);
             
-            // Save state to PlayerPrefs if they set it
-            if (isSetNow)
+            // Save state to PlayerPrefs if they set it AND it wasn't saved before
+            if (isSetNow && PlayerPrefs.GetInt(AVATAR_PREF_PREFIX + i, 0) == 0)
             {
                 PlayerPrefs.SetInt(AVATAR_PREF_PREFIX + i, 1);
+                newlySaved = true; // Mark that we need to hit the disk once
             }
 
             // Check how many have been saved in PlayerPrefs as Complete
@@ -72,8 +75,11 @@ public class PasswordPanicGameManager : MonoBehaviour
             }
         }
 
-        // Save immediately in case we added new completions
-        PlayerPrefs.Save();
+        // Fix: ONLY save if we changed something. Calling Save() 60 times a second freezes Android devices
+        if (newlySaved)
+        {
+            PlayerPrefs.Save();
+        }
         
         return setPasswordsCount >= TOTAL_AVATARS;
     }
@@ -87,11 +93,25 @@ public class PasswordPanicGameManager : MonoBehaviour
         // Wait 2 seconds
         yield return new WaitForSeconds(2.0f);
 
-        // Turn on the Completed panel
+        // Turn on the Completed panel and bring it to the very front
         if (completedPanel != null)
         {
+            // NEW: Push the Completed Panel to the front of the screen
+            completedPanel.transform.SetAsLastSibling();
             completedPanel.SetActive(true);
             
+            // NEW: Hide the password checker UI completely so it doesn't overlap
+            if (passwordChecker != null)
+            {
+                passwordChecker.gameObject.SetActive(false);
+            }
+
+            // Force hide the entire UI Canvas
+            if (passwordUiCanvas != null)
+            {
+                Destroy(passwordUiCanvas);
+            }
+
             // Find and play the attached AudioSource sound
             AudioSource completedAudio = completedPanel.GetComponent<AudioSource>();
             if (completedAudio != null)
@@ -131,7 +151,7 @@ public class PasswordPanicGameManager : MonoBehaviour
         }
     }
 
-    private void OnContinueClicked()
+    public void OnContinueClicked()
     {
         // Load the next scene automatically based on Build Settings index
         int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;

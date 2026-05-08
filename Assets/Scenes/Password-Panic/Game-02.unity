@@ -226,7 +226,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!82 &58075493
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1102,9 +1102,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameProgressManager, Assembly-CSharp
-        m_MethodName: CloseCompletionPopup
+      - m_Target: {fileID: 580186589}
+        m_TargetAssemblyTypeName: PasswordPanicGameManager, Assembly-CSharp
+        m_MethodName: OnContinueClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1199,6 +1199,7 @@ MonoBehaviour:
   passwordChecker: {fileID: 1633500840}
   completedPanel: {fileID: 58075492}
   continueButton: {fileID: 560271873}
+  passwordUiCanvas: {fileID: 2089248259}
   resetProgress: 0
 --- !u!4 &580186590
 Transform:

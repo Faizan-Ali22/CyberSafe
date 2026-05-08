@@ -60,8 +60,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Ransomeware/Chapter4.unity
     guid: 6e82f484e6ad8b54cb5c7d56c6bd1bc1
   - enabled: 1
-    path: Assets/Scenes/Ransomeware/DeadDropGame.unity
-    guid: 7003d94e279ba8c45acccc38073d8ad0
+    path: Assets/Scenes/Ransomeware/Game.unity
+    guid: dfebc8428be2bd04ba31d8bb66147cb0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

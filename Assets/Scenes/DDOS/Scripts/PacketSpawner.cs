@@ -2,145 +2,140 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-[System.Serializable]
-public class Packet {
-public int id;
-public float x, y;
-public float vx, vy;
-public float angle;
-public bool isBot;
-public float speed;
-public int stuckFrames;
-public int lane;
-}
 public class PacketSpawner : MonoBehaviour
 {
-    public static PacketSpawner Instance;
-public List<Packet> Packets { get; private set; } = new List<Packet>();
- 
-    
-[Header("References")]
-public FirewallManager firewallManager;
-public DdosParticleManager particleManager;
-public RadarDrawer radarDrawer;
- 
-private readonly int lanesCount = 6;
-private float width, height;
-private int frame = 0;
-private int nextId = 0;
- 
-void Awake() => Instance = this;
- 
-public void Init(float w, float h) {
-width = w; height = h;
-Packets.Clear();
-frame = 0;
-}
- 
-public void Tick() {
-if (GameController.Instance.GameState != GameController.State.PLAYING) return;
-frame++;
- 
-int wave = GameController.Instance.Wave;
-float elapsed = GameController.Instance.totalTime - GameController.Instance.TimeRemaining;
-// Legit users — steady stream, speeds up over time
-int legitInterval = Mathf.Max(40, 60 - (int)(elapsed / 2f));
-if (frame % legitInterval == 0)
-SpawnPacket(Random.Range(0, lanesCount), false);
- 
-// Attack waves
-if (wave == 1 && frame % 120 == 0)
-SpawnBurst(Random.Range(0, lanesCount), 6);
-else if (wave == 2 && frame % 80 == 0) {
-int lane = Random.Range(0, lanesCount);
-SpawnBurst(lane, 4);
-StartCoroutine(DelayedSpawn(lane, false, 0.2f));
-} else if (wave == 3) {
-if (frame % 30 == 0)
-SpawnPacket(Random.Range(0, lanesCount), Random.value > 0.3f);
-if (frame % 90 == 0)
-SpawnBurst(Random.Range(0, lanesCount), 6);
-}
- 
-UpdatePackets();
-}
- 
-void SpawnPacket(int lane, bool isBot) {
-float cx = width / 2f;
-float cy = height / 2f;
-float spawnRadius = Mathf.Max(width, height) * 0.6f;
-float laneStep = (Mathf.PI * 2f) / lanesCount;
-float angle = lane * laneStep + Random.Range(laneStep * 0.1f, laneStep * 0.9f);
-float startX = cx + Mathf.Cos(angle) * spawnRadius;
-float startY = cy + Mathf.Sin(angle) * spawnRadius;
-float vx = -Mathf.Cos(angle);
-float vy = -Mathf.Sin(angle);
-float speed = isBot ? 1.2f + Random.value * 0.5f : 0.7f;
- 
-Packets.Add(new Packet {
-id = nextId++, lane = lane,
-x = startX, y = startY,
-vx = vx, vy = vy,
-angle = angle + Mathf.PI,
-isBot = isBot, speed = speed,
-stuckFrames = 0
-});
-}
-void SpawnBurst(int lane, int count) {
-for (int i = 0; i < count; i++) {
-int idx = i; // capture
-StartCoroutine(DelayedSpawn(lane, true, i * 0.2f));
-}
-}
- 
-IEnumerator DelayedSpawn(int lane, bool isBot, float delay) {
-yield return new WaitForSeconds(delay);
-if (GameController.Instance.GameState == GameController.State.PLAYING)
-SpawnPacket(lane, isBot);
-}
- 
-void UpdatePackets() {
-float cx = width / 2f;
-float cy = height / 2f;
-float serverR = 40f;
- 
-for (int i = Packets.Count - 1; i >= 0; i--) {
-Packet p = Packets[i];
-float nx = p.x + p.vx * p.speed;
-float ny = p.y + p.vy * p.speed;
- 
-bool hitWall = firewallManager.IsBlockedByWall(nx, ny);
- 
-if (hitWall) {
-p.stuckFrames++;
-p.x += Random.Range(-1.5f, 1.5f);
-p.y += Random.Range(-1.5f, 1.5f);
- 
-if (p.isBot && p.stuckFrames > 20) {
-particleManager.Spawn(p.x, p.y, new Color(0.94f,0.27f,0.27f), 8);
-Packets.RemoveAt(i); continue;
-} else if (!p.isBot && p.stuckFrames > 120) {
-GameController.Instance.AddFrustration(10f);
-particleManager.Spawn(p.x, p.y, new Color(0.96f,0.62f,0.04f), 12);
-radarDrawer.AddPopup(p.x, p.y - 10f, "TIMEOUT (UX DROP)",
-new Color(0.96f,0.62f,0.04f));
-Packets.RemoveAt(i); continue;
-}
-} else {
-p.x = nx; p.y = ny; p.stuckFrames = 0;
-}
- 
-// Server arrival
-if (Mathf.Sqrt((p.x-cx)*(p.x-cx)+(p.y-cy)*(p.y-cy)) < serverR) {
-if (p.isBot) {
-GameController.Instance.AddLoad(12f);
-particleManager.Spawn(p.x, p.y, new Color(0.94f,0.27f,0.27f), 15);
-} else {
-GameController.Instance.ReduceLoad(2f);
-particleManager.Spawn(p.x, p.y, new Color(0.063f,0.725f,0.506f), 8);
-}
-Packets.RemoveAt(i);
-}
-}
-}
+    [Header("Prefabs")]
+    public GameObject botPrefab;
+    public GameObject legitPrefab;
+
+    [Header("References")]
+    public Transform packetParent; 
+
+    const int LANES = 6;
+
+    float _centerX;
+    float _centerY;
+    float _spawnRadius;
+
+    int _frame = 0;
+    List<Packet> _activePackets = new List<Packet>();
+
+    void Start()
+    {
+        _centerX     = 1920f * 0.5f;
+        _centerY     = 1080f * 0.5f;
+        _spawnRadius = Mathf.Max(1920f, 1080f) * 0.6f;
+
+        GameController.Instance.OnStateChanged += OnStateChanged;
+    }
+
+    void OnStateChanged(GameController.GameState state)
+    {
+        StopAllCoroutines();
+
+        if (state == GameController.GameState.PLAYING)
+        {
+            ClearPackets();
+            _frame = 0;
+            StartCoroutine(SpawnLoop());
+        }
+        else
+        {
+            ClearPackets();
+        }
+    }
+
+    void ClearPackets()
+    {
+        foreach (var p in _activePackets)
+            if (p != null) Destroy(p.gameObject);
+
+        _activePackets.Clear();
+    }
+
+    IEnumerator SpawnLoop()
+    {
+        while (GameController.Instance.State == GameController.GameState.PLAYING)
+        {
+            yield return null;
+            _frame++;
+
+            int   wave    = GameController.Instance.Wave;
+            float elapsed = GameController.Instance.totalTime
+                          - GameController.Instance.TimeLeft;
+
+            int legitInterval = Mathf.Max(40, 60 - Mathf.FloorToInt(elapsed / 2f));
+            if (_frame % legitInterval == 0)
+                SpawnPacket(Random.Range(0, LANES), false);
+
+            // Wave 1 — Slow, single bots to teach the mechanic. No bursts yet.
+            if (wave == 1 && _frame % 90 == 0) 
+            {
+                SpawnPacket(Random.Range(0, LANES), true);
+            }
+
+            // Wave 2 — Introduce bursts (4 bots) to test their new skills
+            if (wave == 2 && _frame % 80 == 0)
+            {
+                int lane = Random.Range(0, LANES);
+                StartCoroutine(SpawnBurst(lane, 4));
+                yield return new WaitForSeconds(0.2f);
+                SpawnPacket(lane, false);
+            }
+
+            // Wave 3 — constant stream + heavy bursts
+            if (wave == 3)
+            {
+                if (_frame % 30 == 0)
+                    SpawnPacket(Random.Range(0, LANES), Random.value > 0.3f);
+
+                if (_frame % 90 == 0)
+                    StartCoroutine(SpawnBurst(Random.Range(0, LANES), 6));
+            }
+        }
+    }
+
+    IEnumerator SpawnBurst(int lane, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            if (GameController.Instance.State != GameController.GameState.PLAYING)
+                yield break;
+
+            SpawnPacket(lane, true);
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    void SpawnPacket(int lane, bool isBot)
+    {
+        float laneAngle = (float)lane / LANES * Mathf.PI * 2f;
+        float jitter    = (Random.value * 0.8f + 0.1f) * (Mathf.PI * 2f / LANES);
+        float angle     = laneAngle + jitter;
+
+        Vector2 spawnPos = new Vector2(
+            _centerX + Mathf.Cos(angle) * _spawnRadius,
+            _centerY + Mathf.Sin(angle) * _spawnRadius
+        );
+
+        Vector2 dir = new Vector2(_centerX - spawnPos.x, _centerY - spawnPos.y).normalized;
+
+        // Speed - Slower overall pace for better strategic readability
+        // Bots vary from 0.8 to 1.1 speed. Legit users crawl at 0.5.
+        float speed = isBot ? (0.8f + Random.value * 0.3f) : 0.5f;
+
+        GameObject prefab = isBot ? botPrefab : legitPrefab;
+        GameObject go     = Instantiate(prefab, packetParent);
+
+        Packet packet = go.GetComponent<Packet>();
+        packet.Init(spawnPos, dir, speed, isBot, angle);
+
+        _activePackets.Add(packet);
+    }
+
+    void OnDestroy()
+    {
+        if (GameController.Instance != null)
+            GameController.Instance.OnStateChanged -= OnStateChanged;
+    }
 }

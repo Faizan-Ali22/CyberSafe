@@ -69,13 +69,13 @@ public class PacketSpawner : MonoBehaviour
                 SpawnPacket(Random.Range(0, LANES), false);
 
             // Wave 1 — Slow, single bots to teach the mechanic. No bursts yet.
-            if (wave == 1 && _frame % 90 == 0) 
+            if (wave == 1 && _frame % 180 == 0) 
             {
                 SpawnPacket(Random.Range(0, LANES), true);
             }
 
             // Wave 2 — Introduce bursts (4 bots) to test their new skills
-            if (wave == 2 && _frame % 80 == 0)
+            if (wave == 2 && _frame % 100 == 0)
             {
                 int lane = Random.Range(0, LANES);
                 StartCoroutine(SpawnBurst(lane, 4));
@@ -86,7 +86,7 @@ public class PacketSpawner : MonoBehaviour
             // Wave 3 — constant stream + heavy bursts
             if (wave == 3)
             {
-                if (_frame % 30 == 0)
+                if (_frame % 50 == 0)
                     SpawnPacket(Random.Range(0, LANES), Random.value > 0.3f);
 
                 if (_frame % 90 == 0)
@@ -122,7 +122,7 @@ public class PacketSpawner : MonoBehaviour
 
         // Speed - Slower overall pace for better strategic readability
         // Bots vary from 0.8 to 1.1 speed. Legit users crawl at 0.5.
-        float speed = isBot ? (0.8f + Random.value * 0.3f) : 0.5f;
+        float speed = isBot ? (0.4f + Random.value * 0.2f) : 0.5f;
 
         GameObject prefab = isBot ? botPrefab : legitPrefab;
         GameObject go     = Instantiate(prefab, packetParent);

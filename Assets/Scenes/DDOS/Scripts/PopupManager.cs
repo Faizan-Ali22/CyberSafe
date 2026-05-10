@@ -5,8 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 // Handles floating rule text popups that appear when a wall is deployed
-// and timeout popups when legit users are blocked
-// Attach to: GameManager
+
 
 public class PopupManager : MonoBehaviour
 {
@@ -112,8 +111,8 @@ public class PopupManager : MonoBehaviour
         rootRT.pivot         = new Vector2(0.5f, 0.5f);
 
         // Estimate width from character count
-        float estimatedWidth = text.Length * 8.5f + 16f;
-        rootRT.sizeDelta = new Vector2(estimatedWidth, 28f);
+        float estimatedWidth = text.Length * 9.5f + 18f;
+        rootRT.sizeDelta = new Vector2(estimatedWidth, 32f);
 
         // TMP fills root
         RectTransform textRT = textObj.GetComponent<RectTransform>();

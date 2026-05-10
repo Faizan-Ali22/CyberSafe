@@ -30,25 +30,26 @@ public class Packet : MonoBehaviour
         Vector2 currentPos = rectTransform.anchoredPosition;
         Vector2 nextPos = currentPos + (direction * speed);
 
-        // --- THE MIRROR FIX ---
         // UI is Bottom-Left (Y goes up). Radar/Walls are Top-Left (Y goes down).
-        // We MUST flip the Y axis so the packet's hitbox perfectly matches the drawn wall!
         Vector2 physicsPos = new Vector2(nextPos.x, 1080f - nextPos.y);
 
-        // 1. Check Firewall Collisions using the synced Physics coordinates
+        // 1. Check Firewall Collisions
         if (FirewallManager.Instance.IsNearAnyWall(physicsPos, 30f))
         {
-            stuckFrames++;
-            
-            // Jitter visually in UI space
-            rectTransform.anchoredPosition += new Vector2(Random.Range(-1.5f, 1.5f), Random.Range(-1.5f, 1.5f));
-
-            if (isBot && stuckFrames > 20)
+            // THE FIX: Instant Kill for Red Bots
+            // If it's a bot, destroy it the exact frame it touches the wall. No delay.
+            if (isBot)
             {
                 ParticleManager.Instance.Burst(physicsPos, ParticleManager.COL_RED, 8);
                 Destroy(gameObject);
+                return; // Stop code execution for this packet immediately
             }
-            else if (!isBot && stuckFrames > 300)
+
+            // Green Legit Users still get stuck and jitter
+            stuckFrames++;
+            rectTransform.anchoredPosition += new Vector2(Random.Range(-1.5f, 1.5f), Random.Range(-1.5f, 1.5f));
+
+            if (!isBot && stuckFrames > 300)
             {
                 GameController.Instance.LegitTimedOut();
                 ParticleManager.Instance.Burst(physicsPos, ParticleManager.COL_AMBER, 12);
@@ -64,11 +65,9 @@ public class Packet : MonoBehaviour
         }
 
         // 2. Check Server Arrival
-        // Center is 960, 540 in both coordinate systems, so distance checks work directly
         Vector2 serverCenter = new Vector2(960f, 540f); 
         if (Vector2.Distance(rectTransform.anchoredPosition, serverCenter) < serverRadius)
         {
-            // Sync explosion coordinates to the radar layer so they don't spawn mirrored
             Vector2 currentPhysicsPos = new Vector2(rectTransform.anchoredPosition.x, 1080f - rectTransform.anchoredPosition.y);
             
             if (isBot)

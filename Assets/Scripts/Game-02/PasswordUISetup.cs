@@ -351,7 +351,7 @@ public class PasswordUISetup : MonoBehaviour
 
         // 4. Hints panel (Moved to Top Right - Bigger & clearer)
         GameObject hintsPanel = CreateUIPanel("HintsPanel", passwordPanel.transform);
-        PositionElement(hintsPanel.GetComponent<RectTransform>(), 656f, 420f, 600f, 240f);
+        PositionElement(hintsPanel.GetComponent<RectTransform>(), 625f, 420f, 600f, 240f);
         hintsPanel.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.15f);
         hintsPanel.GetComponent<Image>().raycastTarget = false;
         

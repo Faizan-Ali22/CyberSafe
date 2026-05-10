@@ -271,7 +271,7 @@ public class PasswordUISetup : MonoBehaviour
     
     private void OnAvatarClicked(int index)
     {
-        Debug.Log($"🎯 Avatar {index} clicked: {checker.GetAvatarNames()[index]}");
+        if (checker.IsPasswordSet(index)) return;
         checker.SelectAccount(index);
     }
     
@@ -281,22 +281,19 @@ public class PasswordUISetup : MonoBehaviour
         {
             for (int i = 0; i < avatarButtons.Count; i++)
             {
+                bool locked = checker.IsPasswordSet(i);
+
+                var btn = avatarButtons[i].GetComponent<Button>();
+                if (btn != null) btn.interactable = !locked;
+
                 Transform statusTransform = avatarButtons[i].transform.Find("Status");
                 if (statusTransform != null)
                 {
-                    TextMeshProUGUI statusText = statusTransform.GetComponent<TextMeshProUGUI>();
+                    var statusText = statusTransform.GetComponent<TextMeshProUGUI>();
                     if (statusText != null)
                     {
-                        if (checker.IsPasswordSet(i))
-                        {
-                            statusText.text = "<color=green>●</color> Password Set";
-                            statusText.color = Color.white;
-                        }
-                        else
-                        {
-                            statusText.text = "No Password";
-                            statusText.color = new Color(0.7f, 0.7f, 0.7f);
-                        }
+                        statusText.text = locked ? "🔒 Locked" : "No Password";
+                        statusText.color = locked ? Color.white : new Color(0.7f, 0.7f, 0.7f);
                     }
                 }
             }

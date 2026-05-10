@@ -459,7 +459,10 @@ public class PasswordStrengthChecker : MonoBehaviour
             strengthBar.color = strengthText != null ? strengthText.color : weakColor;
         }
     }
-    
+    public void ClearPasswords()
+    {
+    accountPasswords.Clear();
+    }
     private string GenerateHints(string password, PasswordStrength strength)
     {
         if (password.Length == 0)
@@ -548,3 +551,4 @@ public class PasswordStrengthChecker : MonoBehaviour
         public int Length;
     }
 }
+

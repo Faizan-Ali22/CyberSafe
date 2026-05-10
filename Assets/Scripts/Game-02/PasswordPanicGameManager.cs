@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PasswordPanicGameManager : MonoBehaviour
 {
@@ -52,29 +53,15 @@ public class PasswordPanicGameManager : MonoBehaviour
     private bool CheckAllPasswordsSet()
     {
         int setPasswordsCount = 0;
-        bool newlySaved = false;
 
         for (int i = 0; i < TOTAL_AVATARS; i++)
         {
-            bool isSetNow = passwordChecker != null && passwordChecker.IsPasswordSet(i);
-            
-            if (isSetNow && PlayerPrefs.GetInt(AVATAR_PREF_PREFIX + i, 0) == 0)
-            {
-                PlayerPrefs.SetInt(AVATAR_PREF_PREFIX + i, 1);
-                newlySaved = true; 
-            }
-
-            if (PlayerPrefs.GetInt(AVATAR_PREF_PREFIX + i, 0) == 1)
+            if (passwordChecker != null && passwordChecker.IsPasswordSet(i))
             {
                 setPasswordsCount++;
             }
         }
 
-        if (newlySaved)
-        {
-            PlayerPrefs.Save();
-        }
-        
         return setPasswordsCount >= TOTAL_AVATARS;
     }
 
@@ -158,12 +145,9 @@ public class PasswordPanicGameManager : MonoBehaviour
 
     public void ResetProgress()
     {
-        for (int i = 0; i < TOTAL_AVATARS; i++)
-        {
-            PlayerPrefs.DeleteKey(AVATAR_PREF_PREFIX + i);
-        }
-        PlayerPrefs.Save();
-        
+        if (passwordChecker != null)
+            passwordChecker.ClearPasswords();
+
         isCompleting = false;
 
         if (completedPanel != null)
@@ -171,4 +155,6 @@ public class PasswordPanicGameManager : MonoBehaviour
 
         Debug.Log("🔄 Avatar password progress has been reset for testing!");
     }
+
+    
 }

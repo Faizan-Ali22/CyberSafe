@@ -9,7 +9,7 @@ public class PasswordPanicGameManager : MonoBehaviour
     [SerializeField] private PasswordStrengthChecker passwordChecker;
     [SerializeField] private GameObject completedPanel;
     [SerializeField] private Button continueButton;
-    [SerializeField] private GameObject passwordUiCanvas; // <- drag the parent Canvas here
+    [SerializeField] private GameObject passwordUiCanvas; 
     
     [Header("Debug Settings")]
     [Tooltip("Check this in play mode to reset progress for testing")]
@@ -21,13 +21,13 @@ public class PasswordPanicGameManager : MonoBehaviour
 
     private void Start()
     {
-        // 1. Ensure the completed panel starts turned off
+        ResetProgress(); // reset when this scene loads
+
         if (completedPanel != null)
         {
             completedPanel.SetActive(false);
         }
 
-        // 2. Hook up the Continue Button to load the next scene
         if (continueButton != null)
         {
             continueButton.onClick.RemoveAllListeners();
@@ -37,14 +37,12 @@ public class PasswordPanicGameManager : MonoBehaviour
 
     private void Update()
     {
-        // Reset Logic for Testing
         if (resetProgress)
         {
             ResetProgress();
             resetProgress = false;
         }
 
-        // Continually check if all passwords are set
         if (!isCompleting && CheckAllPasswordsSet())
         {
             StartCoroutine(HandleGameCompletion());
@@ -58,24 +56,20 @@ public class PasswordPanicGameManager : MonoBehaviour
 
         for (int i = 0; i < TOTAL_AVATARS; i++)
         {
-            // Check if the player set the password securely in this active session
             bool isSetNow = passwordChecker != null && passwordChecker.IsPasswordSet(i);
             
-            // Save state to PlayerPrefs if they set it AND it wasn't saved before
             if (isSetNow && PlayerPrefs.GetInt(AVATAR_PREF_PREFIX + i, 0) == 0)
             {
                 PlayerPrefs.SetInt(AVATAR_PREF_PREFIX + i, 1);
-                newlySaved = true; // Mark that we need to hit the disk once
+                newlySaved = true; 
             }
 
-            // Check how many have been saved in PlayerPrefs as Complete
             if (PlayerPrefs.GetInt(AVATAR_PREF_PREFIX + i, 0) == 1)
             {
                 setPasswordsCount++;
             }
         }
 
-        // Fix: ONLY save if we changed something. Calling Save() 60 times a second freezes Android devices
         if (newlySaved)
         {
             PlayerPrefs.Save();
@@ -90,38 +84,37 @@ public class PasswordPanicGameManager : MonoBehaviour
         
         Debug.Log("✅ All 5 Avatar passwords set! Waiting 2 seconds...");
         
-        // Wait 2 seconds
-        yield return new WaitForSeconds(2.0f);
+        // FIX: Use Realtime to prevent Android OS keyboard suspensions from freezing the coroutine
+        yield return new WaitForSecondsRealtime(2.0f);
 
-        // Turn on the Completed panel and bring it to the very front
         if (completedPanel != null)
         {
-            // NEW: Push the Completed Panel to the front of the screen
-            completedPanel.transform.SetAsLastSibling();
+            // NOTE: Make sure the Completed Canvas 'Order in Layer' is set to 1 in the Unity Inspector!
             completedPanel.SetActive(true);
             
-            // NEW: Hide the password checker UI completely so it doesn't overlap
             if (passwordChecker != null)
             {
                 passwordChecker.gameObject.SetActive(false);
             }
 
-            // Force hide the entire UI Canvas
             if (passwordUiCanvas != null)
             {
                 Destroy(passwordUiCanvas);
             }
+            else
+            {
+                Debug.LogWarning("⚠️ passwordUiCanvas is null! Cannot destroy the main canvas.");
+            }
 
-            // Find and play the attached AudioSource sound
             AudioSource completedAudio = completedPanel.GetComponent<AudioSource>();
             if (completedAudio != null)
             {
                 completedAudio.Play();
             }
-            else
-            {
-                Debug.LogWarning("No AudioSource found attached to the Completed Panel!");
-            }
+        }
+        else
+        {
+             Debug.LogError("⚠️ completedPanel is null! The badge cannot be activated.");
         }
 
         UpdatePlayerProgress();
@@ -131,13 +124,11 @@ public class PasswordPanicGameManager : MonoBehaviour
     {
         if (ProgressManager.Instance != null)
         {
-            // Chapters Completed: Element 0, 1, 2, 3
             for (int i = 0; i <= 3; i++)
             {
                 ProgressManager.Instance.SetChapterCompletedOnly(i, true);
             }
 
-            // Chapters Unlocked: Element 0, 1, 2, 3, 4
             for (int i = 0; i <= 4; i++)
             {
                 ProgressManager.Instance.SetChapterUnlocked(i, true);
@@ -153,7 +144,6 @@ public class PasswordPanicGameManager : MonoBehaviour
 
     public void OnContinueClicked()
     {
-        // Load the next scene automatically based on Build Settings index
         int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
         
         if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
@@ -168,7 +158,6 @@ public class PasswordPanicGameManager : MonoBehaviour
 
     public void ResetProgress()
     {
-        // Wipe all 5 avatar keys
         for (int i = 0; i < TOTAL_AVATARS; i++)
         {
             PlayerPrefs.DeleteKey(AVATAR_PREF_PREFIX + i);

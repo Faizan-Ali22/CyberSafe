@@ -1,213 +1,155 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.EventSystems;
-using System;
-#if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-#endif
-
 using TMPro;
 using System.Text;
+using System;
 
-/// </summary>
 public class PasswordStrengthChecker : MonoBehaviour
 {
     [Header("Audio")]
     [SerializeField] private AudioClip typingClip;
     [SerializeField] private AudioSource typingAudioSource;
 
-    [Header("Avatar Names (Customize Here!)")]
-    [SerializeField] private string[] avatarNames = { "Alice", "Bob", "Charlie", "Diana", "Eve" };
-    
-    [Header("Avatar Images (Optional - Drag Images Here!)")]
-    [Tooltip("Leave empty to use default emojis. Drag Sprite/Texture2D for custom images.")]
+    [Header("Avatar Names")]
+    [SerializeField] private string[] avatarNames = { "Bilal", "Ali", "Saad", "Ayesha", "Maham" };
+
+    [Header("Avatar Images (Optional)")]
+    [Tooltip("Leave empty slots to use default emoji text instead.")]
     [SerializeField] private Sprite[] avatarImages = new Sprite[5];
-    
-    [Header("UI References - AUTO-ASSIGNED")]
+
+    // ── Drag each Avatar card's Status TMP text here (5 slots) ──
+    [Header("Avatar Status Labels (one per avatar card)")]
+    [SerializeField] private TextMeshProUGUI[] avatarStatusLabels = new TextMeshProUGUI[5];
+
+    // ── Password Checker Panel UI ────────────────────────────────
+    [Header("Password Checker Panel — Drag refs from Inspector")]
     [SerializeField] private TextMeshProUGUI strengthText;
     [SerializeField] private TextMeshProUGUI hintsText;
     [SerializeField] private TextMeshProUGUI characterCountText;
     [SerializeField] private TextMeshProUGUI crackTimeText;
     [SerializeField] private TextMeshProUGUI currentAccountNameText;
-    [SerializeField] private TMP_InputField passwordInputField;
-    
-    [Header("Visual Feedback")]
-    [SerializeField] private Image strengthBar;
-    [SerializeField] private Color weakColor = new Color(1f, 0.2f, 0.2f);
-    [SerializeField] private Color mediumColor = new Color(1f, 0.8f, 0f);
-    [SerializeField] private Color strongColor = new Color(0.2f, 1f, 0.2f);
+    [SerializeField] private TMP_InputField  passwordInputField;
+    [SerializeField] private Image           strengthBar;
+    [SerializeField] private Button          toggleVisibilityButton;
+    [SerializeField] private Button          setPasswordButton;
+
+    [Header("Strength Colors")]
+    [SerializeField] private Color weakColor      = new Color(1f, 0.2f, 0.2f);
+    [SerializeField] private Color mediumColor    = new Color(1f, 0.8f, 0f);
+    [SerializeField] private Color strongColor    = new Color(0.2f, 1f, 0.2f);
     [SerializeField] private Color veryStrongColor = new Color(0f, 0.8f, 0f);
-    
-    [Header("Password Display Settings")]
-    [SerializeField] private bool showPassword = false;
-    [SerializeField] private Button toggleVisibilityButton;
-    [SerializeField] private Button setPasswordButton;
-    
+
     [Header("Panel References")]
     [SerializeField] private GameObject avatarSelectionPanel;
     [SerializeField] private GameObject passwordCheckerPanel;
-    
-    private StringBuilder currentPassword = new StringBuilder();
-    private const int MAX_PASSWORD_LENGTH = 128;
-    private int currentAccountIndex = -1;
+
+    [Header("Password Visibility")]
+    [SerializeField] private bool showPassword = false;
+
+    // ── Private state ────────────────────────────────────────────
+    private StringBuilder currentPassword    = new StringBuilder();
+    private const int     MAX_PASSWORD_LENGTH = 128;
+    private int           currentAccountIndex = -1;
     private Dictionary<int, string> accountPasswords = new Dictionary<int, string>();
-    private const long ATTEMPTS_PER_SECOND = 1000000000;
-    
+    private const long    ATTEMPTS_PER_SECOND = 1_000_000_000;
+
+    // ── Lifecycle ────────────────────────────────────────────────
     private void Start()
     {
         ShowAvatarSelection();
         SetupButtons();
         SetupInputField();
-        
-        Debug.Log("✅ Password Checker Ready - Android Compatible!");
+        Debug.Log("✅ PasswordStrengthChecker ready — Inspector-wired mode.");
     }
-    
+
     private void SetupButtons()
     {
         if (setPasswordButton != null)
-        {
             setPasswordButton.onClick.AddListener(OnSetPasswordClicked);
-        }
-        
+
         if (toggleVisibilityButton != null)
-        {
             toggleVisibilityButton.onClick.AddListener(TogglePasswordVisibility);
-        }
     }
-    
+
     private void SetupInputField()
     {
-        if (passwordInputField != null)
-        {
-            // Configure for Android keyboard
-            passwordInputField.contentType = TMP_InputField.ContentType.Standard;
-            passwordInputField.inputType = TMP_InputField.InputType.Standard;
-            passwordInputField.keyboardType = TouchScreenKeyboardType.Default;
-            passwordInputField.characterLimit = MAX_PASSWORD_LENGTH;
-            
-            // Listen to input changes
-            passwordInputField.onValueChanged.AddListener(OnPasswordInputChanged);
-            passwordInputField.onEndEdit.AddListener(OnPasswordInputEnd);
-            
-            Debug.Log("✅ InputField configured for Android keyboard");
-        }
-    }
-    
-    /// <summary>
-    /// Called by PasswordUISetup to assign UI references
-    /// </summary>
-    public void AssignUIReferences(
-        TextMeshProUGUI strength,
-        TextMeshProUGUI hints,
-        TextMeshProUGUI charCount,
-        TextMeshProUGUI crackTime,
-        TextMeshProUGUI accountName,
-        Image bar,
-        Button toggleBtn,
-        Button setBtn,
-        GameObject avatarPanel,
-        GameObject passwordPanel,
-        TMP_InputField inputField)
-    {
-        strengthText = strength;
-        hintsText = hints;
-        characterCountText = charCount;
-        crackTimeText = crackTime;
-        currentAccountNameText = accountName;
-        strengthBar = bar;
-        toggleVisibilityButton = toggleBtn;
-        setPasswordButton = setBtn;
-        avatarSelectionPanel = avatarPanel;
-        passwordCheckerPanel = passwordPanel;
-        passwordInputField = inputField;
+        if (passwordInputField == null) return;
 
-        Debug.Log("✅ All UI references assigned successfully!");
-    }
-    
-    private void OnPasswordInputChanged(string input)
-    {
-        // Update password from input field
-        currentPassword.Clear();
-        currentPassword.Append(input);
-        UpdateDisplay();
+        // Android keyboard config
+        passwordInputField.contentType    = TMP_InputField.ContentType.Standard;
+        passwordInputField.inputType      = TMP_InputField.InputType.Standard;
+        passwordInputField.keyboardType   = TouchScreenKeyboardType.Default;
+        passwordInputField.characterLimit = MAX_PASSWORD_LENGTH;
 
-        // Play typing sound on each keystroke
-        if (typingAudioSource != null && typingClip != null)
-        {
-            typingAudioSource.PlayOneShot(typingClip);
-        }
+        passwordInputField.onValueChanged.AddListener(OnPasswordInputChanged);
+        passwordInputField.onEndEdit.AddListener(OnPasswordInputEnd);
     }
-    
-    private void OnPasswordInputEnd(string input)
+
+    // ── Public API ───────────────────────────────────────────────
+    public string[] GetAvatarNames()  => avatarNames;
+    public Sprite[] GetAvatarImages() => avatarImages;
+
+    public bool IsPasswordSet(int index)
+        => accountPasswords.ContainsKey(index);
+
+    public void ClearPasswords()
     {
-        // Final update when editing ends
-        currentPassword.Clear();
-        currentPassword.Append(input);
-        UpdateDisplay();
+        accountPasswords.Clear();
+        RefreshAllStatusLabels();
     }
-    
+
+    // ── Navigation ───────────────────────────────────────────────
     public void ShowAvatarSelection()
     {
-        if (avatarSelectionPanel != null)
-            avatarSelectionPanel.SetActive(true);
-        
-        if (passwordCheckerPanel != null)
-            passwordCheckerPanel.SetActive(false);
-        
-        // Clear input field
+        if (avatarSelectionPanel  != null) avatarSelectionPanel.SetActive(true);
+        if (passwordCheckerPanel  != null) passwordCheckerPanel.SetActive(false);
+        if (passwordInputField    != null) passwordInputField.text = "";
+    }
+
+    public void SelectAccount(int index)
+    {
+        currentAccountIndex = index;
+        currentPassword.Clear();
+
+        if (avatarSelectionPanel != null) avatarSelectionPanel.SetActive(false);
+        if (passwordCheckerPanel != null) passwordCheckerPanel.SetActive(true);
+
+        InitializeUI();
+        UpdateDisplay();
+
+        if (currentAccountNameText != null && index >= 0 && index < avatarNames.Length)
+            currentAccountNameText.text =
+                $"Setting password for: <b>{avatarNames[index]}</b>";
+
         if (passwordInputField != null)
         {
             passwordInputField.text = "";
-        }
-    }
-    
-    public void SelectAccount(int accountIndex)
-    {
-        currentAccountIndex = accountIndex;
-        currentPassword.Clear();
-        
-        if (avatarSelectionPanel != null)
-            avatarSelectionPanel.SetActive(false);
-        
-        if (passwordCheckerPanel != null)
-            passwordCheckerPanel.SetActive(true);
-        
-        InitializeUI();
-        UpdateDisplay();
-        
-        // Focus input field for Android keyboard
-        if (passwordInputField != null)
-        {
             passwordInputField.ActivateInputField();
             passwordInputField.Select();
         }
-        
-        if (currentAccountNameText != null && accountIndex >= 0 && accountIndex < avatarNames.Length)
-        {
-            currentAccountNameText.text = $"Setting password for: <b>{avatarNames[accountIndex]}</b>";
-        }
     }
-    
-    private IEnumerator FocusInputFieldDelayed()
+
+    // ── Input Handlers ───────────────────────────────────────────
+    private void OnPasswordInputChanged(string input)
     {
-        yield return new WaitForSeconds(0.1f);
-        passwordInputField.ActivateInputField();
-        passwordInputField.Select();
+        currentPassword.Clear();
+        currentPassword.Append(input);
+        UpdateDisplay();
+
+        if (typingAudioSource != null && typingClip != null)
+            typingAudioSource.PlayOneShot(typingClip);
     }
-    
-    public string[] GetAvatarNames()
+
+    private void OnPasswordInputEnd(string input)
     {
-        return avatarNames;
+        currentPassword.Clear();
+        currentPassword.Append(input);
+        UpdateDisplay();
     }
-    
-    public Sprite[] GetAvatarImages()
-    {
-        return avatarImages;
-    }
-    
+
+    // ── Set Password ─────────────────────────────────────────────
     private void OnSetPasswordClicked()
     {
         if (currentPassword.Length == 0)
@@ -215,340 +157,257 @@ public class PasswordStrengthChecker : MonoBehaviour
             Debug.Log("❌ Cannot set empty password!");
             return;
         }
-        
+
         accountPasswords[currentAccountIndex] = currentPassword.ToString();
-        
-        Debug.Log($"✅ Password set for account {currentAccountIndex}: {avatarNames[currentAccountIndex]}");
-        
+        Debug.Log($"✅ Password set for: {avatarNames[currentAccountIndex]}");
+
+        // Update button text temporarily
         if (setPasswordButton != null)
         {
-            TextMeshProUGUI btnText = setPasswordButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (btnText != null)
-            {
-                btnText.text = "✅ Password Set!";
-            }
+            var txt = setPasswordButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (txt) txt.text = "✅ Password Set!";
         }
-        
+
+        // Update this avatar's status label immediately
+        UpdateAvatarStatusLabel(currentAccountIndex, locked: true);
+
         StartCoroutine(ReturnToAvatarSelection());
     }
-    
+
     private IEnumerator ReturnToAvatarSelection()
     {
         yield return new WaitForSeconds(1.5f);
-        
+
+        // Reset button text
         if (setPasswordButton != null)
         {
-            TextMeshProUGUI btnText = setPasswordButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (btnText != null)
-            {
-                btnText.text = "✓ Set Password";
-            }
+            var txt = setPasswordButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (txt) txt.text = "✓ Set Password";
         }
-        
+
         ShowAvatarSelection();
     }
-    
-    public bool IsPasswordSet(int accountIndex)
-    {
-        return accountPasswords.ContainsKey(accountIndex);
-    }
-    
-    private void InitializeUI()
-    {
-        if (characterCountText != null)
-            characterCountText.text = "Characters: 0";
 
-        if (crackTimeText != null)
-            crackTimeText.text = "";
-
-        if (passwordInputField != null)
-            passwordInputField.text = "";
-    }
-    
     public void TogglePasswordVisibility()
     {
         showPassword = !showPassword;
-        
+
         if (passwordInputField != null)
         {
-            passwordInputField.contentType = showPassword ? 
-                TMP_InputField.ContentType.Standard : 
-                TMP_InputField.ContentType.Password;
+            passwordInputField.contentType = showPassword
+                ? TMP_InputField.ContentType.Standard
+                : TMP_InputField.ContentType.Password;
             passwordInputField.ForceLabelUpdate();
         }
-        
+
         UpdateDisplay();
-        
+
         if (toggleVisibilityButton != null)
         {
-            TextMeshProUGUI buttonText = toggleVisibilityButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (buttonText != null)
-            {
-                buttonText.text = showPassword ? "🙈 Hide" : "👁️ Show";
-            }
+            var txt = toggleVisibilityButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (txt) txt.text = showPassword ? "🙈 Hide" : "👁️ Show";
         }
-        
-        Debug.Log($"👁️ Password visibility: {(showPassword ? "VISIBLE" : "HIDDEN")}");
     }
-    
+
+    // ── Avatar Status Labels ─────────────────────────────────────
+    // Call this to refresh all 5 status labels on the avatar panel
+    private void RefreshAllStatusLabels()
+    {
+        for (int i = 0; i < 5; i++)
+            UpdateAvatarStatusLabel(i, accountPasswords.ContainsKey(i));
+    }
+
+    private void UpdateAvatarStatusLabel(int index, bool locked)
+    {
+        if (avatarStatusLabels == null || index >= avatarStatusLabels.Length) return;
+        var label = avatarStatusLabels[index];
+        if (label == null) return;
+
+        if (locked)
+        {
+            label.text  = "🔒 Password Set";
+            label.color = new Color(0.4f, 1f, 0.6f); // green
+        }
+        else
+        {
+            label.text  = "No Password";
+            label.color = new Color(0.7f, 0.7f, 0.7f); // grey
+        }
+    }
+
+    // ── Display Update ───────────────────────────────────────────
+    private void InitializeUI()
+    {
+        if (characterCountText != null) characterCountText.text = "Characters: 0";
+        if (crackTimeText      != null) crackTimeText.text      = "";
+        if (strengthText       != null) strengthText.text       = "Strength:  None\nScore: 0/100";
+        if (strengthBar        != null) strengthBar.fillAmount  = 0f;
+        if (hintsText          != null)
+            hintsText.text = "💡 <b>Tips for a Strong Password:</b>\n" +
+                             "• Use at least 12 characters\n" +
+                             "• Mix uppercase and lowercase letters\n" +
+                             "• Include numbers and special characters\n" +
+                             "• Avoid common words and patterns";
+    }
+
     private void UpdateDisplay()
     {
-        string password = currentPassword.ToString();
+        string pwd = currentPassword.ToString();
 
         if (characterCountText != null)
-            characterCountText.text = $"Characters: {password.Length}";
+            characterCountText.text = $"Characters: {pwd.Length}";
 
-        PasswordStrength strength = CalculateStrength(password);
+        PasswordStrength strength = CalculateStrength(pwd);
         UpdateStrengthDisplay(strength);
 
-        if (crackTimeText != null)
-        {
-            string crackTime = CalculateCrackTime(password, strength);
-            crackTimeText.text = crackTime;
-        }
+        if (hintsText    != null) hintsText.text    = GenerateHints(pwd, strength);
+        if (crackTimeText != null) crackTimeText.text = CalculateCrackTime(pwd, strength);
+    }
 
-        string hints = GenerateHints(password, strength);
-        if (hintsText != null)
-            hintsText.text = hints;
-    }
-    
-    private string CalculateCrackTime(string password, PasswordStrength strength)
+    private void UpdateStrengthDisplay(PasswordStrength s)
     {
-        if (password.Length == 0)
-            return "";
-        
-        int poolSize = 0;
-        if (strength.HasLower) poolSize += 26;
-        if (strength.HasUpper) poolSize += 26;
-        if (strength.HasDigit) poolSize += 10;
-        if (strength.HasSpecial) poolSize += 32;
-        
-        if (poolSize == 0) poolSize = 26;
-        
-        double combinations = Math.Pow(poolSize, password.Length);
-        double secondsToCrack = combinations / ATTEMPTS_PER_SECOND;
-        
-        string timeString = FormatCrackTime(secondsToCrack);
-        string emoji = GetCrackTimeEmoji(secondsToCrack);
-        
-        return $"{emoji} <b>Time to Crack:</b> {timeString}\n<size=14><color=#888888>(At 1 billion guesses/second)</color></size>";
-    }
-    
-    private string FormatCrackTime(double seconds)
-    {
-        if (seconds < 1)
-            return "<color=red>Instantly</color>";
-        
-        if (seconds < 60)
-            return $"<color=red>{seconds:F1} seconds</color>";
-        
-        double minutes = seconds / 60;
-        if (minutes < 60)
-            return $"<color=orange>{minutes:F1} minutes</color>";
-        
-        double hours = minutes / 60;
-        if (hours < 24)
-            return $"<color=yellow>{hours:F1} hours</color>";
-        
-        double days = hours / 24;
-        if (days < 30)
-            return $"<color=yellow>{days:F1} days</color>";
-        
-        double months = days / 30;
-        if (months < 12)
-            return $"<color=#90EE90>{months:F1} months</color>";
-        
-        double years = days / 365;
-        if (years < 1000)
-            return $"<color=green>{years:F1} years</color>";
-        
-        if (years < 1000000)
+        Color c = s.Level switch
         {
-            double thousands = years / 1000;
-            return $"<color=green>{thousands:F1} thousand years</color>";
-        }
-        
-        if (years < 1000000000)
-        {
-            double millions = years / 1000000;
-            return $"<color=green>{millions:F1} million years</color>";
-        }
-        
-        double billions = years / 1000000000;
-        return $"<color=green>{billions:F1} billion years</color>";
-    }
-    
-    private string GetCrackTimeEmoji(double seconds)
-    {
-        if (seconds < 60) return "💀";
-        if (seconds < 3600) return "⚠️";
-        if (seconds < 86400) return "⏰";
-        if (seconds < 2592000) return "📅";
-        if (seconds < 31536000) return "🗓️";
-        return "🔒";
-    }
-    
-    private PasswordStrength CalculateStrength(string password)
-    {
-        if (password.Length == 0)
-            return new PasswordStrength { Score = 0, Level = "None" };
-        
-        int score = 0;
-        bool hasLower = false, hasUpper = false, hasDigit = false, hasSpecial = false;
-        
-        foreach (char c in password)
-        {
-            if (char.IsLower(c)) hasLower = true;
-            else if (char.IsUpper(c)) hasUpper = true;
-            else if (char.IsDigit(c)) hasDigit = true;
-            else if (!char.IsLetterOrDigit(c)) hasSpecial = true;
-        }
-        
-        if (password.Length >= 8) score += 20;
-        if (password.Length >= 12) score += 15;
-        if (password.Length >= 16) score += 15;
-        
-        if (hasLower) score += 10;
-        if (hasUpper) score += 15;
-        if (hasDigit) score += 15;
-        if (hasSpecial) score += 20;
-        
-        if (hasLower && hasUpper && hasDigit && hasSpecial)
-            score += 10;
-        
-        string level;
-        if (score < 30) level = "Very Weak";
-        else if (score < 50) level = "Weak";
-        else if (score < 70) level = "Medium";
-        else if (score < 85) level = "Strong";
-        else level = "Very Strong";
-        
-        return new PasswordStrength 
-        { 
-            Score = score, 
-            Level = level,
-            HasLower = hasLower,
-            HasUpper = hasUpper,
-            HasDigit = hasDigit,
-            HasSpecial = hasSpecial,
-            Length = password.Length
+            "Very Weak"   => weakColor,
+            "Weak"        => new Color(1f, 0.5f, 0f),
+            "Medium"      => mediumColor,
+            "Strong"      => strongColor,
+            "Very Strong" => veryStrongColor,
+            _             => weakColor
         };
-    }
-    
-    private void UpdateStrengthDisplay(PasswordStrength strength)
-    {
+
         if (strengthText != null)
         {
-            strengthText.text = $"Strength: {strength.Level}\nScore: {strength.Score}/100";
-            
-            Color textColor = weakColor;
-            switch (strength.Level)
-            {
-                case "Very Weak": textColor = weakColor; break;
-                case "Weak": textColor = new Color(1f, 0.5f, 0f); break;
-                case "Medium": textColor = mediumColor; break;
-                case "Strong": textColor = strongColor; break;
-                case "Very Strong": textColor = veryStrongColor; break;
-            }
-            strengthText.color = textColor;
+            strengthText.text  = $"Strength:  {s.Level}\nScore: {s.Score}/100";
+            strengthText.color = c;
         }
-        
         if (strengthBar != null)
         {
-            strengthBar.fillAmount = strength.Score / 100f;
-            strengthBar.color = strengthText != null ? strengthText.color : weakColor;
+            strengthBar.fillAmount = s.Score / 100f;
+            strengthBar.color      = c;
         }
     }
-    public void ClearPasswords()
+
+    // ── Strength Calculation ─────────────────────────────────────
+    private PasswordStrength CalculateStrength(string pwd)
     {
-    accountPasswords.Clear();
+        if (pwd.Length == 0)
+            return new PasswordStrength { Score = 0, Level = "None" };
+
+        int  score = 0;
+        bool hasLower = false, hasUpper = false, hasDigit = false, hasSpecial = false;
+
+        foreach (char c in pwd)
+        {
+            if      (char.IsLower(c))          hasLower   = true;
+            else if (char.IsUpper(c))          hasUpper   = true;
+            else if (char.IsDigit(c))          hasDigit   = true;
+            else if (!char.IsLetterOrDigit(c)) hasSpecial = true;
+        }
+
+        if (pwd.Length >= 8)  score += 20;
+        if (pwd.Length >= 12) score += 15;
+        if (pwd.Length >= 16) score += 15;
+        if (hasLower)   score += 10;
+        if (hasUpper)   score += 15;
+        if (hasDigit)   score += 15;
+        if (hasSpecial) score += 20;
+        if (hasLower && hasUpper && hasDigit && hasSpecial) score += 10;
+
+        string level = score < 30 ? "Very Weak"  :
+                       score < 50 ? "Weak"        :
+                       score < 70 ? "Medium"      :
+                       score < 85 ? "Strong"      : "Very Strong";
+
+        return new PasswordStrength {
+            Score = score, Level = level,
+            HasLower = hasLower, HasUpper = hasUpper,
+            HasDigit = hasDigit, HasSpecial = hasSpecial,
+            Length = pwd.Length
+        };
     }
-    private string GenerateHints(string password, PasswordStrength strength)
+
+    // ── Hints ────────────────────────────────────────────────────
+    private string GenerateHints(string pwd, PasswordStrength s)
     {
-        if (password.Length == 0)
+        if (pwd.Length == 0)
             return "💡 <b>Tips for a Strong Password:</b>\n" +
                    "• Use at least 12 characters\n" +
                    "• Mix uppercase and lowercase letters\n" +
                    "• Include numbers and special characters\n" +
                    "• Avoid common words and patterns";
-        
-        StringBuilder hints = new StringBuilder();
-        hints.AppendLine("<b>💡 Improvement Suggestions:</b>");
-        
-        bool needsImprovement = false;
-        
-        if (strength.Length < 8)
-        {
-            hints.AppendLine($"❌ Add {8 - strength.Length} more characters (minimum 8)");
-            needsImprovement = true;
-        }
-        else if (strength.Length < 12)
-        {
-            hints.AppendLine($"⚠️ Add {12 - strength.Length} more characters (recommended 12+)");
-            needsImprovement = true;
-        }
-        else
-        {
-            hints.AppendLine("✓ Length is good");
-        }
-        
-        if (!strength.HasLower)
-        {
-            hints.AppendLine("❌ Add lowercase letters (a-z)");
-            needsImprovement = true;
-        }
-        else
-        {
-            hints.AppendLine("✓ Has lowercase letters");
-        }
-        
-        if (!strength.HasUpper)
-        {
-            hints.AppendLine("❌ Add uppercase letters (A-Z)");
-            needsImprovement = true;
-        }
-        else
-        {
-            hints.AppendLine("✓ Has uppercase letters");
-        }
-        
-        if (!strength.HasDigit)
-        {
-            hints.AppendLine("❌ Add numbers (0-9)");
-            needsImprovement = true;
-        }
-        else
-        {
-            hints.AppendLine("✓ Has numbers");
-        }
-        
-        if (!strength.HasSpecial)
-        {
-            hints.AppendLine("❌ Add special characters (!@#$%^&*)");
-            needsImprovement = true;
-        }
-        else
-        {
-            hints.AppendLine("✓ Has special characters");
-        }
-        
-        if (!needsImprovement && strength.Score >= 85)
-        {
-            hints.AppendLine("\n<color=green>🎉 Excellent password!</color>");
-        }
-        
-        return hints.ToString();
+
+        var sb = new StringBuilder("<b>💡 Improvement Suggestions:</b>\n");
+
+        if      (s.Length < 8)  sb.AppendLine($"❌ Add {8  - s.Length} more chars (min 8)");
+        else if (s.Length < 12) sb.AppendLine($"⚠️ Add {12 - s.Length} more chars (rec 12+)");
+        else                     sb.AppendLine("✓ Length is good");
+
+        sb.AppendLine(!s.HasLower   ? "❌ Add lowercase letters (a-z)"   : "✓ Has lowercase");
+        sb.AppendLine(!s.HasUpper   ? "❌ Add uppercase letters (A-Z)"   : "✓ Has uppercase");
+        sb.AppendLine(!s.HasDigit   ? "❌ Add numbers (0-9)"             : "✓ Has numbers");
+        sb.AppendLine(!s.HasSpecial ? "❌ Add special chars (!@#$%^&*)"  : "✓ Has special chars");
+
+        if (s.Score >= 85)
+            sb.AppendLine("\n<color=green>🎉 Excellent password!</color>");
+
+        return sb.ToString();
     }
-    
+
+    // ── Crack Time ───────────────────────────────────────────────
+    private string CalculateCrackTime(string pwd, PasswordStrength s)
+    {
+        if (pwd.Length == 0) return "";
+
+        int pool = 0;
+        if (s.HasLower)   pool += 26;
+        if (s.HasUpper)   pool += 26;
+        if (s.HasDigit)   pool += 10;
+        if (s.HasSpecial) pool += 32;
+        if (pool == 0)    pool  = 26;
+
+        double combos  = Math.Pow(pool, pwd.Length);
+        double seconds = combos / ATTEMPTS_PER_SECOND;
+        string emoji   = GetCrackEmoji(seconds);
+
+        return $"{emoji} <b>Time to Crack:</b> {FormatTime(seconds)}\n" +
+               "<size=14><color=#888888>(At 1 billion guesses/second)</color></size>";
+    }
+
+    private string FormatTime(double sec)
+    {
+        if (sec < 1)            return "<color=red>Instantly</color>";
+        if (sec < 60)           return $"<color=red>{sec:F1} seconds</color>";
+        double m = sec / 60;
+        if (m  < 60)            return $"<color=orange>{m:F1} minutes</color>";
+        double h = m / 60;
+        if (h  < 24)            return $"<color=yellow>{h:F1} hours</color>";
+        double d = h / 24;
+        if (d  < 30)            return $"<color=yellow>{d:F1} days</color>";
+        double mo = d / 30;
+        if (mo < 12)            return $"<color=#90EE90>{mo:F1} months</color>";
+        double y = d / 365;
+        if (y  < 1_000)         return $"<color=green>{y:F1} years</color>";
+        if (y  < 1_000_000)     return $"<color=green>{y/1_000:F1} thousand years</color>";
+        if (y  < 1_000_000_000) return $"<color=green>{y/1_000_000:F1} million years</color>";
+        return $"<color=green>{y/1_000_000_000:F1} billion years</color>";
+    }
+
+    private string GetCrackEmoji(double sec)
+    {
+        if (sec < 60)        return "💀";
+        if (sec < 3_600)     return "⚠️";
+        if (sec < 86_400)    return "⏰";
+        if (sec < 2_592_000) return "📅";
+        if (sec < 31_536_000)return "🗓️";
+        return "🔒";
+    }
+
+    // ── Data ─────────────────────────────────────────────────────
     private struct PasswordStrength
     {
-        public int Score;
+        public int    Score, Length;
         public string Level;
-        public bool HasLower;
-        public bool HasUpper;
-        public bool HasDigit;
-        public bool HasSpecial;
-        public int Length;
+        public bool   HasLower, HasUpper, HasDigit, HasSpecial;
     }
 }
-

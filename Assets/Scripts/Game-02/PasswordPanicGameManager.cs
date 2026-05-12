@@ -1,40 +1,40 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using System.Collections.Generic;
 
 public class PasswordPanicGameManager : MonoBehaviour
 {
     [Header("References")]
+    [Tooltip("Leave null — auto-found via GetComponent at runtime.")]
     [SerializeField] private PasswordStrengthChecker passwordChecker;
-    [SerializeField] private GameObject completedPanel;
-    [SerializeField] private Button continueButton;
-    [SerializeField] private GameObject passwordUiCanvas; 
-    
-    [Header("Debug Settings")]
-    [Tooltip("Check this in play mode to reset progress for testing")]
+
+    [Tooltip("Drag the Canvas GameObject here if you want it destroyed on scene exit.")]
+    [SerializeField] private GameObject passwordUiCanvas;
+
+    [Header("Next Scene")]
+    [SerializeField] private int nextSceneIndex = 17;
+
+    [Header("Debug")]
     public bool resetProgress = false;
 
-    private bool isCompleting = false;
-    private const string AVATAR_PREF_PREFIX = "AvatarPasswordSet_";
+    private bool isCompleting  = false;
     private const int TOTAL_AVATARS = 5;
 
-    private void Start()
+    private void Awake()
     {
-        ResetProgress(); // reset when this scene loads
+        if (passwordChecker == null)
+            passwordChecker = GetComponent<PasswordStrengthChecker>();
 
-        if (completedPanel != null)
-        {
-            completedPanel.SetActive(false);
-        }
+        if (passwordChecker == null)
+            passwordChecker = FindFirstObjectByType<PasswordStrengthChecker>(FindObjectsInactive.Include);
 
-        if (continueButton != null)
-        {
-            continueButton.onClick.RemoveAllListeners();
-            continueButton.onClick.AddListener(OnContinueClicked);
-        }
+        if (passwordChecker == null)
+            Debug.LogError("❌ PasswordStrengthChecker not found on GameManager!");
+        else
+            Debug.Log("✅ PasswordStrengthChecker found.");
     }
+
+    private void Start() => ResetProgress();
 
     private void Update()
     {
@@ -45,66 +45,62 @@ public class PasswordPanicGameManager : MonoBehaviour
         }
 
         if (!isCompleting && CheckAllPasswordsSet())
-        {
             StartCoroutine(HandleGameCompletion());
-        }
     }
 
     private bool CheckAllPasswordsSet()
     {
-        int setPasswordsCount = 0;
-
+        if (passwordChecker == null) return false;
+        int count = 0;
         for (int i = 0; i < TOTAL_AVATARS; i++)
-        {
-            if (passwordChecker != null && passwordChecker.IsPasswordSet(i))
-            {
-                setPasswordsCount++;
-            }
-        }
-
-        return setPasswordsCount >= TOTAL_AVATARS;
+            if (passwordChecker.IsPasswordSet(i)) count++;
+        return count >= TOTAL_AVATARS;
     }
 
     private IEnumerator HandleGameCompletion()
     {
         isCompleting = true;
-        
-        Debug.Log("✅ All 5 Avatar passwords set! Waiting 2 seconds...");
-        
-        // FIX: Use Realtime to prevent Android OS keyboard suspensions from freezing the coroutine
-        yield return new WaitForSecondsRealtime(2.0f);
+        Debug.Log("✅ All 5 passwords set — starting scene transition.");
 
-        if (completedPanel != null)
+        // ANDROID FIX: stop ReturnToAvatarSelection coroutine before UI cleanup
+        if (passwordChecker != null)
         {
-            // NOTE: Make sure the Completed Canvas 'Order in Layer' is set to 1 in the Unity Inspector!
-            completedPanel.SetActive(true);
-            
-            if (passwordChecker != null)
-            {
-                passwordChecker.gameObject.SetActive(false);
-            }
-
-            if (passwordUiCanvas != null)
-            {
-                Destroy(passwordUiCanvas);
-            }
-            else
-            {
-                Debug.LogWarning("⚠️ passwordUiCanvas is null! Cannot destroy the main canvas.");
-            }
-
-            AudioSource completedAudio = completedPanel.GetComponent<AudioSource>();
-            if (completedAudio != null)
-            {
-                completedAudio.Play();
-            }
+            passwordChecker.StopAllCoroutines();
+            Debug.Log("🛑 Stopped checker coroutines.");
         }
-        else
-        {
-             Debug.LogError("⚠️ completedPanel is null! The badge cannot be activated.");
-        }
+
+        yield return null; // flush Unity callbacks
+        yield return null;
 
         UpdatePlayerProgress();
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextSceneIndex);
+        if (asyncLoad == null)
+        {
+            Debug.LogError($"❌ Scene index {nextSceneIndex} not in Build Settings!");
+            isCompleting = false;
+            yield break;
+        }
+
+        asyncLoad.allowSceneActivation = false;
+
+        // Safe to clean up UI now that async load is in-flight
+        if (passwordChecker != null)
+            passwordChecker.gameObject.SetActive(false);
+
+        if (passwordUiCanvas != null)
+            Destroy(passwordUiCanvas);
+
+        while (asyncLoad.progress < 0.9f)
+        {
+            Debug.Log($"⏳ Loading: {asyncLoad.progress:P0}");
+            yield return null;
+        }
+
+        asyncLoad.allowSceneActivation = true;
+        while (!asyncLoad.isDone) yield return null;
+
+        Debug.Log("🎉 Scene transition complete.");
     }
 
     private void UpdatePlayerProgress()
@@ -112,49 +108,21 @@ public class PasswordPanicGameManager : MonoBehaviour
         if (ProgressManager.Instance != null)
         {
             for (int i = 0; i <= 3; i++)
-            {
                 ProgressManager.Instance.SetChapterCompletedOnly(i, true);
-            }
-
             for (int i = 0; i <= 4; i++)
-            {
                 ProgressManager.Instance.SetChapterUnlocked(i, true);
-            }
-            
-            Debug.Log("🏆 Player progress saved successfully via ProgressManager!");
+            Debug.Log("🏆 Progress saved.");
         }
         else
         {
-            Debug.LogWarning("ProgressManager.Instance is null! Could not update progress.");
-        }
-    }
-
-    public void OnContinueClicked()
-    {
-        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        
-        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
-        {
-            SceneManager.LoadScene(nextSceneIndex);
-        }
-        else
-        {
-            Debug.LogWarning("No next scene available in Build Settings.");
+            Debug.LogWarning("⚠️ ProgressManager.Instance is null — progress not saved.");
         }
     }
 
     public void ResetProgress()
     {
-        if (passwordChecker != null)
-            passwordChecker.ClearPasswords();
-
+        if (passwordChecker != null) passwordChecker.ClearPasswords();
         isCompleting = false;
-
-        if (completedPanel != null)
-            completedPanel.SetActive(false);
-
-        Debug.Log("🔄 Avatar password progress has been reset for testing!");
+        Debug.Log("🔄 Progress reset.");
     }
-
-    
 }

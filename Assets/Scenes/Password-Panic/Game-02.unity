@@ -573,13 +573,14 @@ GameObject:
   - component: {fileID: 131777083}
   - component: {fileID: 131777085}
   - component: {fileID: 131777084}
+  - component: {fileID: 131777086}
   m_Layer: 5
   m_Name: PasswordCheckerPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &131777083
 RectTransform:
   m_ObjectHideFlags: 0
@@ -647,6 +648,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 131777082}
   m_CullTransparentMesh: 1
+--- !u!225 &131777086
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131777082}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &142489325
 GameObject:
   m_ObjectHideFlags: 0
@@ -2503,11 +2516,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   avatarStatusLabels:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 762762370}
+  - {fileID: 342128957}
+  - {fileID: 1752597413}
+  - {fileID: 2038039305}
+  - {fileID: 384897941}
   strengthText: {fileID: 1956031980}
   hintsText: {fileID: 1665809314}
   characterCountText: {fileID: 644571857}
@@ -2517,6 +2530,8 @@ MonoBehaviour:
   strengthBar: {fileID: 308100525}
   toggleVisibilityButton: {fileID: 596141422}
   setPasswordButton: {fileID: 455082868}
+  panelCanvasGroup: {fileID: 131777086}
+  fadeDuration: 0.15
   weakColor: {r: 1, g: 0.2, b: 0.2, a: 1}
   mediumColor: {r: 1, g: 0.8, b: 0, a: 1}
   strongColor: {r: 0.2, g: 1, b: 0.2, a: 1}
@@ -2536,7 +2551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ce695b9afa0c8b428630fbdda97bc87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  passwordChecker: {fileID: 0}
+  passwordChecker: {fileID: 580186591}
   passwordUiCanvas: {fileID: 1162178764}
   nextSceneIndex: 17
   resetProgress: 0
@@ -4104,8 +4119,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 131777083}
   - {fileID: 889621421}
+  - {fileID: 131777083}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

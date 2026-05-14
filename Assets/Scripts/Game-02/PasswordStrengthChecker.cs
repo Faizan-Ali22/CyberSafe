@@ -35,6 +35,11 @@ public class PasswordStrengthChecker : MonoBehaviour
     [SerializeField] private Button          toggleVisibilityButton;
     [SerializeField] private Button          setPasswordButton;
 
+    [Header("UI Transitions (190 IQ Optimization)")]
+    [Tooltip("Drag the Canvas Group from PasswordCheckerPanel here")]
+    [SerializeField] private CanvasGroup panelCanvasGroup;
+    [SerializeField] private float fadeDuration = 0.15f; // 0.15s is the sweet spot for snappy UI
+
     [Header("Strength Colors")]
     [SerializeField] private Color weakColor      = new Color(1f, 0.2f, 0.2f);
     [SerializeField] private Color mediumColor    = new Color(1f, 0.8f, 0f);
@@ -54,14 +59,40 @@ public class PasswordStrengthChecker : MonoBehaviour
     private int           currentAccountIndex = -1;
     private Dictionary<int, string> accountPasswords = new Dictionary<int, string>();
     private const long    ATTEMPTS_PER_SECOND = 1_000_000_000;
+    private Coroutine     currentFadeCoroutine;
+
+    // Global Memory Reference to bypass Android Scene searches
+    public static PasswordStrengthChecker Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+
+        // Force the panel to be invisible and unclickable immediately on boot
+        if (panelCanvasGroup != null)
+        {
+            panelCanvasGroup.alpha = 0f;
+            panelCanvasGroup.interactable = false;
+            panelCanvasGroup.blocksRaycasts = false;
+        }
+    }
 
     // ── Lifecycle ────────────────────────────────────────────────
     private void Start()
     {
-        ShowAvatarSelection();
         SetupButtons();
         SetupInputField();
+        
+        // Wait a small fraction of a frame to hide the panels, 
+        // ensuring other scripts have time to run their Finds.
+        StartCoroutine(DelayedHide());
         Debug.Log("✅ PasswordStrengthChecker ready — Inspector-wired mode.");
+    }
+
+    private IEnumerator DelayedHide()
+    {
+        yield return null; // wait 1 frame
+        ShowAvatarSelection();
     }
 
     private void SetupButtons()
@@ -106,6 +137,14 @@ public class PasswordStrengthChecker : MonoBehaviour
         if (avatarSelectionPanel  != null) avatarSelectionPanel.SetActive(true);
         if (passwordCheckerPanel  != null) passwordCheckerPanel.SetActive(false);
         if (passwordInputField    != null) passwordInputField.text = "";
+
+        // Reset the canvas group so it's ready to fade in smoothly next time
+        if (panelCanvasGroup != null)
+        {
+            panelCanvasGroup.alpha = 0f;
+            panelCanvasGroup.interactable = false;
+            panelCanvasGroup.blocksRaycasts = false;
+        }
     }
 
     public void SelectAccount(int index)
@@ -114,7 +153,16 @@ public class PasswordStrengthChecker : MonoBehaviour
         currentPassword.Clear();
 
         if (avatarSelectionPanel != null) avatarSelectionPanel.SetActive(false);
+        
+        // Must be active so the Coroutine and CanvasGroup can render
         if (passwordCheckerPanel != null) passwordCheckerPanel.SetActive(true);
+
+        // --- 190 IQ Smooth Fade ---
+        if (panelCanvasGroup != null)
+        {
+            if (currentFadeCoroutine != null) StopCoroutine(currentFadeCoroutine);
+            currentFadeCoroutine = StartCoroutine(FadeInPanel());
+        }
 
         InitializeUI();
         UpdateDisplay();
@@ -129,6 +177,28 @@ public class PasswordStrengthChecker : MonoBehaviour
             passwordInputField.ActivateInputField();
             passwordInputField.Select();
         }
+    }
+
+    private IEnumerator FadeInPanel()
+    {
+        // Start at 0
+        panelCanvasGroup.alpha = 0f;
+        
+        // Turn on raycasts so the player can interact as it fades in
+        panelCanvasGroup.interactable = true;
+        panelCanvasGroup.blocksRaycasts = true;
+
+        float elapsed = 0f;
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            // Smoothly interpolate from 0 to 1
+            panelCanvasGroup.alpha = Mathf.Clamp01(elapsed / fadeDuration);
+            yield return null;
+        }
+
+        // Ensure it mathematically hits exactly 1.0 at the end
+        panelCanvasGroup.alpha = 1f;
     }
 
     // ── Input Handlers ───────────────────────────────────────────

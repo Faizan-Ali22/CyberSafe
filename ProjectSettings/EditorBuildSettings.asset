@@ -58,7 +58,7 @@ EditorBuildSettings:
     guid: e1af21ef7adc8dd4a91986d96adf5df0
   - enabled: 1
     path: Assets/Scenes/Password-Panic/RewardScene.unity
-    guid: 5d592b75a50f16542a4c61cc7372b4b8
+    guid: 5fc87ba331b120247bd749c96135361f
   - enabled: 1
     path: Assets/Scenes/Ransomeware/Chapter4.unity
     guid: 6e82f484e6ad8b54cb5c7d56c6bd1bc1

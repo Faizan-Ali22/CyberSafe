@@ -20,8 +20,21 @@ public class PasswordPanicGameManager : MonoBehaviour
     private bool isCompleting  = false;
     private const int TOTAL_AVATARS = 5;
 
+    public static PasswordPanicGameManager Instance { get; private set; }
+
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (passwordChecker == null)
             passwordChecker = GetComponent<PasswordStrengthChecker>();
 
@@ -74,32 +87,9 @@ public class PasswordPanicGameManager : MonoBehaviour
 
         UpdatePlayerProgress();
 
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextSceneIndex);
-        if (asyncLoad == null)
-        {
-            Debug.LogError($"❌ Scene index {nextSceneIndex} not in Build Settings!");
-            isCompleting = false;
-            yield break;
-        }
-
-        asyncLoad.allowSceneActivation = false;
-
-        // Safe to clean up UI now that async load is in-flight
-        if (passwordChecker != null)
-            passwordChecker.gameObject.SetActive(false);
-
-        if (passwordUiCanvas != null)
-            Destroy(passwordUiCanvas);
-
-        while (asyncLoad.progress < 0.9f)
-        {
-            Debug.Log($"⏳ Loading: {asyncLoad.progress:P0}");
-            yield return null;
-        }
-
-        asyncLoad.allowSceneActivation = true;
-        while (!asyncLoad.isDone) yield return null;
-
+        // Synchronous load for debugging - replace with async if needed
+        Debug.Log($"🔄 Loading scene {nextSceneIndex} synchronously...");
+        SceneManager.LoadScene(nextSceneIndex);
         Debug.Log("🎉 Scene transition complete.");
     }
 

@@ -2,6 +2,22 @@ using UnityEngine;
 
 public class LabReturnState : MonoBehaviour
 {
+#if UNITY_EDITOR
+    [Header("Editor Testing")]
+    [Tooltip("Check this before pressing Play from the Main Menu or beginning of Chapter 1. Uncheck before returning from an ad/reward scene to test persistence.")]
+    public bool wipeSaveOnAwake = false;
+
+    private void Awake()
+    {
+        if (wipeSaveOnAwake)
+        {
+            ResetChapter1State();
+            SessionProgress.Reset();
+            Debug.Log("<b>[LabReturnState]</b> Editor Only: Wiped save data because 'wipeSaveOnAwake' is checked.");
+        }
+    }
+#endif
+
    private const string PosX = "LabPlayerPosX";
     private const string PosY = "LabPlayerPosY";
     private const string PosZ = "LabPlayerPosZ";
@@ -67,5 +83,14 @@ public class LabReturnState : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    public static void ResetChapter1State()
+    {
+        PlayerPrefs.DeleteKey(TeacherDoneKey);
+        PlayerPrefs.DeleteKey(PosX);
+        PlayerPrefs.DeleteKey(PosY);
+        PlayerPrefs.DeleteKey(PosZ);
+        PlayerPrefs.DeleteKey(RotY);
+        PlayerPrefs.Save();
+    }
 }
 

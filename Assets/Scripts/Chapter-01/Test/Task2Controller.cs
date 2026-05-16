@@ -23,6 +23,8 @@ public class Task2Controller : MonoBehaviour
     [Header("Scene Transition")]
     [Tooltip("Type the exact name of the Scene you want to load (e.g., MainMenu or Reward01)")]
     [SerializeField] private string nextSceneName = "Reward01";
+    [Tooltip("Index of the Scene in Build Settings to load")]
+    [SerializeField] private int nextSceneIndex = 12;
 
     [Header("Scene Audio")]
     [Tooltip("The AudioSource that plays the 4-second looping background music.")]

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 [RequireComponent(typeof(Button))]
 public class AvatarButtonWirer : MonoBehaviour
@@ -11,33 +12,46 @@ public class AvatarButtonWirer : MonoBehaviour
 
     private void Start()
     {
-        Button myButton = GetComponent<Button>();
-        myButton.onClick.RemoveAllListeners(); // Safe clean
-        myButton.onClick.AddListener(OnAvatarClicked);
+        StartCoroutine(SetupButton());
     }
 
-    private void OnAvatarClicked()
+    private IEnumerator SetupButton()
     {
-        // --- THE 190 IQ 3-TIER FAILSAFE ---
+        Button myButton = GetComponent<Button>();
+        myButton.onClick.RemoveAllListeners(); // Safe clean
 
-        // Tier 1: Use the Inspector assignment if it exists.
-        PasswordStrengthChecker activeChecker = checker;
+        PasswordStrengthChecker activeChecker = null;
 
-        // Tier 2: Try the Global Singleton from Memory.
-        if (activeChecker == null) 
+        // Wait for the checker to be available (handles timing issues on mobile)
+        while (activeChecker == null)
         {
-            activeChecker = PasswordStrengthChecker.Instance;
+            // Tier 1: Use the Inspector assignment if it exists.
+            activeChecker = checker;
+
+            // Tier 2: Try the Global Singleton from Memory.
+            if (activeChecker == null) 
+            {
+                activeChecker = PasswordStrengthChecker.Instance;
+            }
+
+            // Tier 3: BRUTE FORCE. If Android wiped the memory or the object is inactive, force a scene sweep.
+            if (activeChecker == null)
+            {
+                activeChecker = FindFirstObjectByType<PasswordStrengthChecker>(FindObjectsInactive.Include);
+            }
+
+            if (activeChecker == null)
+            {
+                yield return null; // Wait one frame and try again
+            }
         }
 
-        // Tier 3: BRUTE FORCE. If Android wiped the memory or the object is inactive, force a scene sweep.
-        if (activeChecker == null)
-        {
-            Debug.LogWarning($"[AvatarButtonWirer] Singleton lost! Brute-forcing scene search for Avatar {avatarIndex}...");
-            activeChecker = FindFirstObjectByType<PasswordStrengthChecker>(FindObjectsInactive.Include);
-        }
+        // Now that we have the checker, add the listener
+        myButton.onClick.AddListener(() => OnAvatarClicked(activeChecker));
+    }
 
-        // --- EXECUTION ---
-
+    private void OnAvatarClicked(PasswordStrengthChecker activeChecker)
+    {
         // If it is STILL null, the script literally does not exist in your scene hierarchy anymore.
         if (activeChecker == null)
         {

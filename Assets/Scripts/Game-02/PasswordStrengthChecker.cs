@@ -68,6 +68,9 @@ public class PasswordStrengthChecker : MonoBehaviour
     {
         Instance = this;
 
+        // Prevent this GameObject from being destroyed when loading new scenes
+        DontDestroyOnLoad(gameObject);
+
         // Force the panel to be invisible and unclickable immediately on boot
         if (panelCanvasGroup != null)
         {

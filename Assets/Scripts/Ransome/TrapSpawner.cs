@@ -10,8 +10,8 @@ public RectTransform spawnParent; // TrapContainer
  
 [Header("Settings")]
 public float spawnInterval = 2f;
-public float minLifetime = 3f;
-public float maxLifetime = 5.5f;
+public float minLifetime = 2f;
+public float maxLifetime = 3f;
  
 void Start() {
 if (GameManager.Instance != null) {

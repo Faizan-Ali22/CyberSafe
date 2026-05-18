@@ -10,7 +10,7 @@ public class CutSceneDeaddrop : MonoBehaviour
     
     // Optional: Use scene index instead of name
     [SerializeField] private bool useSceneIndex = true;
-    [SerializeField] public int sceneIndex= 18;
+    [SerializeField] public int sceneIndex= 19;
 
     void OnEnable()
     {

@@ -6,18 +6,18 @@ public class GameManager : MonoBehaviour
 public static GameManager Instance;
  
 [Header("Wave Settings")]
-public float waveSpeed = 3f; // percent of screen per second
+public float waveSpeed = 3.0f; // percent of screen per second
 
 [Header("Wave Progression")]
 public int totalWaves = 3;
 public int[] filesPerWave = new int[] { 5, 8, 11 };
 public int[] trapsPerWave = new int[] { 2, 4, 5 };
-public float waveSpeedIncrement = 1.5f;
+public float waveSpeedIncrement = 3.0f;
 
 [Header("Win Conditions")]
 [Tooltip("Percentage of important files that must be saved to win (e.g., 0.8 = 80%)")]
 [Range(0f, 1f)]
-public float requiredSavePercentage = 0.8f;
+public float requiredSavePercentage = 0.7f;
 public GameState State { get; private set; } = GameState.Idle;
 public float WavePercent { get; private set; }
 public int CurrentWave { get; private set; } = 1;
@@ -39,6 +39,9 @@ public event System.Action<Vector2> OnPrimaryPointerDown;
 public event System.Action<Vector2> OnPrimaryPointerDrag;
 public event System.Action<Vector2> OnPrimaryPointerUp;
 
+// Add this variable near your pointer variables
+private int activeTouchId = -1;
+
 float baseWaveSpeed;
  
 void Awake() {
@@ -57,43 +60,63 @@ if (WavePercent >= 100f) AdvanceWaveOrEnd();
 }
 
 void UpdatePrimaryPointer() {
-// Touch input (Android/iOS)
-if (Input.touchCount > 0) {
-Touch touch = Input.GetTouch(0);
-PrimaryPointerPosition = touch.position;
+    // Touch input (Android/iOS)
+    if (Input.touchCount > 0) {
+        foreach (Touch touch in Input.touches) {
+            // Check for new touches starting
+            if (touch.phase == TouchPhase.Began) {
+                // Optional: Prevent starting a drag if touching a UI element
+                // if (UnityEngine.EventSystems.EventSystem.current != null && 
+                //     UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(touch.fingerId)) {
+                //     continue; 
+                // }
 
-if (touch.phase == TouchPhase.Began) {
-PrimaryPointerIsDown = true;
-OnPrimaryPointerDown?.Invoke(PrimaryPointerPosition);
-}
-else if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary) {
-if (PrimaryPointerIsDown)
-OnPrimaryPointerDrag?.Invoke(PrimaryPointerPosition);
-}
-else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
-if (PrimaryPointerIsDown)
-OnPrimaryPointerUp?.Invoke(PrimaryPointerPosition);
-PrimaryPointerIsDown = false;
-}
+                // Only grab the first touch that starts and ignore others until this one ends
+                if (!PrimaryPointerIsDown) {
+                    activeTouchId = touch.fingerId;
+                    PrimaryPointerIsDown = true;
+                    PrimaryPointerPosition = touch.position;
+                    OnPrimaryPointerDown?.Invoke(PrimaryPointerPosition);
+                }
+            }
+            // Track only our actively held touch
+            else if (touch.fingerId == activeTouchId) {
+                PrimaryPointerPosition = touch.position;
 
-return;
-}
+                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary) {
+                    OnPrimaryPointerDrag?.Invoke(PrimaryPointerPosition);
+                }
+                else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
+                    OnPrimaryPointerUp?.Invoke(PrimaryPointerPosition);
+                    PrimaryPointerIsDown = false;
+                    activeTouchId = -1; // Reset active touch
+                }
+            }
+        }
+        return; // Don't process mouse if we have touches
+    }
 
-// Mouse fallback (Editor / standalone)
-PrimaryPointerPosition = Input.mousePosition;
-if (Input.GetMouseButtonDown(0)) {
-PrimaryPointerIsDown = true;
-OnPrimaryPointerDown?.Invoke(PrimaryPointerPosition);
-}
-if (Input.GetMouseButton(0)) {
-if (PrimaryPointerIsDown)
-OnPrimaryPointerDrag?.Invoke(PrimaryPointerPosition);
-}
-if (Input.GetMouseButtonUp(0)) {
-if (PrimaryPointerIsDown)
-OnPrimaryPointerUp?.Invoke(PrimaryPointerPosition);
-PrimaryPointerIsDown = false;
-}
+    // Mouse fallback (Editor / standalone)
+    // (Your existing mouse code remains identical here)
+    PrimaryPointerPosition = Input.mousePosition;
+    
+    if (Input.GetMouseButtonDown(0)) {
+        // Optional UI check for mouse:
+        // if (UnityEngine.EventSystems.EventSystem.current != null && 
+        //     UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+
+        PrimaryPointerIsDown = true;
+        OnPrimaryPointerDown?.Invoke(PrimaryPointerPosition);
+    }
+    if (Input.GetMouseButton(0)) {
+        if (PrimaryPointerIsDown)
+            OnPrimaryPointerDrag?.Invoke(PrimaryPointerPosition);
+    }
+    if (Input.GetMouseButtonUp(0)) {
+        if (PrimaryPointerIsDown)
+            OnPrimaryPointerUp?.Invoke(PrimaryPointerPosition);
+        PrimaryPointerIsDown = false;
+    }
 }
 
 void AdvanceWaveOrEnd() {

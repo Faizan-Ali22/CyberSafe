@@ -11,7 +11,7 @@ public class RansomwareEndScreen : MonoBehaviour
     public Text actionButtonText;
 
     [Header("Scene Transition")]
-    public string nextLevelSceneName = "DDOS";
+    public string nextLevelSceneName = "NULL";
 
     private void OnEnable() 
     {

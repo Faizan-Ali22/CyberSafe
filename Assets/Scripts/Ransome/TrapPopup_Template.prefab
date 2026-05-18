@@ -406,8 +406,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -19.123398, y: 0.0000019073486}
-  m_SizeDelta: {x: 43.1346, y: 24}
+  m_AnchoredPosition: {x: -24.3134, y: 0.19999981}
+  m_SizeDelta: {x: 53.5147, y: 26.441}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4593607784042308163
 CanvasRenderer:
@@ -643,8 +643,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72c052d84edad77469343b62d956660d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  closeButton: {fileID: 0}
-  payButton: {fileID: 0}
+  closeButton: {fileID: 4139426991489139261}
+  payButton: {fileID: 6030738000544865093}
 --- !u!1 &4641846228872045171
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,11 +712,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: e66d28c06d7ca3743beaa0ef21049db8, type: 3}
-    m_FontSize: 23
+    m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
-    m_MaxSize: 40
+    m_MinSize: 0
+    m_MaxSize: 300
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1

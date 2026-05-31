@@ -6,7 +6,7 @@ public class Packet : MonoBehaviour
     private RectTransform rectTransform;
     private Vector2 direction;
     private float speed;
-    private bool isBot;
+    public bool isBot;
     private int stuckFrames = 0;
 
     private const float serverRadius = 40f;
@@ -23,6 +23,24 @@ public class Packet : MonoBehaviour
         rectTransform.localRotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg);
     }
 
+    // Returns position in RenderTexture pixel space (top-left origin)
+    // This matches the coordinate space that DrawInputManager uses
+    public Vector2 GetPhysicsPos()
+    {
+        Vector2 anchored = rectTransform.anchoredPosition;
+        // anchoredPosition is UI space (bottom-left origin), flip Y to match RT space
+        return new Vector2(anchored.x, 1080f - anchored.y);
+    }
+
+    public bool IsBot => isBot;
+
+    public void DestroyAsBlocked()
+    {
+        Vector2 pos = GetPhysicsPos();
+        ParticleManager.Instance.Burst(pos, ParticleManager.COL_RED, 12);
+        Destroy(gameObject);
+    }
+
     void Update()
     {
         if (GameController.Instance.State != GameController.GameState.PLAYING) return;
@@ -36,16 +54,13 @@ public class Packet : MonoBehaviour
         // 1. Check Firewall Collisions
         if (FirewallManager.Instance.IsNearAnyWall(physicsPos, 30f))
         {
-            // THE FIX: Instant Kill for Red Bots
-            // If it's a bot, destroy it the exact frame it touches the wall. No delay.
             if (isBot)
             {
                 ParticleManager.Instance.Burst(physicsPos, ParticleManager.COL_RED, 8);
                 Destroy(gameObject);
-                return; // Stop code execution for this packet immediately
+                return;
             }
 
-            // Green Legit Users still get stuck and jitter
             stuckFrames++;
             rectTransform.anchoredPosition += new Vector2(Random.Range(-1.5f, 1.5f), Random.Range(-1.5f, 1.5f));
 
@@ -59,13 +74,12 @@ public class Packet : MonoBehaviour
         }
         else
         {
-            // Move forward visually
             rectTransform.anchoredPosition = nextPos;
             stuckFrames = 0;
         }
 
         // 2. Check Server Arrival
-        Vector2 serverCenter = new Vector2(960f, 540f); 
+        Vector2 serverCenter = new Vector2(960f, 540f);
         if (Vector2.Distance(rectTransform.anchoredPosition, serverCenter) < serverRadius)
         {
             Vector2 currentPhysicsPos = new Vector2(rectTransform.anchoredPosition.x, 1080f - rectTransform.anchoredPosition.y);

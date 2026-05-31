@@ -7,7 +7,7 @@ public class PacketSpawner : MonoBehaviour
     [Header("Prefabs")]
     public GameObject botPrefab;
     public GameObject legitPrefab;
-
+    public static PacketSpawner Instance;
     [Header("References")]
     public Transform packetParent; 
 
@@ -19,6 +19,13 @@ public class PacketSpawner : MonoBehaviour
 
     int _frame = 0;
     List<Packet> _activePackets = new List<Packet>();
+    public List<Packet> GetActivePackets() => _activePackets;
+
+    void Awake()
+{
+    Instance = this;
+}
+
 
     void Start()
     {

@@ -6,25 +6,24 @@ using System.Collections.Generic;
 
 public class DrawInputManager : MonoBehaviour
 {
-    // Singleton so RadarDrawer can easily fetch active strokes
     public static DrawInputManager Instance;
 
     [Header("References")]
-    public RectTransform gameCanvasRect; // Assign GameCanvas (RawImage) here
+    public RectTransform gameCanvasRect;
 
-    // Class to track active finger strokes
     private class TouchStroke
     {
         public Vector2 startPos;
         public Vector2 currentPos;
+        public Vector2 prevPos;
     }
 
     private Dictionary<int, TouchStroke> _activeStrokes = new Dictionary<int, TouchStroke>();
 
-    // Mouse fallback tracking
     private bool    _mouseDown    = false;
     private Vector2 _mouseStart   = Vector2.zero;
-    private Vector2 _mouseCurrent = Vector2.zero; 
+    private Vector2 _mouseCurrent = Vector2.zero;
+    private Vector2 _mousePrev    = Vector2.zero;
 
     void Awake()
     {
@@ -33,15 +32,14 @@ public class DrawInputManager : MonoBehaviour
 
     void Update()
     {
-        // Don't allow drawing if we aren't actively playing
-        if (GameController.Instance == null || GameController.Instance.State != GameController.GameState.PLAYING) 
+        if (GameController.Instance == null || GameController.Instance.State != GameController.GameState.PLAYING)
             return;
 
         HandleTouchInput();
         HandleMouseInput();
     }
 
-    // ── Touch Input (Android multitouch) ─────────────────────────
+    // ── Touch Input ───────────────────────────────────────────────
     void HandleTouchInput()
     {
         for (int i = 0; i < Input.touchCount; i++)
@@ -52,13 +50,23 @@ public class DrawInputManager : MonoBehaviour
             switch (t.phase)
             {
                 case TouchPhase.Began:
-                    _activeStrokes[t.fingerId] = new TouchStroke { startPos = canvasPos, currentPos = canvasPos };
+                    _activeStrokes[t.fingerId] = new TouchStroke
+                    {
+                        startPos   = canvasPos,
+                        currentPos = canvasPos,
+                        prevPos    = canvasPos
+                    };
                     break;
 
                 case TouchPhase.Moved:
                 case TouchPhase.Stationary:
                     if (_activeStrokes.ContainsKey(t.fingerId))
+                    {
+                        Vector2 prev = _activeStrokes[t.fingerId].currentPos;
+                        _activeStrokes[t.fingerId].prevPos    = prev;
                         _activeStrokes[t.fingerId].currentPos = canvasPos;
+                        CheckSwipeKills(prev, canvasPos);
+                    }
                     break;
 
                 case TouchPhase.Ended:
@@ -76,7 +84,6 @@ public class DrawInputManager : MonoBehaviour
     // ── Mouse Input (Editor testing) ─────────────────────────────
     void HandleMouseInput()
     {
-        // Only use mouse if no real touches exist to prevent duplicate inputs
         if (Input.touchCount > 0) return;
 
         Vector2 canvasPos = ScreenToCanvas(Input.mousePosition);
@@ -86,11 +93,13 @@ public class DrawInputManager : MonoBehaviour
             _mouseDown    = true;
             _mouseStart   = canvasPos;
             _mouseCurrent = canvasPos;
+            _mousePrev    = canvasPos;
         }
         else if (Input.GetMouseButton(0) && _mouseDown)
         {
-            // Update current position while dragging so the white line follows the cursor
-            _mouseCurrent = canvasPos; 
+            _mousePrev    = _mouseCurrent;
+            _mouseCurrent = canvasPos;
+            CheckSwipeKills(_mousePrev, _mouseCurrent);
         }
         else if (Input.GetMouseButtonUp(0) && _mouseDown)
         {
@@ -99,58 +108,79 @@ public class DrawInputManager : MonoBehaviour
         }
     }
 
+    // ── Swipe Kill Detection ──────────────────────────────────────
+    // Both prevRT and currentRT are already in RenderTexture pixel space (top-left origin)
+    // GetPhysicsPos() on Packet also returns RT pixel space
+    // So NO coordinate conversion needed — they are already the same space
+    void CheckSwipeKills(Vector2 prevRT, Vector2 currentRT)
+    {
+        if (PacketSpawner.Instance == null) return;
+
+        var packets = PacketSpawner.Instance.GetActivePackets();
+        if (packets == null) return;
+
+        for (int i = packets.Count - 1; i >= 0; i--)
+        {
+            Packet packet = packets[i];
+            if (packet == null || !packet.IsBot) continue;
+
+            Vector2 packetPos = packet.GetPhysicsPos();
+
+            if (DistanceToSegment(packetPos, prevRT, currentRT) < 40f)
+            {
+                packet.DestroyAsBlocked();
+                packets.RemoveAt(i);
+            }
+        }
+    }
+
+    float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
+    {
+        Vector2 ab = b - a;
+        float t = Vector2.Dot(p - a, ab) / Mathf.Max(Vector2.Dot(ab, ab), 0.0001f);
+        t = Mathf.Clamp01(t);
+        return Vector2.Distance(p, a + t * ab);
+    }
+
     // ── Finish a stroke → send to FirewallManager ─────────────────
     void FinishStroke(Vector2 start, Vector2 end)
     {
         float dist = Vector2.Distance(start, end);
-
-        // Minimum draw distance 30px (ignores accidental taps)
         if (dist < 30f) return;
-
         FirewallManager.Instance.DeployWall(start, end);
     }
 
-    // ── Feed active strokes to the RadarDrawer ────────────────────
+    // ── Feed active strokes to RadarDrawer ────────────────────────
     public List<(Vector2 start, Vector2 current)> GetActiveStrokes()
     {
         var result = new List<(Vector2, Vector2)>();
-        
+
         foreach (var kvp in _activeStrokes)
-        {
             result.Add((kvp.Value.startPos, kvp.Value.currentPos));
-        }
 
         if (_mouseDown)
-        {
             result.Add((_mouseStart, _mouseCurrent));
-        }
 
         return result;
     }
 
-    // ── Bulletproof Coordinate Math ───────────────────────────────
+    // ── Coordinate Conversion ─────────────────────────────────────
+    // Converts screen pixel position → RenderTexture pixel space (top-left origin, 1920x1080)
     Vector2 ScreenToCanvas(Vector2 screenPos)
     {
         if (gameCanvasRect == null) return Vector2.zero;
 
-        // 1. Convert Screen space to Local UI space. 
-        // FORCE null for the camera parameter. If a camera is passed in while 
-        // using Screen Space - Overlay, the math completely breaks.
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             gameCanvasRect,
             screenPos,
-            null, 
+            null,
             out Vector2 localPos
         );
 
-        // 2. Ignore Pivots entirely. Calculate the exact percentage (0.0 to 1.0) 
-        // of where the click happened across the Rect's width and height.
         Rect rect = gameCanvasRect.rect;
         float normalizedX = (localPos.x - rect.x) / rect.width;
         float normalizedY = (localPos.y - rect.y) / rect.height;
 
-        // 3. Map that percentage directly to our 1920x1080 RenderTexture resolution.
-        // Y is inverted because RenderTexture (0,0) is Top-Left, but UI (0,0) is Bottom-Left.
         float pixelX = normalizedX * 1920f;
         float pixelY = (1f - normalizedY) * 1080f;
 

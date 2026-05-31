@@ -88,3 +88,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d0593e67ee9aae4e8aba92fda51d10e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBot: 1

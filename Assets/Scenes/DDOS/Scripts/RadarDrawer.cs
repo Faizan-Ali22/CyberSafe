@@ -100,18 +100,21 @@ public class RadarDrawer : MonoBehaviour
 
     // ── Preview Lines for Drawing ─────────────────────────────────
     void DrawActiveTouchLines()
+{
+    if (DrawInputManager.Instance == null) return;
+    var strokes = DrawInputManager.Instance.GetActiveStrokes();
+    
+    foreach (var stroke in strokes)
     {
-        if (DrawInputManager.Instance == null) return;
-
-        // Fetch the active mouse drag or touch strokes
-        var strokes = DrawInputManager.Instance.GetActiveStrokes();
+        // Glow layer (wide, transparent)
+        Color glow = new Color(0.220f, 0.741f, 0.973f, 0.3f); // cyan glow
+        DrawLine(stroke.start, stroke.current, glow, 18f);
         
-        foreach (var stroke in strokes)
-        {
-            // Draw a solid white line while holding down the mouse/finger
-            DrawLine(stroke.start, stroke.current, Color.white, 4f);
-        }
+        // Core slash line (sharp, bright)
+        Color core = new Color(0.220f, 0.741f, 0.973f, 1f);
+        DrawLine(stroke.start, stroke.current, core, 4f);
     }
+}
 
     // ── Radar grid (concentric circles + lane lines) ──────────────
     void DrawRadarGrid()

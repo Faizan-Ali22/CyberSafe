@@ -12,6 +12,7 @@ public class RansomwareEndScreen : MonoBehaviour
 
     [Header("Scene Transition")]
     public string nextLevelSceneName = "NULL";
+    public int nextLevelBuildIndex = 20;
 
     private void OnEnable() 
     {
@@ -19,7 +20,7 @@ public class RansomwareEndScreen : MonoBehaviour
         ConfigureEndScreen();
     }
 
-    private void ConfigureEndScreen()
+    public void ConfigureEndScreen()
     {
         GameManager gm = GameManager.Instance;
         bool isWin = gm.HasPlayerWon();
@@ -68,13 +69,21 @@ public class RansomwareEndScreen : MonoBehaviour
 
     private void ClaimBadgeAndContinue()
     {
-        // 1. Award the Badge (using PlayerPrefs or your custom save system)
-        PlayerPrefs.SetInt("Badge_DeadDrop", 1);
-        PlayerPrefs.Save();
-        
-        Debug.Log("Badge Awarded! Proceeding to next level...");
+    PlayerPrefs.SetInt("Badge_DeadDrop", 1);
+    PlayerPrefs.Save();
+    Debug.Log("Badge Awarded! Proceeding to next level...");
 
-        // 2. Load the next scene
+    if (nextLevelBuildIndex >= 0)
+    {
+        SceneManager.LoadScene(nextLevelBuildIndex);
+    }
+    else if (!string.IsNullOrEmpty(nextLevelSceneName) && nextLevelSceneName != "NULL")
+    {
         SceneManager.LoadScene(nextLevelSceneName);
+    }
+    else
+    {
+        Debug.LogError("Next level not set. Set nextLevelBuildIndex or nextLevelSceneName in the inspector.");
+    }
     }
 }

@@ -65,6 +65,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Ransomeware/Game.unity
     guid: dfebc8428be2bd04ba31d8bb66147cb0
+  - enabled: 1
+    path: Assets/Scenes/DDOS/NULL.unity
+    guid: 790650172b8c7a1428c3e49d7101df5a
+  - enabled: 1
+    path: Assets/Scenes/DDOS/DDOS.unity
+    guid: 03529369a22cce94096d3a0216879987
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

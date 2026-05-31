@@ -17,7 +17,7 @@ public float waveSpeedIncrement = 3.0f;
 [Header("Win Conditions")]
 [Tooltip("Percentage of important files that must be saved to win (e.g., 0.8 = 80%)")]
 [Range(0f, 1f)]
-public float requiredSavePercentage = 0.7f;
+public float requiredSavePercentage = 0.55f;
 public GameState State { get; private set; } = GameState.Idle;
 public float WavePercent { get; private set; }
 public int CurrentWave { get; private set; } = 1;

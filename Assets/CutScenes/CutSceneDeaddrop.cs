@@ -12,17 +12,17 @@ public class CutSceneDeaddrop : MonoBehaviour
     [SerializeField] private bool useSceneIndex = true;
     [SerializeField] public int sceneIndex= 19;
 
-    void OnEnable()
+    void Start()
     {
         MarkChapterProgress();
 
         if (useSceneIndex)
         {
-            StartCoroutine(LoadSceneAsync(sceneIndex));
+            StartCoroutine(LoadSceneAsyncRoutine(sceneIndex));
         }
         else
         {
-            StartCoroutine(LoadSceneAsync(sceneName));
+            StartCoroutine(LoadSceneAsyncRoutine(sceneName));
         }
     }
 
@@ -47,13 +47,15 @@ public class CutSceneDeaddrop : MonoBehaviour
         ProgressManager.Instance.SetChapterUnlocked(4, true);
     }
     
-    private IEnumerator LoadSceneAsync(string name)
+    private IEnumerator LoadSceneAsyncRoutine(string name)
     {
         yield return SceneManager.LoadSceneAsync(name);
     }
     
-    private IEnumerator LoadSceneAsync(int index)
+    private IEnumerator LoadSceneAsyncRoutine(int index)
     {
+        // Wait a frame so we exit the Timeline/OnEnable evaluation step first
+        yield return null; 
         yield return SceneManager.LoadSceneAsync(index);
     }
 }
